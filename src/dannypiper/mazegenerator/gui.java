@@ -13,10 +13,20 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 public class gui {
-
-	//essential variables
-	private static JFrame jframe;
+	
+	public static File imageFile;
+	
+	//parameters
+	public static int width;
+	public static int height;
+	public static int EntranceX;
+	public static int EntranceY;
+	public static int ExitX;
+	public static int ExitY;
 	public static BufferedImage mazeImage;
+	
+	//gui vars
+	private static JFrame jframe;
 	private static JPanel jpanel;
 	private static JTextArea widthTitle;
 	private static JTextArea heightTitle;
@@ -56,7 +66,7 @@ public class gui {
 	};
 	
 	//UI Methods
-	public static void InitJFrame() {
+	private static void InitJFrame() {
 		jframe = new JFrame("Maze Generator");
 		jframe.setSize(1900, 1000);
 		jframe.setResizable(false);
@@ -64,7 +74,7 @@ public class gui {
 		jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	}
 	
-	public static void initInputFieldsAndCaptions() {
+	private static void initInputFieldsAndCaptions() {
 		widthTitle = new JTextArea("Graph width: ");
 		widthTitle.setEditable(false);
 		jframe.add(widthTitle);
@@ -87,21 +97,16 @@ public class gui {
 			
 	}
 	
+	private static void initButtons() {
+		generateBtn = new JButton("Generate Maze");
+		cancelGenerationBtn = new JButton("Cancel");
+	}
+	
 	public static void InitUI() {
 		InitJFrame();
 		initInputFieldsAndCaptions();
-		
+		initButtons();
 	}
-	
-	public static File imageFile;
-	
-	//parameters
-	public static int width;
-	public static int height;
-	public static int EntranceX;
-	public static int EntranceY;
-	public static int ExitX;
-	public static int ExitY;
 	
 	public boolean valuesForAllParameters() {
 		return (width>0 && height>0) 
@@ -110,7 +115,7 @@ public class gui {
 				&& imageFile!=null;
 	}
 	
-	public static boolean validNumericalParameter(String parameterStr) {
+	private static boolean validNumericalParameter(String parameterStr) {
 		String validChars = "0123456789";
 		String[] parameterStrArray = parameterStr.split(""); //split after each char
 		for (int i = 0; i<parameterStrArray.length; i++) {
