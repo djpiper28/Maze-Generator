@@ -1,28 +1,52 @@
 package dannypiper.mazegenerator;
 
-import java.awt.Graphics;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import javax.swing.JPanel;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
 
 public class renderer implements Runnable {
 
-	public BufferedImage renderImage;
-	private Graphics graphics;
-	private JPanel observer;
+	public int width;
+	public int height;
+	public float scale;
 	
-	public void updateGraphics(Graphics graphics) {
-		this.graphics = graphics;
-	}
-	
-	public renderer(int width, int height, Graphics graphics, JPanel observer) {
-		this.observer = observer;
-		updateGraphics(graphics);
-		this.renderImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+	public renderer(int width, int height, float scale) {
+		this.width = width;
+		this.height = height;
+		this.scale = scale;
 	}
 	
 	@Override
 	public void run() {
-		graphics.drawImage(this.renderImage, 0, 0, this.observer);
+		long time = System.currentTimeMillis();
+
+		if(scale!=1) { 
+			BufferedImage after = new BufferedImage((int) Math.ceil(width*scale), (int) Math.ceil(height*scale)
+					, BufferedImage.TYPE_INT_RGB);
+			AffineTransform at = new AffineTransform();
+			at.scale(scale, scale);
+			AffineTransformOp scaleOp = 
+			   new AffineTransformOp(at, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+			after = scaleOp.filter(mazegen.mazeImage, after);
+			
+			Image image = SwingFXUtils.toFXImage(after, null);
+			
+			gui.graphicsContext.drawImage(image, 0, 0);
+			
+			image = null;
+			after = null;
+		} else {
+			Image image = SwingFXUtils.toFXImage(mazegen.mazeImage, null);
+			
+			gui.graphicsContext.drawImage(image, 0, 0);
+			
+			image = null;
+		}
+		 
+		System.out.println("Render call - " + (System.currentTimeMillis() - time) + "ms");
+		System.gc();
 	}
 
 }

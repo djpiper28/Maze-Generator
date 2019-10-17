@@ -1,6 +1,8 @@
-package dannypiper.mazegenerator;
+package dannypiper.mazegenerator.old;
 
 import java.util.Random;
+
+import dannypiper.mazegenerator.renderer;
 
 public class generator {
 	public boolean cancelled;
