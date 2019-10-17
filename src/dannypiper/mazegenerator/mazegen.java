@@ -11,22 +11,28 @@ public class mazegen implements Runnable {
 	@SuppressWarnings("exports")
 	public static BufferedImage mazeImage;
 	
-	private int width;
-	private int height;
-	private int entranceY;;
-	private int exitY;
-	private int max;
-	private float scale;
+	public static int width;
+	public static int height;
+	private static int entranceY;;
+	private static int exitY;
+	private static float scale;
+	public static int max;
 	private final static int white = 0xFFFFFF;
-	private final static int maxRand = 50000;	
-	
-	private renderer renderObject;
-	private Thread renderThread;
-	
-	private File file;	
+	public static final int maxRand = 50000;	
+	public static int[][] adjMat;
 
-	private int[][] adjMat;
-	private Random rand;
+	public static int[] pivotColumns;
+	public static int[] deletedRows;
+
+	public static int pivotColumnsLength;
+	public static int deletedRowsLength;
+	
+	private static renderer renderObject;
+	private static Thread renderThread;
+	
+	private static File file;	
+
+	private static Random rand;
 	
 	private void randInt(int x, int y) {
 		int random = rand.nextInt();
@@ -36,75 +42,7 @@ public class mazegen implements Runnable {
 		adjMat[x][y] = random % maxRand;
 	}
 	
-	private void primms() {
-		long frameControlTime = System.currentTimeMillis();
-		
-		int nodesFound = 0;
-		int nodesNeeded = height * width - 1;
-		
-		int[] pivotColumns = new int[nodesNeeded+1];
-		int[] deletedRows = new int[nodesNeeded+1];
-	
-		pivotColumns[0] = height * width / 2;
-		deletedRows[0] = pivotColumns[0];
-		
-		int pivotColumnsLength = 1;
-		int deletedRowsLength = 1;		
-		
-		while(nodesFound < nodesNeeded) {
-			
-			//PRIMMS
-			int minValue = maxRand+1;
-			int column = 0;
-			int row = 0;
-			
-			for(int i = 0; i < pivotColumnsLength; i++) {
-				int x = pivotColumns[i];
-				for(int y = 0; y < max; y++) {
-					boolean deleted = false;
-					int j = 0; 
-					while(j < deletedRowsLength && !deleted) {	
-						if (y==deletedRows[j]) {
-							deleted = true;
-						}
-						j++;
-					}
-					
-					if(!deleted) {
-						if((adjMat[x][y] < minValue) && adjMat[x][y]!=-1) {
-							minValue = adjMat[x][y];
-							column = x;
-							row = y;		
-							
-							if(minValue==0) {
-								break;			//TODO: Remove break
-							}
-						}
-					}
-				}
-	
-				if(minValue==0) {
-					break;						//TODO: Remove break
-				}
-			}
-	
-			deletedRows[deletedRowsLength] = row;
-			deletedRowsLength++;
-	
-			pivotColumns[pivotColumnsLength] = row;
-			pivotColumnsLength++;
-	
-			drawArc(column, row);
-			
-			if(System.currentTimeMillis() - frameControlTime >=16) {				
-				frameControlTime = System.currentTimeMillis();
-				render();
-			}
-			nodesFound++;
-		}
-	}
-
-	private void drawArc(int adjMatX, int adjMatY) {
+	public static void drawArc(int adjMatX, int adjMatY) {
 		
 		int x1 = ( (adjMatX % width) * 2 ) + 1;
 		int y1 = ( (adjMatX / width) * 2 ) + 1;
@@ -169,6 +107,10 @@ public class mazegen implements Runnable {
 			}
 		}
 	}
+	
+	private void primms() {
+		primms.executePrimms();
+	}
 
 	private void generate() {
 
@@ -202,8 +144,8 @@ public class mazegen implements Runnable {
 		}
 	}
 
-	public void render() {
-		this.renderThread = new Thread(renderObject, "Render Thread");
+	public static void render() {
+		renderThread = new Thread(renderObject, "Render Thread");
 		renderThread.start();
 	}
 

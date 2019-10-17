@@ -262,7 +262,7 @@ public class gui extends Application {
 	private void generateGUI() {
 		canvas = new Canvas(1920, 1050);
 		vBox = new VBox(canvas);
-		vBox.setPadding(new Insets(20));
+		vBox.setPadding(new Insets(0));
 		
 		renderScene = new Scene(vBox, 1920, 1050);
 		stage.setScene(renderScene); 
@@ -290,7 +290,7 @@ public class gui extends Application {
 			float scale = 1;
 			if(scalex < 1 || scaley < 1) {
 				scale = 1f;
-			} else if(scalex <= scaley) {
+			} if(scalex <= scaley) {
 				scale = scalex;
 			} else {
 				scale = scaley;
