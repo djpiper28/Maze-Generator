@@ -6,6 +6,8 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import javafx.scene.paint.Color;
+
 public class mazegen implements Runnable {
 	
 	@SuppressWarnings("exports")
@@ -15,10 +17,10 @@ public class mazegen implements Runnable {
 	public static int height;
 	private static int entranceY;;
 	private static int exitY;
-	private static float scale;
+	public static float scale;
 	public static int max;
 	private final static int white = 0xFFFFFF;
-	public static final int maxRand = 50000;	
+	public static final int maxRand = 500;	
 	public static int[][] adjMat;
 
 	public static int[] pivotColumns;
@@ -58,6 +60,10 @@ public class mazegen implements Runnable {
 		mazeImage.setRGB(x3, y3, white);
 	}
 
+	private void primms() {
+		primms.executePrimms();
+	}
+
 	private void populateAdjMat() {
 		max = height*width;
 		
@@ -76,14 +82,18 @@ public class mazegen implements Runnable {
 				
 				if(x < width - 1) {
 					randInt(Coord + 1, Coord);
+					randInt(Coord, Coord + 1);
 				}
 				if(x > 0) {
 					randInt(Coord - 1, Coord);
+					randInt(Coord, Coord - 1);
 				}
 				if(y < height - 1) {
 					randInt(Coord, Coord + width);
+					randInt(Coord, Coord + width);
 				}
 				if(y > 0) {
+					randInt(Coord, Coord - width);
 					randInt(Coord, Coord - width);
 				}
 				
@@ -97,7 +107,12 @@ public class mazegen implements Runnable {
 	}
 
 	private void loadingScreen() {
-		gui.graphicsContext.fillText("Loading", 1920/2 , 1050/2 );
+		gui.graphicsContext.fillText("A Really Good Loading Screen!", 1920/2 , 1050/2 );
+	}
+	
+	private void setBGToGrey() {
+		gui.graphicsContext.setFill(Color.DARKGREY);
+		gui.graphicsContext.fillRect(0, 0, gui.XMAX, gui.YMAX);
 	}
 
 	private void setImageToBlack() {
@@ -108,10 +123,6 @@ public class mazegen implements Runnable {
 		}
 	}
 	
-	private void primms() {
-		primms.executePrimms();
-	}
-
 	private void generate() {
 
 		System.out.println("Setting image to black");		
@@ -125,6 +136,8 @@ public class mazegen implements Runnable {
 		System.out.println("Populating adjacency matrix");
 		populateAdjMat();
 		System.out.println("Populated adjacency matrix");
+		
+		setBGToGrey();
 		
 		long time = System.currentTimeMillis();
 		System.out.println("Applying Primms...");

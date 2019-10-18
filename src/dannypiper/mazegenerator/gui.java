@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 
 public class gui extends Application {
 	
-	//Obejects to parse
+	//Objects to parse
 	public static File imageFile;
 	
 	//parameters
@@ -28,6 +28,10 @@ public class gui extends Application {
 	private static int height;
 	private static int EntranceY;
 	private static int ExitY;
+	private static float scale = 1;
+	public static final int XMAX = 1920;
+	public static final int YMAX = 1080;
+	public static final String Version = "1.1.1";
 	
 	//javaFX
 	private final static String font = "Lucida Console";
@@ -162,8 +166,21 @@ public class gui extends Application {
 		entranceYField = new TextField("5");
 		entranceYField.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
 		entranceYField.setOnKeyTyped(e -> {
+			int pos = entranceYField.getCaretPosition();
+			
 			entranceYField.setText(numOnly(entranceYField.getText()));
-			EntranceY = Integer.valueOf(entranceYField.getText());
+			
+			if(entranceYField.getText().length() > pos+1) {
+				entranceYField.positionCaret(pos + 1);
+			} else if (entranceYField.getText().length() > pos){
+				entranceYField.positionCaret(pos);
+			}
+			
+			if(entranceYField.getText().length() > 0) {
+				EntranceY = Integer.valueOf(entranceYField.getText());
+			} else {
+				EntranceY = 0;
+			}
 			validateInput();
 		});
 		
@@ -173,8 +190,21 @@ public class gui extends Application {
 		exitYField = new TextField("5");	
 		exitYField.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
 		exitYField.setOnKeyTyped(e -> {
+			int pos = exitYField.getCaretPosition();
+			
 			exitYField.setText(numOnly(exitYField.getText()));
-			ExitY = Integer.valueOf(exitYField.getText());
+			
+			if(exitYField.getText().length() > pos+1) {
+				exitYField.positionCaret(pos + 1);
+			} else if (exitYField.getText().length() > pos){
+				exitYField.positionCaret(pos);
+			} 
+			
+			if(exitYField.getText().length() > 0) {
+				ExitY = Integer.valueOf(exitYField.getText());
+			} else {
+				ExitY = 0;
+			}
 			validateInput();
 		});
 		entranceExitParametersHBOX = new HBox(entranceYLabel,
@@ -192,8 +222,21 @@ public class gui extends Application {
 		widthField = new TextField("50");
 		widthField.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
 		widthField.setOnKeyTyped(e -> {
-			widthField.setText(numOnly(widthField.getText()));			
-			width = Integer.valueOf(widthField.getText());
+			int pos = widthField.getCaretPosition();
+			
+			widthField.setText(numOnly(widthField.getText()));
+			
+			if(widthField.getText().length() > pos+1) {
+				widthField.positionCaret(pos + 1);
+			} else if (widthField.getText().length() > pos){
+				widthField.positionCaret(pos);
+			} 
+				
+			if(widthField.getText().length() > 0) {
+				width = Integer.valueOf(widthField.getText());
+			} else {
+				width = 0;
+			}
 			validateInput();
 		});
 		
@@ -203,8 +246,21 @@ public class gui extends Application {
 		heightField = new TextField("50");	
 		heightField.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
 		heightField.setOnKeyTyped(e -> {
-			heightField.setText(numOnly(heightField.getText()));	
-			height = Integer.valueOf(heightField.getText());	
+			int pos = heightField.getCaretPosition();
+			
+			heightField.setText(numOnly(heightField.getText()));
+			
+			if(heightField.getText().length() > pos+1) {
+				heightField.positionCaret(pos + 1);
+			} else if (heightField.getText().length() > pos){
+				heightField.positionCaret(pos);
+			} 	
+				
+			if(heightField.getText().length() > 0) {
+				height = Integer.valueOf(heightField.getText());	
+			} else {
+				height = 0;
+			}
 			validateInput();
 		});
 		
@@ -260,11 +316,11 @@ public class gui extends Application {
 	}
 	
 	private void generateGUI() {
-		canvas = new Canvas(1920, 1050);
+		canvas = new Canvas(XMAX, YMAX);
 		vBox = new VBox(canvas);
 		vBox.setPadding(new Insets(0));
 		
-		renderScene = new Scene(vBox, 1920, 1050);
+		renderScene = new Scene(vBox, XMAX, YMAX+10);
 		stage.setScene(renderScene); 
 		stage.setResizable(false);
 		stage.setX(0);
@@ -282,12 +338,10 @@ public class gui extends Application {
 		
 		if(!validateInput()) {
 			System.out.println("Canvas GUI");
-			generateGUI();
 			
 			float scalex = 1920 / (width * 2 + 1);
 			float scaley = 1050 / (height * 2 + 1);
 			
-			float scale = 1;
 			if(scalex < 1 || scaley < 1) {
 				scale = 1f;
 			} if(scalex <= scaley) {
@@ -295,6 +349,7 @@ public class gui extends Application {
 			} else {
 				scale = scaley;
 			}
+			generateGUI();
 
 			System.out.println("Started Generation");
 			mazegen generator = new mazegen(width, height, scale, imageFile, EntranceY, ExitY);
@@ -314,7 +369,7 @@ public class gui extends Application {
 			memStatus += "Low RAM! ";
 		}
 		memStatus+=Runtime.getRuntime().totalMemory()/1024/1024/1024+"GB RAM Default.";
-		stage.setTitle("Maze Generator 1.0.0 - "+memStatus);
+		stage.setTitle("Maze Generator v"+Version+" - "+memStatus);
 		initScene();
 		
 		inputScene = new Scene(vBox, 500, 300);
