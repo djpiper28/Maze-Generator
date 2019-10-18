@@ -25,6 +25,8 @@ public class renderer implements Runnable {
 		if(scale!=1) { 
 			BufferedImage after = new BufferedImage((int) Math.ceil(width*scale), (int) Math.ceil(height*scale)
 					, BufferedImage.TYPE_INT_RGB);
+			after.setAccelerationPriority(1);
+			
 			AffineTransform at = new AffineTransform();
 			at.scale(scale, scale);
 			AffineTransformOp scaleOp = 

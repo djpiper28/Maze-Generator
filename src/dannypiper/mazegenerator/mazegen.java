@@ -2,6 +2,7 @@ package dannypiper.mazegenerator;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.LinkedList;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -20,11 +21,11 @@ public class mazegen implements Runnable {
 	public static float scale;
 	public static int max;
 	private final static int white = 0xFFFFFF;
-	public static final int maxRand = 500;	
-	public static int[][] adjMat;
+	public static final short maxRand = 500;	
+	public static short[][] adjMat;
 
-	public static int[] pivotColumns;
-	public static int[] deletedRows;
+	public static LinkedList<Integer> pivotColumns;
+	public static LinkedList<Integer> deletedRows;
 
 	public static int pivotColumnsLength;
 	public static int deletedRowsLength;
@@ -41,7 +42,7 @@ public class mazegen implements Runnable {
 		if (random < 0) {
 			random *= -1;			
 		} 
-		adjMat[x][y] = random % maxRand;
+		adjMat[x][y] = (short) (random % maxRand);
 	}
 	
 	public static void drawArc(int adjMatX, int adjMatY) {
@@ -69,7 +70,7 @@ public class mazegen implements Runnable {
 		
 		loadingScreen();
 		
-		adjMat = new int[max][max];
+		adjMat = new short[max][max];
 		for(int x = 0; x < max; x++) {
 			for(int y =0; y < max; y++) {
 				adjMat[x][y] = -1;

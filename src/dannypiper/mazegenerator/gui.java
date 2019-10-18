@@ -2,6 +2,8 @@ package dannypiper.mazegenerator;
 
 import java.io.File;
 
+import javax.swing.GroupLayout.Alignment;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -30,8 +32,8 @@ public class gui extends Application {
 	private static int ExitY;
 	private static float scale = 1;
 	public static final int XMAX = 1920;
-	public static final int YMAX = 1080;
-	public static final String Version = "1.1.1";
+	public static final int YMAX = 1050;
+	public static final String Version = "1.1.2";
 	
 	//javaFX
 	private final static String font = "Lucida Console";
@@ -315,17 +317,20 @@ public class gui extends Application {
 		vBox.setPadding(new Insets(20));
 	}
 	
-	private void generateGUI() {
-		canvas = new Canvas(XMAX, YMAX);
+	private void generationGUI() {
+		canvas = new Canvas(XMAX, YMAX);			
+		
 		vBox = new VBox(canvas);
 		vBox.setPadding(new Insets(0));
 		
-		renderScene = new Scene(vBox, XMAX, YMAX+10);
+		renderScene = new Scene(vBox, XMAX, YMAX+30);
+		
 		stage.setScene(renderScene); 
 		stage.setResizable(false);
 		stage.setX(0);
-		stage.setY(0);	
+		stage.setY(0);			
 		stage.setFullScreen(true); //Fullscreen!
+		
 		graphicsContext = canvas.getGraphicsContext2D();
 	}
 
@@ -339,19 +344,24 @@ public class gui extends Application {
 		if(!validateInput()) {
 			System.out.println("Canvas GUI");
 			
-			float scalex = 1920 / (width * 2 + 1);
-			float scaley = 1050 / (height * 2 + 1);
+			float scalex = XMAX / (width * 2 + 1);
+			float scaley = YMAX / (height * 2 + 1);
 			
 			if(scalex < 1 || scaley < 1) {
 				scale = 1f;
-			} if(scalex <= scaley) {
+			} else if(scalex <= scaley) {
 				scale = scalex;
 			} else {
 				scale = scaley;
 			}
-			generateGUI();
+			
+			if(scale > 20) {
+				scale = 20f;
+			}
+			
+			generationGUI();
 
-			System.out.println("Started Generation");
+			System.out.println("Started Generation, scale: "+scale);
 			mazegen generator = new mazegen(width, height, scale, imageFile, EntranceY, ExitY);
 			Thread generatorThread = new Thread(generator, "Generator Thread");
 			generatorThread.start();
