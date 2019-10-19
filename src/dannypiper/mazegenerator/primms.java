@@ -9,14 +9,17 @@ public class primms {
 		
 		int nodesFound = 0;
 		int nodesNeeded = mazegen.height * ( mazegen.width - 1) + mazegen.width * ( mazegen.height - 1);
+		nodesNeeded = mazegen.height * mazegen.width + mazegen.width + mazegen.height;
 		
-		//mazegen.pivotColumns = new int[nodesNeeded+1];
-		mazegen.pivotColumns = new  LinkedList<Integer>();
-		mazegen.deletedRows = new  LinkedList<Integer>();
-		//mazegen.deletedRows = new int[nodesNeeded+1];
-	
+		mazegen.pivotColumns = new LinkedList<Integer>();
+		mazegen.deletedRows = new boolean[mazegen.max];
+		
+		for(int i = 0; i< mazegen.max; i++) {
+			mazegen.deletedRows[i] = false;
+		}		
+		
 		mazegen.pivotColumns.add(mazegen.height * mazegen.width / 2);
-		mazegen.deletedRows.add(mazegen.pivotColumns.get(0));
+		mazegen.deletedRows[0] = true;
 		
 		mazegen.pivotColumnsLength = 1;
 		mazegen.deletedRowsLength = 1;		
@@ -24,9 +27,8 @@ public class primms {
 		Thread[] workers = new Thread[nodesNeeded];
 		primmsWorkerThread[] worker = new primmsWorkerThread[nodesNeeded];
 		
-		for(int i = 0; i<nodesNeeded; i++) {
+		for(int i = 0; i < nodesNeeded; i++) {
 			worker[i] = new primmsWorkerThread();
-			workers[i] = new Thread(worker[i], "Worker "+i);
 		}
 		
 		short minValue = mazegen.maxRand+1;
@@ -41,55 +43,44 @@ public class primms {
 			column = 0;
 			row = 0;
 			
-			for(int i = 1; i < mazegen.pivotColumnsLength; i++) {
-				int x = mazegen.pivotColumns.get(i);
-				
-				worker[i].columnInput = x;
-				workers[i] = new Thread(worker[i]);
-				workers[i].start();
-			}			
-
 			//Main thread			
-			int x = mazegen.pivotColumns.get(0) % mazegen.width; 
-			int y = mazegen.pivotColumns.get(0) / mazegen.width;
+			int x = mazegen.pivotColumns.get(mazegen.pivotColumnsLength - 1) % mazegen.width; 
+			int y = mazegen.pivotColumns.get(mazegen.pivotColumnsLength - 1) / mazegen.width;
 			Coord = (mazegen.width * y) + x;
 			
-			column = mazegen.pivotColumns.get(0);			
+			column = mazegen.pivotColumns.get(mazegen.pivotColumnsLength - 1);			
 
 			boolean yCurrentXPlusDeleted = false;
 			boolean yCurrentXMinusDeleted = false;
 			boolean yDownDeleted = false;
 			boolean yUpDeleted = false;
 			
-			int offSet = 0;
-			int j = 0;
-			while(j < mazegen.deletedRowsLength && !(yCurrentXPlusDeleted && yCurrentXMinusDeleted && yUpDeleted && yDownDeleted)) {	
-				if (mazegen.deletedRows.get(j)==Coord + 1) {
-					yCurrentXPlusDeleted = true;
-				} else if (mazegen.deletedRows.get(j)==Coord - 1) {
-					yCurrentXMinusDeleted = true;
-				} else if (mazegen.deletedRows.get(j)==Coord+mazegen.width) {
-					yUpDeleted = true;
-				} else if (mazegen.deletedRows.get(j)==Coord-mazegen.width) {
-					yDownDeleted = true;
-				}
-				j++;
+			if(x < mazegen.width - 1) {
+				yCurrentXPlusDeleted = mazegen.deletedRows[Coord + 1];
+			}
+			if(x > 0) {
+				yCurrentXMinusDeleted = mazegen.deletedRows[Coord - 1];
+			}
+			if(y < mazegen.height - 1) {
+				yUpDeleted = mazegen.deletedRows[Coord + mazegen.width];
+			}
+			if(y > 0) {
+				yDownDeleted = mazegen.deletedRows[Coord - mazegen.width];
 			}
 
 			if(!(yCurrentXPlusDeleted && yCurrentXMinusDeleted && yUpDeleted && yDownDeleted)) {				
 				if(x < mazegen.width - 1 && !yCurrentXPlusDeleted) {
 					if(mazegen.adjMat[Coord][Coord+1] < minValue) {
 						minValue = mazegen.adjMat[Coord][Coord+1];
-						row = Coord+1;
+						row = Coord + 1;
 					}
 				}
 				if(x > 0 && !yCurrentXMinusDeleted) {
 					if(mazegen.adjMat[Coord][Coord-1] < minValue) {
 						minValue = mazegen.adjMat[Coord][Coord-1];
-						row = Coord-1;
+						row = Coord - 1;
 					}
-				}
-				
+				}				
 				if(y < mazegen.height - 1 && !yUpDeleted) {
 					if(mazegen.adjMat[Coord][Coord + mazegen.width] < minValue) {
 						minValue = mazegen.adjMat[Coord][Coord + mazegen.width];
@@ -102,45 +93,74 @@ public class primms {
 						row = Coord - mazegen.width;
 					}
 				}	
-			} else {
-				mazegen.pivotColumnsLength--;
-				mazegen.pivotColumns.remove(0);		
-				offSet++;
+			} else {	
+				mazegen.pivotColumnsLength--;	
+				mazegen.pivotColumns.remove(mazegen.pivotColumnsLength);
 			}
 			
-			//wait for all to be complete and get the minimum value.
-			boolean finished = false;
-			while(!finished) {
-				finished = true;
-				for(int i = 1; i < mazegen.pivotColumnsLength; i++) {
-					finished &= worker[i].finished;
-					if(worker[i].finished) {
-						if(worker[i].minValue < minValue) {
-							minValue = worker[i].minValue;
-							row = worker[i].row;
-							column = worker[i].column;
-							if(minValue == 0) {
-								finished = true;
-								break;								
+			if(minValue <= mazegen.halfMaxRand) {
+				
+				mazegen.deletedRows[row] = true;
+				mazegen.deletedRowsLength++;
+		
+				mazegen.pivotColumns.add(row);
+				mazegen.pivotColumnsLength++;
+		
+				mazegen.drawArc(column, row);
+				
+			} else {
+				//Start up worker threads
+				for(int i = 0; i < mazegen.pivotColumnsLength - 1; i++) {
+					int columnValue = mazegen.pivotColumns.get(i);
+					
+					worker [i].columnInput = columnValue;
+					workers[i] = new Thread(worker[i]);
+					workers[i].start();
+				}						
+				
+				//wait for all to be complete and get the minimum value.
+				boolean finished = false;
+				while(!finished) {
+					finished = true;
+					for(int i = 0; i < mazegen.pivotColumnsLength - 1; i++) {
+						finished &= worker[i].finished;
+						if(worker[i].finished) {
+							if(worker[i].minValue < minValue) {
+								minValue = worker[i].minValue;
+								row = worker[i].row;
+								column = worker[i].column;
+								if(minValue == 0) {
+									finished = true;
+									break;								
+								}
 							}
-						}
-						if(worker[i].delete) {
-							mazegen.pivotColumnsLength--;
-							mazegen.pivotColumns.remove(i - offSet);
-							offSet++;
-							worker[i].delete = false;
 						}
 					}
 				}
-			}
-	
-			mazegen.deletedRows.add(row);
-			mazegen.deletedRowsLength++;
-	
-			mazegen.pivotColumns.add(row);
-			mazegen.pivotColumnsLength++;
-	
-			mazegen.drawArc(column, row);
+
+				int offSet = 0;	
+				for(int i = 0; i<mazegen.pivotColumnsLength -1 ; i++) {
+					if(worker[i].delete) {
+						mazegen.pivotColumnsLength--;
+						try {
+							mazegen.pivotColumns.remove(i - offSet);
+						} catch(Exception e) {
+							
+						}
+						offSet++;
+						worker[i].delete = false;
+					}
+				}
+				
+				mazegen.deletedRows[row] = true;
+				mazegen.deletedRowsLength++;
+		
+				mazegen.pivotColumns.add(row);
+				mazegen.pivotColumnsLength++;
+				
+				mazegen.drawArc(column, row);
+				
+			}	
 			
 			if(System.currentTimeMillis() - frameControlTime >=16) {				
 				frameControlTime = System.currentTimeMillis();

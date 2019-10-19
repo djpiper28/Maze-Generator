@@ -4,9 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Random;
-
 import javax.imageio.ImageIO;
-
 import javafx.scene.paint.Color;
 
 public class mazegen implements Runnable {
@@ -22,10 +20,11 @@ public class mazegen implements Runnable {
 	public static int max;
 	private final static int white = 0xFFFFFF;
 	public static final short maxRand = 500;	
+	public static final short halfMaxRand = maxRand / 2;
 	public static short[][] adjMat;
 
 	public static LinkedList<Integer> pivotColumns;
-	public static LinkedList<Integer> deletedRows;
+	public static boolean[] deletedRows;
 
 	public static int pivotColumnsLength;
 	public static int deletedRowsLength;
@@ -36,14 +35,6 @@ public class mazegen implements Runnable {
 	private static File file;	
 
 	private static Random rand;
-	
-	private void randInt(int x, int y) {
-		int random = rand.nextInt();
-		if (random < 0) {
-			random *= -1;			
-		} 
-		adjMat[x][y] = (short) (random % maxRand);
-	}
 	
 	public static void drawArc(int adjMatX, int adjMatY) {
 		
@@ -65,15 +56,23 @@ public class mazegen implements Runnable {
 		primms.executePrimms();
 	}
 
+	private void randInt(int x, int y) {
+		int random = rand.nextInt();
+		if (random < 0) {
+			random *= -1;			
+		} 
+		adjMat[x][y] = (short) (random % maxRand);
+	}
+
 	private void populateAdjMat() {
-		max = height*width;
+		max = height*(width+1);
 		
 		loadingScreen();
 		
 		adjMat = new short[max][max];
 		for(int x = 0; x < max; x++) {
 			for(int y =0; y < max; y++) {
-				adjMat[x][y] = -1;
+				adjMat[x][y] = 0;
 			}
 		}
 		
@@ -90,14 +89,13 @@ public class mazegen implements Runnable {
 					randInt(Coord, Coord - 1);
 				}
 				if(y < height - 1) {
-					randInt(Coord, Coord + width);
+					randInt(Coord + width, Coord );
 					randInt(Coord, Coord + width);
 				}
 				if(y > 0) {
+					randInt(Coord - width, Coord);
 					randInt(Coord, Coord - width);
-					randInt(Coord, Coord - width);
-				}
-				
+				}				
 			}
 		}
 	}
@@ -164,21 +162,22 @@ public class mazegen implements Runnable {
 	}
 
 	public mazegen(int widthIn, int heightIn, float scaleIn, File imageFile, int entranceYIn, int exitYIn) {
-		this.file = imageFile;
-		this.width = widthIn;
-		this.height = heightIn;
-		this.scale = scaleIn;
-		this.entranceY = entranceYIn;
-		this.exitY = exitYIn;
+		mazegen.file = imageFile;
+		mazegen.width = widthIn;
+		mazegen.height = heightIn;
+		mazegen.scale = scaleIn;
+		mazegen.entranceY = entranceYIn;
+		mazegen.exitY = exitYIn;
 		
 		assert(height>0);
 		assert(width>0);
 		assert(scale>0);
 		
-		this.rand = new Random();
-		
-		System.out.println("Graph Width: "+this.width+" Graph Height: "+this.height+" Entrance Y: "+this.entranceY
-				+" Exit Y: "+this.exitY+ " Scale: "+this.scale+" Filename: "+this.file.getName());
+		mazegen.rand = new Random();
+		 
+		System.out.println("Graph Width: " + mazegen.width + " Graph Height: " + mazegen.height+
+				" Entrance Y: " + mazegen.entranceY + " Exit Y: " + mazegen.exitY + " Scale: "
+				+ mazegen.scale + " Filename: " + mazegen.file.getName());
 		
 		mazeImage = new BufferedImage(width*2 +1, height*2 +1, BufferedImage.TYPE_INT_RGB);
 		

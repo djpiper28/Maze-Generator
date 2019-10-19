@@ -1,9 +1,6 @@
 package dannypiper.mazegenerator;
 
 import java.io.File;
-
-import javax.swing.GroupLayout.Alignment;
-
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -32,8 +29,8 @@ public class gui extends Application {
 	private static int ExitY;
 	private static float scale = 1;
 	public static final int XMAX = 1920;
-	public static final int YMAX = 1050;
-	public static final String Version = "1.1.2";
+	public static final int YMAX = 1000;
+	public static final String Version = "1.1.3";
 	
 	//javaFX
 	private final static String font = "Lucida Console";
@@ -48,6 +45,7 @@ public class gui extends Application {
 	
 	private static Scene renderScene;
 	private static Canvas canvas;
+	@SuppressWarnings("exports")
 	public static GraphicsContext graphicsContext;
 	
 	//Entrance and Exit Parameters
@@ -305,7 +303,7 @@ public class gui extends Application {
         buttonHBOX.setPadding(new Insets(20));
 	}
 	
-	private void initScene() {
+	private void initInputScene() {
 		entranceExitParameters();
 		graphParameters();
 		details();
@@ -317,7 +315,7 @@ public class gui extends Application {
 		vBox.setPadding(new Insets(20));
 	}
 	
-	private void generationGUI() {
+	private void initGenerationScene() {
 		canvas = new Canvas(XMAX, YMAX);			
 		
 		vBox = new VBox(canvas);
@@ -359,7 +357,7 @@ public class gui extends Application {
 				scale = 20f;
 			}
 			
-			generationGUI();
+			initGenerationScene();
 
 			System.out.println("Started Generation, scale: "+scale);
 			mazegen generator = new mazegen(width, height, scale, imageFile, EntranceY, ExitY);
@@ -371,7 +369,7 @@ public class gui extends Application {
 	}
 
 	@Override
-	public void start(Stage arg0) throws Exception {
+	public void start(@SuppressWarnings("exports") Stage arg0) throws Exception {
 		stage = arg0;
 		
 		String memStatus = "";
@@ -380,7 +378,7 @@ public class gui extends Application {
 		}
 		memStatus+=Runtime.getRuntime().totalMemory()/1024/1024/1024+"GB RAM Default.";
 		stage.setTitle("Maze Generator v"+Version+" - "+memStatus);
-		initScene();
+		initInputScene();
 		
 		inputScene = new Scene(vBox, 500, 300);
 		stage.setScene(inputScene);

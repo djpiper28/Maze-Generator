@@ -31,18 +31,17 @@ public class primmsWorkerThread implements Runnable {
 		boolean yDownDeleted = false;
 		boolean yUpDeleted = false;
 		
-		int j = 0;
-		while(j < mazegen.deletedRowsLength && !(yCurrentXPlusDeleted && yCurrentXMinusDeleted && yUpDeleted && yDownDeleted)) {	
-			if (mazegen.deletedRows.get(j)==Coord + 1) {
-				yCurrentXPlusDeleted = true;
-			} else if (mazegen.deletedRows.get(j)==Coord - 1) {
-				yCurrentXMinusDeleted = true;
-			} else if (mazegen.deletedRows.get(j)==Coord+mazegen.width) {
-				yUpDeleted = true;
-			} else if (mazegen.deletedRows.get(j)==Coord-mazegen.width) {
-				yDownDeleted = true;
-			}
-			j++;
+		if(x < mazegen.width - 1) {
+			yCurrentXPlusDeleted = mazegen.deletedRows[Coord + 1];
+		}
+		if(x > 0) {
+			yCurrentXMinusDeleted = mazegen.deletedRows[Coord - 1];
+		}
+		if(y < mazegen.height - 1) {
+			yUpDeleted = mazegen.deletedRows[Coord + mazegen.width];
+		}
+		if(y > 0) {
+			yDownDeleted = mazegen.deletedRows[Coord - mazegen.width];
 		}
 		
 		if(!(yCurrentXPlusDeleted && yCurrentXMinusDeleted && yUpDeleted && yDownDeleted)) {	
@@ -57,8 +56,7 @@ public class primmsWorkerThread implements Runnable {
 					minValue = mazegen.adjMat[Coord][Coord-1];
 					row = Coord-1;
 				}
-			}
-			
+			}			
 			if(y < mazegen.height - 1 && !yUpDeleted) {
 				if(mazegen.adjMat[Coord][Coord + mazegen.width] < minValue) {
 					minValue = mazegen.adjMat[Coord][Coord + mazegen.width];

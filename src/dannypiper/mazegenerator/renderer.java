@@ -11,34 +11,38 @@ public class renderer implements Runnable {
 	public int width;
 	public int height;
 	public float scale;
+	private BufferedImage after; 
+	private AffineTransform affineTransform;
+	private AffineTransformOp scaleOp;
 	
 	public renderer(int width, int height, float scale) {
 		this.width = width;
 		this.height = height;
 		this.scale = scale;
+
+		if(this.scale!=1) { 
+			this.after= new BufferedImage((int) Math.ceil(width*scale), (int) Math.ceil(height*scale)
+					, BufferedImage.TYPE_INT_RGB);
+			this.after.setAccelerationPriority(1);
+			this.affineTransform = new AffineTransform();
+			this.affineTransform.scale(scale, scale);
+			this.scaleOp = new AffineTransformOp(affineTransform, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+		}
 	}
 	
 	@Override
 	public void run() {
 		long time = System.currentTimeMillis();
 
-		if(scale!=1) { 
-			BufferedImage after = new BufferedImage((int) Math.ceil(width*scale), (int) Math.ceil(height*scale)
-					, BufferedImage.TYPE_INT_RGB);
-			after.setAccelerationPriority(1);
-			
-			AffineTransform at = new AffineTransform();
-			at.scale(scale, scale);
-			AffineTransformOp scaleOp = 
-			   new AffineTransformOp(at, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-			after = scaleOp.filter(mazegen.mazeImage, after);
+		if(this.scale!=1) { 
+			this.after = this.scaleOp.filter(mazegen.mazeImage, this.after);
 			
 			Image image = SwingFXUtils.toFXImage(after, null);
 			
 			gui.graphicsContext.drawImage(image, 0, 0);
 			
 			image = null;
-			after = null;
+			this.after = null;
 		} else {
 			Image image = SwingFXUtils.toFXImage(mazegen.mazeImage, null);
 			
