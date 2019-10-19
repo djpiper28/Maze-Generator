@@ -15,7 +15,7 @@ public class primmsWorkerThread implements Runnable {
 	
 	@Override
 	public void run() {		
-		this.finished = false;
+		//this.finished = false;
 		this.delete = false;
 		this.row = 0;
 		this.column = columnInput;

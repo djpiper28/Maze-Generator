@@ -30,7 +30,7 @@ public class gui extends Application {
 	private static float scale = 1;
 	public static final int XMAX = 1920;
 	public static final int YMAX = 1000;
-	public static final String Version = "1.1.3";
+	public static final String Version = "1.1.4";
 	
 	//javaFX
 	private final static String font = "Lucida Console";

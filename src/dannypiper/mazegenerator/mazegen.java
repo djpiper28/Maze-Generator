@@ -27,7 +27,6 @@ public class mazegen implements Runnable {
 	public static boolean[] deletedRows;
 
 	public static int pivotColumnsLength;
-	public static int deletedRowsLength;
 	
 	private static renderer renderObject;
 	private static Thread renderThread;

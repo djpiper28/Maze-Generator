@@ -9,7 +9,7 @@ public class primms {
 		
 		int nodesFound = 0;
 		int nodesNeeded = mazegen.height * ( mazegen.width - 1) + mazegen.width * ( mazegen.height - 1);
-		nodesNeeded = mazegen.height * mazegen.width + mazegen.width + mazegen.height;
+		nodesNeeded = mazegen.height * mazegen.width - 1;
 		
 		mazegen.pivotColumns = new LinkedList<Integer>();
 		mazegen.deletedRows = new boolean[mazegen.max];
@@ -22,7 +22,6 @@ public class primms {
 		mazegen.deletedRows[0] = true;
 		
 		mazegen.pivotColumnsLength = 1;
-		mazegen.deletedRowsLength = 1;		
 		
 		Thread[] workers = new Thread[nodesNeeded];
 		primmsWorkerThread[] worker = new primmsWorkerThread[nodesNeeded];
@@ -101,7 +100,6 @@ public class primms {
 			if(minValue <= mazegen.halfMaxRand) {
 				
 				mazegen.deletedRows[row] = true;
-				mazegen.deletedRowsLength++;
 		
 				mazegen.pivotColumns.add(row);
 				mazegen.pivotColumnsLength++;
@@ -114,6 +112,7 @@ public class primms {
 					int columnValue = mazegen.pivotColumns.get(i);
 					
 					worker [i].columnInput = columnValue;
+					worker [i].finished = false;
 					workers[i] = new Thread(worker[i]);
 					workers[i].start();
 				}						
@@ -122,19 +121,19 @@ public class primms {
 				boolean finished = false;
 				while(!finished) {
 					finished = true;
-					for(int i = 0; i < mazegen.pivotColumnsLength - 1; i++) {
-						finished &= worker[i].finished;
+					for(int i = 0; (i < mazegen.pivotColumnsLength - 1) ; i++) {
 						if(worker[i].finished) {
 							if(worker[i].minValue < minValue) {
 								minValue = worker[i].minValue;
 								row = worker[i].row;
 								column = worker[i].column;
 								if(minValue == 0) {
-									finished = true;
-									break;								
+									finished = true;	
+									break;
 								}
 							}
 						}
+						finished &= worker[i].finished;
 					}
 				}
 
@@ -153,7 +152,6 @@ public class primms {
 				}
 				
 				mazegen.deletedRows[row] = true;
-				mazegen.deletedRowsLength++;
 		
 				mazegen.pivotColumns.add(row);
 				mazegen.pivotColumnsLength++;
