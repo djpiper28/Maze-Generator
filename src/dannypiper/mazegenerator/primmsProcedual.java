@@ -35,8 +35,7 @@ public class primmsProcedual {
 		int row = 0;
 		int Coord;
 		
-		while(nodesFound < nodesNeeded) {
-			
+		while(nodesFound < nodesNeeded) {				
 			//PRIMMS
 			minValue = mazegen.maxRand+1;
 			column = 0;
@@ -165,9 +164,11 @@ public class primmsProcedual {
 				
 			}	
 			
-			if(System.currentTimeMillis() - frameControlTime >=16) {				
+			if(System.currentTimeMillis() - frameControlTime >= mazegen.frameRate) {				
 				frameControlTime = System.currentTimeMillis();
 				mazegen.render();
+				double percentage = (double) nodesFound / (double) nodesNeeded;
+				gui.setProgress(percentage);
 			}
 			
 			nodesFound++;

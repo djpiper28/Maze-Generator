@@ -161,9 +161,11 @@ public class primmsAdjMat {
 				
 			}	
 			
-			if(System.currentTimeMillis() - frameControlTime >=16) {				
+			if(System.currentTimeMillis() - frameControlTime >= mazegen.frameRate) {				
 				frameControlTime = System.currentTimeMillis();
 				mazegen.render();
+				double percentage = (double) nodesFound / (double) nodesNeeded;
+				gui.setProgress(percentage);
 			}
 			
 			nodesFound++;

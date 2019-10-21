@@ -21,6 +21,7 @@ public class mazegen implements Runnable {
 	private static boolean procedual;
 	
 	private static final int white = 0xFFFFFF;
+	public static final long frameRate = 16;
 	public static final int procedualThreshold = 100;
 	public static final short maxRand = 500;	
 	public static final short halfMaxRand = maxRand / 2;
@@ -38,8 +39,7 @@ public class mazegen implements Runnable {
 
 	private static Random rand;
 	
-	public static void drawArc(int adjMatX, int adjMatY) {
-		
+	public static void drawArc(int adjMatX, int adjMatY) {		
 		int x1 = ( (adjMatX % width) * 2 ) + 1;
 		int y1 = ( (adjMatX / width) * 2 ) + 1;
 	
@@ -149,8 +149,12 @@ public class mazegen implements Runnable {
 		
 		loadingScreen();
 		
+		if(Runtime.getRuntime().totalMemory()/1024/1024 < 700) {
+			mazegen.procedual = true;
+		}
+		
 		if( (mazegen.width < mazegen.procedualThreshold && mazegen.height < mazegen.procedualThreshold) 
-				|| !(mazegen.procedual) || Runtime.getRuntime().totalMemory()/1024/1024 < 700) {				
+				&& !(mazegen.procedual)) {				
 			time = System.currentTimeMillis();
 			System.out.println("Populating adjacency matrix");
 			populateAdjMat();
@@ -162,16 +166,16 @@ public class mazegen implements Runnable {
 			setBGToGrey();
 			
 			time = System.currentTimeMillis();
-			System.out.println("Applying Primms...");
+			System.out.println("Applying Primms adj mat ...");
 			primmsAdjMat();
-			System.out.println("Applied Primms in "+(System.currentTimeMillis() - time)+"ms");
+			System.out.println("Applied Primms adj mat in "+(System.currentTimeMillis() - time)+"ms");
 		} else {
 			setBGToGrey();
 			
 			time = System.currentTimeMillis();
-			System.out.println("Applying Primms...");
+			System.out.println("Applying Primms procedual...");
 			primmsProcedual();
-			System.out.println("Applied Primms in "+(System.currentTimeMillis() - time)+"ms");
+			System.out.println("Applied Primms procedual in "+(System.currentTimeMillis() - time)+"ms");
 		}
 		saveImage();
 		

@@ -9,6 +9,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -33,7 +34,8 @@ public class gui extends Application {
 	private static float scale = 1;
 	public static int XMAX = 1920;
 	public static int YMAX = 1000;
-	public static final String Version = "1.2.0";
+	public static final int progressBarY = 10;
+	public static final String Version = "1.2.1";
 	
 	//javaFX
 	private final static String font = "Lucida Console";
@@ -47,6 +49,8 @@ public class gui extends Application {
 	private static HBox buttonHBOX;
 	private static HBox procedualHBOX;
 	
+	//Maze render scene
+	private static ProgressBar progress;
 	private static Scene renderScene;
 	private static Canvas canvas;
 	@SuppressWarnings("exports")
@@ -327,14 +331,20 @@ public class gui extends Application {
 	}
 	
 	private void initGenerationScene() {
-		if(width* scale * 2 + scale <= XMAX && height* scale * 2 + scale <= YMAX) {
+		progress = new ProgressBar(0);
+		progress.setPrefHeight(progressBarY);
+		progress.setMinHeight(progressBarY);
+		
+		if(width* scale * 2 + scale <= XMAX && height* scale * 2 + scale <= (YMAX - progressBarY)) {
 			canvas = new Canvas(width* scale * 2 + scale, height* scale * 2 + scale);
-			vBox = new VBox(canvas);	
-			renderScene = new Scene(vBox, width* scale * 2 + scale, height* scale * 2 + scale);			
+			progress.setPrefWidth(width* scale * 2 + scale);
+			vBox = new VBox(progress, canvas);	
+			renderScene = new Scene(vBox, width* scale * 2 + scale, height* scale * 2 + scale + progressBarY);			
 		} else {
 			canvas = new Canvas(XMAX, YMAX);	
-			vBox = new VBox(canvas);
-			renderScene = new Scene(vBox, XMAX, YMAX);		
+			vBox = new VBox(progress, canvas);
+			progress.setPrefWidth(XMAX);
+			renderScene = new Scene(vBox, XMAX, YMAX + progressBarY);		
 		}
 		canvas.setOnMouseClicked(e -> {
 			if(e.getClickCount()>=2) {
@@ -368,7 +378,7 @@ public class gui extends Application {
 			scale = 1f;
 			
 			float scalex = XMAX / (width * 2 + 1);
-			float scaley = YMAX / (height * 2 + 1);
+			float scaley = (YMAX - 30) / (height * 2 + 1);
 			
 			if(scalex < 1 || scaley < 1) {
 				scale = 1f;
@@ -380,7 +390,7 @@ public class gui extends Application {
 			
 			if (scale * width * 2 + 1 > XMAX) {
 				scale = 1f;
-			} else if (scale * height * 2 + 1 > XMAX) {
+			} else if (scale * height * 2 + 1 > YMAX) {
 				scale = 1f;
 			}
 			
@@ -393,6 +403,10 @@ public class gui extends Application {
 		} else {
 			System.out.println("Invalid input");
 		}
+	}
+	
+	public static void setProgress(double percentage) {
+		progress.setProgress(percentage);
 	}
 
 	@Override
@@ -419,6 +433,7 @@ public class gui extends Application {
 		
 		stage.setScene(inputScene);
 		stage.show();
+		stage.centerOnScreen();
 
 		stage.setOnCloseRequest(e -> {
 			System.out.println("Closing program by user request.");
