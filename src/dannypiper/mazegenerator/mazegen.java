@@ -14,11 +14,14 @@ public class mazegen implements Runnable {
 	
 	public static int width;
 	public static int height;
-	private static int entranceY;;
+	public static int entranceY;;
 	private static int exitY;
 	public static float scale;
 	public static int max;
-	private final static int white = 0xFFFFFF;
+	private static boolean procedual;
+	
+	private static final int white = 0xFFFFFF;
+	public static final int procedualThreshold = 100;
 	public static final short maxRand = 500;	
 	public static final short halfMaxRand = maxRand / 2;
 	public static short[][] adjMat;
@@ -51,11 +54,23 @@ public class mazegen implements Runnable {
 		mazeImage.setRGB(x3, y3, white);
 	}
 
-	private void primms() {
-		primms.executePrimms();
+	private void primmsAdjMat() {
+		primmsAdjMat.executePrimms();
+	}
+	
+	private void primmsProcedual() {
+		primmsProcedual.executePrimms();
 	}
 
-	private void randInt(int x, int y) {
+	public static short randInt() {
+		int random = rand.nextInt();
+		if (random < 0) {
+			random *= -1;			
+		} 
+		return (short) (random % maxRand);
+	}
+	
+	private void randIntAdjMat(int x, int y) {
 		int random = rand.nextInt();
 		if (random < 0) {
 			random *= -1;			
@@ -64,10 +79,6 @@ public class mazegen implements Runnable {
 	}
 
 	private void populateAdjMat() {
-		max = height*(width+1);
-		
-		loadingScreen();
-		
 		adjMat = new short[max][max];
 		for(int x = 0; x < max; x++) {
 			for(int y =0; y < max; y++) {
@@ -80,20 +91,20 @@ public class mazegen implements Runnable {
 				int Coord = (width * y) + x;
 				
 				if(x < width - 1) {
-					randInt(Coord + 1, Coord);
-					randInt(Coord, Coord + 1);
+					randIntAdjMat(Coord + 1, Coord);
+					randIntAdjMat(Coord, Coord + 1);
 				}
 				if(x > 0) {
-					randInt(Coord - 1, Coord);
-					randInt(Coord, Coord - 1);
+					randIntAdjMat(Coord - 1, Coord);
+					randIntAdjMat(Coord, Coord - 1);
 				}
 				if(y < height - 1) {
-					randInt(Coord + width, Coord );
-					randInt(Coord, Coord + width);
+					randIntAdjMat(Coord + width, Coord );
+					randIntAdjMat(Coord, Coord + width);
 				}
 				if(y > 0) {
-					randInt(Coord - width, Coord);
-					randInt(Coord, Coord - width);
+					randIntAdjMat(Coord - width, Coord);
+					randIntAdjMat(Coord, Coord - width);
 				}				
 			}
 		}
@@ -114,34 +125,54 @@ public class mazegen implements Runnable {
 	}
 
 	private void setImageToBlack() {
-		for(int x = 0; x< width * 2; x++) {
-			for(int y = 0; y< height * 2; y++) {
-				mazeImage.setRGB(x,y,1);
+		for(int x = 0; x< width * 2 + 1; x++) {
+			for(int y = 0; y< height * 2 + 1; y++) {
+				mazeImage.setRGB(x,y,0);
 			}
 		}
 	}
 	
 	private void generate() {
-
+		long time = System.currentTimeMillis();
 		System.out.println("Setting image to black");		
 		setImageToBlack();
 		System.out.println("Set image to black");
-
+		System.out.println("Set image to black in "+(System.currentTimeMillis() - time)+"ms");
+		
+		time = System.currentTimeMillis();
 		System.out.println("Adding entrance and exit");		
 		addEntranceAndExit();
 		System.out.println("Added entrance and exit");
+		System.out.println("Added entrance and exit in "+(System.currentTimeMillis() - time)+"ms");
+
+		max = height*(width+1);
 		
-		System.out.println("Populating adjacency matrix");
-		populateAdjMat();
-		System.out.println("Populated adjacency matrix");
+		loadingScreen();
 		
-		setBGToGrey();
-		
-		long time = System.currentTimeMillis();
-		System.out.println("Applying Primms...");
-		primms();
-		System.out.println("Applied Primms in "+(System.currentTimeMillis() - time)+"ms");
-		
+		if( (mazegen.width < mazegen.procedualThreshold && mazegen.height < mazegen.procedualThreshold) 
+				|| !(mazegen.procedual) || Runtime.getRuntime().totalMemory()/1024/1024 < 700) {				
+			time = System.currentTimeMillis();
+			System.out.println("Populating adjacency matrix");
+			populateAdjMat();
+			System.out.println("Populated adjacency matrix");
+			System.out.println("Populated adjacency matrix in "+(System.currentTimeMillis() - time)+"ms");
+			System.out.println("Memory usage: " + (Runtime.getRuntime().totalMemory() 
+					- Runtime.getRuntime().freeMemory()) /1024 /1024 + "MB in use.");
+			
+			setBGToGrey();
+			
+			time = System.currentTimeMillis();
+			System.out.println("Applying Primms...");
+			primmsAdjMat();
+			System.out.println("Applied Primms in "+(System.currentTimeMillis() - time)+"ms");
+		} else {
+			setBGToGrey();
+			
+			time = System.currentTimeMillis();
+			System.out.println("Applying Primms...");
+			primmsProcedual();
+			System.out.println("Applied Primms in "+(System.currentTimeMillis() - time)+"ms");
+		}
 		saveImage();
 		
 		System.exit(0);
@@ -157,16 +188,18 @@ public class mazegen implements Runnable {
 
 	public static void render() {
 		renderThread = new Thread(renderObject, "Render Thread");
+		renderThread.setPriority(10);
 		renderThread.start();
 	}
 
-	public mazegen(int widthIn, int heightIn, float scaleIn, File imageFile, int entranceYIn, int exitYIn) {
+	public mazegen(int widthIn, int heightIn, float scaleIn, File imageFile, int entranceYIn, int exitYIn, boolean procedualIN) {
 		mazegen.file = imageFile;
 		mazegen.width = widthIn;
 		mazegen.height = heightIn;
 		mazegen.scale = scaleIn;
 		mazegen.entranceY = entranceYIn;
 		mazegen.exitY = exitYIn;
+		mazegen.procedual = procedualIN;
 		
 		assert(height>0);
 		assert(width>0);
@@ -189,7 +222,12 @@ public class mazegen implements Runnable {
 	
 	@Override
 	public void run() {
-		generate();		
+		try {
+			generate();
+		} catch (Exception e) {
+			System.out.println("Critical error.");
+			System.exit(13);
+		}
 	}
 	
 }

@@ -2,11 +2,13 @@ package dannypiper.mazegenerator;
 
 import java.io.File;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -15,6 +17,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class gui extends Application {
@@ -28,9 +31,9 @@ public class gui extends Application {
 	private static int EntranceY;
 	private static int ExitY;
 	private static float scale = 1;
-	public static final int XMAX = 1920;
-	public static final int YMAX = 1000;
-	public static final String Version = "1.1.4";
+	public static int XMAX = 1920;
+	public static int YMAX = 1000;
+	public static final String Version = "1.2.0";
 	
 	//javaFX
 	private final static String font = "Lucida Console";
@@ -42,6 +45,7 @@ public class gui extends Application {
 	private static HBox graphParametersHBOX;
 	private static VBox detailsBOX;
 	private static HBox buttonHBOX;
+	private static HBox procedualHBOX;
 	
 	private static Scene renderScene;
 	private static Canvas canvas;
@@ -59,6 +63,7 @@ public class gui extends Application {
 	private static TextField widthField;
 	private static Text heightLabel;
 	private static TextField heightField;
+	private static CheckBox procedualCheckBox;
 
 	//Details
 	private static Text fileSelectedText;
@@ -71,33 +76,48 @@ public class gui extends Application {
 	private boolean validateInput() {
 		boolean out = false;
 		String errorText = "";
+		String procedualGenerationSatus = "Using adjacency matrix";
 				
 		if(imageFile==null) {
 			out=true;
 			errorText+="Please select a file.";
 		}
-		if(width < 0) {
+		if(width <= 0) {
 			if(out) {
 				errorText+="\n";
 			}
 			out = true;
 			errorText+="Invalid width.";
 		}
-		if(height < 0) {
+		if(height <= 0) {
 			if(out) {
 				errorText+="\n";
 			}
 			out = true;
-			errorText+="Invalid height";
+			errorText+="Invalid height.";
 		}
-		if(!(EntranceY <= height)) {
+		if(height >= mazegen.procedualThreshold || width >= mazegen.procedualThreshold) {
+			if(out) {
+				errorText+="\n";
+			}
+			errorText+="Procedual generation must be used.";
+			procedualCheckBox.setSelected(true);
+			procedualCheckBox.setDisable(true);
+			procedualGenerationSatus = "Must procedual generation";
+		} else {
+			procedualCheckBox.setDisable(false);
+		}
+		if(procedualCheckBox.isSelected()) {
+			procedualGenerationSatus = "Using procedual generation";
+		}
+		if(EntranceY > height || EntranceY < 0) {
 			if(out) {
 				errorText+="\n";
 			}
 			out = true;
 			errorText+="Invalid entrance Y.";
 		}
-		if(!(ExitY <= height)) {
+		if(ExitY > height || ExitY < 0) {
 			if(out) {
 				errorText+="\n";
 			}
@@ -106,30 +126,23 @@ public class gui extends Application {
 		}
 		
 		if(!out) {
-			errorText = "All input valid.";
-			generateButton.setText("Generate Maze");
+			errorText = "All input valid. Maze Width: " + (width * 2 + 1) + " Maze Height: " + (height * 2 + 1);
+			generateButton.setText("Generate Maze\n" + procedualGenerationSatus);
 		} else {
 			generateButton.setText("Invalid Input");
 		}
 		
 		errorsText.setText(errorText);
+		if(!out) {
+			System.out.println("Input is: valid");			
+		} else {
+			System.out.println("Input is: not valid");		
+		}		
 		
 		return out;		
 	}
 
 	//Methods	
-	private String numOnly(String input) {		
-		String temp = "";
-		int i = 0;
-		for (String c: input.split("")) {
-			if(validNumericalParameter(c) && i<=7) {
-				temp+=c;
-				i++;
-			}
-		}
-		return temp;
-	}
-	
 	private static boolean validNumericalParameter(String parameterStr) {
 		String validChars = "0123456789";
 		String[] parameterStrArray = parameterStr.split(""); //split after each char
@@ -166,21 +179,15 @@ public class gui extends Application {
 		entranceYField = new TextField("5");
 		entranceYField.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
 		entranceYField.setOnKeyTyped(e -> {
-			int pos = entranceYField.getCaretPosition();
-			
-			entranceYField.setText(numOnly(entranceYField.getText()));
-			
-			if(entranceYField.getText().length() > pos+1) {
-				entranceYField.positionCaret(pos + 1);
-			} else if (entranceYField.getText().length() > pos){
-				entranceYField.positionCaret(pos);
-			}
-			
-			if(entranceYField.getText().length() > 0) {
-				EntranceY = Integer.valueOf(entranceYField.getText());
+			if(validNumericalParameter(entranceYField.getText())) {
+				if(entranceYField.getText().length() > 0 && entranceYField.getText().length() < 8) {
+					EntranceY = Integer.valueOf(entranceYField.getText());
+				} else {
+					EntranceY = 0;
+				}				
 			} else {
 				EntranceY = 0;
-			}
+			}	
 			validateInput();
 		});
 		
@@ -189,22 +196,16 @@ public class gui extends Application {
 		
 		exitYField = new TextField("5");	
 		exitYField.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
-		exitYField.setOnKeyTyped(e -> {
-			int pos = exitYField.getCaretPosition();
-			
-			exitYField.setText(numOnly(exitYField.getText()));
-			
-			if(exitYField.getText().length() > pos+1) {
-				exitYField.positionCaret(pos + 1);
-			} else if (exitYField.getText().length() > pos){
-				exitYField.positionCaret(pos);
-			} 
-			
-			if(exitYField.getText().length() > 0) {
-				ExitY = Integer.valueOf(exitYField.getText());
+		exitYField.setOnKeyTyped(e -> {	
+			if(validNumericalParameter(exitYField.getText())) {		
+				if(exitYField.getText().length() > 0 && exitYField.getText().length() < 8) {
+					ExitY = Integer.valueOf(exitYField.getText());
+				} else {
+					ExitY = 0;
+				}		
 			} else {
 				ExitY = 0;
-			}
+			}	
 			validateInput();
 		});
 		entranceExitParametersHBOX = new HBox(entranceYLabel,
@@ -212,6 +213,8 @@ public class gui extends Application {
 				exitYLabel,
 				exitYField);
 		entranceExitParametersHBOX.setPadding(new Insets(20));
+		EntranceY = 5;
+		ExitY = 5;
 	}
 
 	private void graphParameters() {
@@ -221,22 +224,16 @@ public class gui extends Application {
 		
 		widthField = new TextField("50");
 		widthField.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
-		widthField.setOnKeyTyped(e -> {
-			int pos = widthField.getCaretPosition();
-			
-			widthField.setText(numOnly(widthField.getText()));
-			
-			if(widthField.getText().length() > pos+1) {
-				widthField.positionCaret(pos + 1);
-			} else if (widthField.getText().length() > pos){
-				widthField.positionCaret(pos);
-			} 
-				
-			if(widthField.getText().length() > 0) {
-				width = Integer.valueOf(widthField.getText());
+		widthField.setOnKeyTyped(e -> {				
+			if(validNumericalParameter(widthField.getText())) {		
+				if(widthField.getText().length() > 0 && widthField.getText().length() < 8) {
+					width = Integer.valueOf(widthField.getText());
+				} else {
+					width = 0;
+				}		
 			} else {
 				width = 0;
-			}
+			}	
 			validateInput();
 		});
 		
@@ -245,22 +242,16 @@ public class gui extends Application {
 		
 		heightField = new TextField("50");	
 		heightField.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
-		heightField.setOnKeyTyped(e -> {
-			int pos = heightField.getCaretPosition();
-			
-			heightField.setText(numOnly(heightField.getText()));
-			
-			if(heightField.getText().length() > pos+1) {
-				heightField.positionCaret(pos + 1);
-			} else if (heightField.getText().length() > pos){
-				heightField.positionCaret(pos);
-			} 	
-				
-			if(heightField.getText().length() > 0) {
-				height = Integer.valueOf(heightField.getText());	
+		heightField.setOnKeyTyped(e -> {		
+			if(validNumericalParameter(heightField.getText())) {		
+				if(heightField.getText().length() > 0 && heightField.getText().length() < 8) {
+					height = Integer.valueOf(heightField.getText());
+				} else {
+					height = 0;
+				}		
 			} else {
 				height = 0;
-			}
+			}	
 			validateInput();
 		});
 		
@@ -269,6 +260,9 @@ public class gui extends Application {
 				heightLabel,
 				heightField);
 		graphParametersHBOX.setPadding(new Insets(20));
+		
+		width = 50;
+		height = 50;
 	}
 
 	private void details() {
@@ -282,9 +276,22 @@ public class gui extends Application {
 		detailsBOX.setPadding(new Insets(20));
 	}
 	
+	private void procedualCheckBox() {	
+		procedualCheckBox = new CheckBox("Procedual Generation (Uses less RAM)");
+		procedualCheckBox.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
+		procedualCheckBox.setSelected(true);
+	
+		procedualCheckBox.setOnAction(e -> {
+			validateInput();
+		});
+		
+		procedualHBOX = new HBox(procedualCheckBox);
+		procedualHBOX.setPadding(new Insets(20));
+	}
+
 	private void buttons() {
-		generateButton = new Button("Invalid input");
-		selectImageButton = new Button("Save Maze As");
+		generateButton = new Button("Invalid input.");
+		selectImageButton = new Button("Save Maze As.");
 		
 		generateButton.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
 		selectImageButton.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
@@ -308,26 +315,42 @@ public class gui extends Application {
 		graphParameters();
 		details();
 		buttons();
+		procedualCheckBox();
+		
 		vBox = new VBox(entranceExitParametersHBOX,
 				graphParametersHBOX,
 				detailsBOX,
+				procedualHBOX,
 				buttonHBOX);
 		vBox.setPadding(new Insets(20));
+		inputScene = new Scene(vBox, 500, 400);
 	}
 	
 	private void initGenerationScene() {
-		canvas = new Canvas(XMAX, YMAX);			
+		if(width* scale * 2 + scale <= XMAX && height* scale * 2 + scale <= YMAX) {
+			canvas = new Canvas(width* scale * 2 + scale, height* scale * 2 + scale);
+			vBox = new VBox(canvas);	
+			renderScene = new Scene(vBox, width* scale * 2 + scale, height* scale * 2 + scale);			
+		} else {
+			canvas = new Canvas(XMAX, YMAX);	
+			vBox = new VBox(canvas);
+			renderScene = new Scene(vBox, XMAX, YMAX);		
+		}
+		canvas.setOnMouseClicked(e -> {
+			if(e.getClickCount()>=2) {
+				stage.setFullScreen(true);
+			}
+		});
 		
-		vBox = new VBox(canvas);
-		vBox.setPadding(new Insets(0));
-		
-		renderScene = new Scene(vBox, XMAX, YMAX+30);
+		vBox.setPadding(new Insets(0));	
 		
 		stage.setScene(renderScene); 
 		stage.setResizable(false);
 		stage.setX(0);
 		stage.setY(0);			
 		stage.setFullScreen(true); //Fullscreen!
+		stage.setFullScreenExitHint("ESC to exit fullscreen mode"
+				+ "\nDouble click to go fullscreen");
 		
 		graphicsContext = canvas.getGraphicsContext2D();
 	}
@@ -342,6 +365,8 @@ public class gui extends Application {
 		if(!validateInput()) {
 			System.out.println("Canvas GUI");
 			
+			scale = 1f;
+			
 			float scalex = XMAX / (width * 2 + 1);
 			float scaley = YMAX / (height * 2 + 1);
 			
@@ -353,14 +378,16 @@ public class gui extends Application {
 				scale = scaley;
 			}
 			
-			if(scale > 20) {
-				scale = 20f;
+			if (scale * width * 2 + 1 > XMAX) {
+				scale = 1f;
+			} else if (scale * height * 2 + 1 > XMAX) {
+				scale = 1f;
 			}
 			
 			initGenerationScene();
 
 			System.out.println("Started Generation, scale: "+scale);
-			mazegen generator = new mazegen(width, height, scale, imageFile, EntranceY, ExitY);
+			mazegen generator = new mazegen(width, height, scale, imageFile, EntranceY, ExitY, procedualCheckBox.isSelected());
 			Thread generatorThread = new Thread(generator, "Generator Thread");
 			generatorThread.start();
 		} else {
@@ -372,19 +399,29 @@ public class gui extends Application {
 	public void start(@SuppressWarnings("exports") Stage arg0) throws Exception {
 		stage = arg0;
 		
+		stage.setRenderScaleX(1);
+		stage.setRenderScaleY(1);
+		
 		String memStatus = "";
-		if(Runtime.getRuntime().totalMemory()/1024/1024<1500) {
+		if(Runtime.getRuntime().totalMemory()/1024/1024<700) {
 			memStatus += "Low RAM! ";
 		}
-		memStatus+=Runtime.getRuntime().totalMemory()/1024/1024/1024+"GB RAM Default.";
+		memStatus+=Runtime.getRuntime().totalMemory()/1024/1024+"MB RAM Default.";
 		stage.setTitle("Maze Generator v"+Version+" - "+memStatus);
 		initInputScene();
 		
-		inputScene = new Scene(vBox, 500, 300);
+		//Get primary screen and adjust canvas size for it.
+		if(Screen.getPrimary() != null){
+	  	      System.out.println(Screen.getPrimary().getBounds());
+	  	      XMAX = (int) Screen.getPrimary().getBounds().getWidth();
+		      YMAX = (int) Screen.getPrimary().getBounds().getHeight();
+	   	}
+		
 		stage.setScene(inputScene);
 		stage.show();
 
 		stage.setOnCloseRequest(e -> {
+			System.out.println("Closing program by user request.");
 			System.exit(1); //User closed program
 		});
 	}

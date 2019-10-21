@@ -10,6 +10,7 @@ module mazeGenerator {
 	requires javafx.graphics;
 	requires javafx.controls;
 	requires javafx.swing;
+	requires javafx.base;
 	
 	exports dannypiper.mazegenerator;
 }

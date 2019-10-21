@@ -1,6 +1,7 @@
 package dannypiper.mazegenerator;
 
-public class primmsWorkerThread implements Runnable {
+public class primmsProcedualWorkerThread implements Runnable {
+
 	
 	public boolean finished;
 	public boolean delete;
@@ -9,7 +10,7 @@ public class primmsWorkerThread implements Runnable {
 	public int column;
 	public short minValue;
 	
-	public primmsWorkerThread() {
+	public primmsProcedualWorkerThread() {
 		this.columnInput=-1;
 	}
 	
@@ -46,26 +47,30 @@ public class primmsWorkerThread implements Runnable {
 		
 		if(!(yCurrentXPlusDeleted && yCurrentXMinusDeleted && yUpDeleted && yDownDeleted)) {	
 			if(x < mazegen.width - 1 && !yCurrentXPlusDeleted) {
-				if(mazegen.adjMat[Coord][Coord+1] < minValue) {
-					minValue = mazegen.adjMat[Coord][Coord+1];
-					row = Coord+1;
+				short value = mazegen.randInt();
+				if(value < minValue) {
+					minValue = value;
+					row = Coord + 1;
 				}
 			}
 			if(x > 0 && !yCurrentXMinusDeleted) {
-				if(mazegen.adjMat[Coord][Coord-1] < minValue) {
-					minValue = mazegen.adjMat[Coord][Coord-1];
-					row = Coord-1;
+				short value = mazegen.randInt();
+				if(value < minValue) {
+					minValue = value;
+					row = Coord - 1;
 				}
-			}			
+			}				
 			if(y < mazegen.height - 1 && !yUpDeleted) {
-				if(mazegen.adjMat[Coord][Coord + mazegen.width] < minValue) {
-					minValue = mazegen.adjMat[Coord][Coord + mazegen.width];
+				short value = mazegen.randInt();
+				if(value < minValue) {
+					minValue = value;
 					row = Coord + mazegen.width;
 				}
 			}
 			if(y > 0 && !yDownDeleted) {
-				if(mazegen.adjMat[Coord][Coord - mazegen.width] < minValue) {
-					minValue = mazegen.adjMat[Coord][Coord - mazegen.width];
+				short value = mazegen.randInt();
+				if(value < minValue) {
+					minValue = value;
 					row = Coord - mazegen.width;
 				}
 			}			
