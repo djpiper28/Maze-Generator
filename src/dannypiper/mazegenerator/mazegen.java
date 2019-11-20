@@ -166,15 +166,12 @@ public class mazegen implements Runnable {
 			System.out.println("Populated adjacency matrix in "+(System.currentTimeMillis() - time)+"ms");
 			System.out.println("Memory usage: " + (Runtime.getRuntime().totalMemory() 
 					- Runtime.getRuntime().freeMemory()) /1024 /1024 + "MB in use.");
-			
-			setBGToGrey();
-			
+						
 			time = System.currentTimeMillis();
 			System.out.println("Applying Primms adj mat ...");
 			primmsAdjMat();
 			System.out.println("Applied Primms adj mat in "+(System.currentTimeMillis() - time)+"ms");
 		} else {
-			setBGToGrey();
 			
 			time = System.currentTimeMillis();
 			System.out.println("Applying Primms procedual...");
@@ -217,6 +214,7 @@ public class mazegen implements Runnable {
 			gui.graphicsContext.fillText("Maze too big to be displayed", 10, 10);
 		} else {
 			mazegen.renderObject = new renderer(width*2 +1, height*2 +1, scale);
+			setBGToGrey();
 		}
 		try {
 			mazeImage = new BufferedImage(width*2 +1, height*2 +1, BufferedImage.TYPE_INT_RGB);
