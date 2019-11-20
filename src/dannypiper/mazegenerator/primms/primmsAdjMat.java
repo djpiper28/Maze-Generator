@@ -22,7 +22,7 @@ public class primmsAdjMat {
 		}		
 		
 		mazegen.pivotColumns.add(mazegen.entranceY * mazegen.width);
-		mazegen.deletedRows[0] = true;
+		mazegen.deletedRows[mazegen.entranceY * mazegen.width] = true;
 		
 		mazegen.pivotColumnsLength = 1;
 		
