@@ -214,7 +214,7 @@ public class mazegen implements Runnable {
 		
 		if(width > screenWidth || height > screenHeight) {
 			mazegen.renderObject = new renderless(width*2 +1, height*2 +1, scale);
-			gui.graphicsContext.fillText("Maze too big to be displayed", screenWidth / 2, screenHeight / 2);
+			gui.graphicsContext.fillText("Maze too big to be displayed", 10, 10);
 		} else {
 			mazegen.renderObject = new renderer(width*2 +1, height*2 +1, scale);
 		}

@@ -401,10 +401,14 @@ public class gui extends Application {
 			vBox = new VBox(progress, canvas);	
 			renderScene = new Scene(vBox, width* scale * 2 + scale, height* scale * 2 + scale + progressBarY);			
 		} else {
-			canvas = new Canvas(XMAX, YMAX);	
+			canvas = new Canvas(XMAX, YMAX - progressBarY);	
 			vBox = new VBox(progress, canvas);
 			progress.setPrefWidth(XMAX);
-			renderScene = new Scene(vBox, XMAX, YMAX + progressBarY);		
+			if(width > XMAX || height > YMAX) {
+				renderScene = new Scene(vBox, XMAX, 30 + progressBarY);	
+			} else {
+				renderScene = new Scene(vBox, XMAX, YMAX + progressBarY);
+			}
 		}
 		canvas.setOnMouseClicked(e -> {
 			if(e.getClickCount()>=2) {
