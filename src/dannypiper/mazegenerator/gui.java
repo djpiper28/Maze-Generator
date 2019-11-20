@@ -458,7 +458,7 @@ public class gui extends Application {
 
 			System.out.println("Started Generation, scale: "+scale);
 			try {
-				mazegen generator = new mazegen(width, height, scale, imageFile, EntranceY, ExitY, procedualCheckBox.isSelected());
+				mazegen generator = new mazegen(width, height, scale, imageFile, EntranceY, ExitY, procedualCheckBox.isSelected(), XMAX, YMAX);
 				Thread generatorThread = new Thread(generator, "Generator Thread");
 				generatorThread.start();
 			} catch(Exception e ) {

@@ -12,7 +12,7 @@ public class primmsAdjMat {
 		
 		int nodesFound = 0;
 		int nodesNeeded = mazegen.height * ( mazegen.width - 1) + mazegen.width * ( mazegen.height - 1);
-		nodesNeeded = mazegen.height * mazegen.width - 1;
+		nodesNeeded = mazegen.max - 1;// mazegen.height * mazegen.width - 1;
 		
 		mazegen.pivotColumns = new LinkedList<Integer>();
 		mazegen.deletedRows = new boolean[mazegen.max];

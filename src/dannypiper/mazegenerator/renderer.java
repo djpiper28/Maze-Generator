@@ -11,9 +11,9 @@ public class renderer implements Runnable {
 	public int width;
 	public int height;
 	public float scale;
-	private BufferedImage after; 
-	private AffineTransform affineTransform;
-	private AffineTransformOp scaleOp;
+	protected BufferedImage after; 
+	protected AffineTransform affineTransform;
+	protected AffineTransformOp scaleOp;
 	
 	public renderer(int width, int height, float scale) {
 		this.width = width;

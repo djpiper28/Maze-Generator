@@ -192,7 +192,7 @@ public class mazegen implements Runnable {
 		renderThread.start();
 	}
 
-	public mazegen(int widthIn, int heightIn, float scaleIn, File imageFile, int entranceYIn, int exitYIn, boolean procedualIN) throws Exception {
+	public mazegen(int widthIn, int heightIn, float scaleIn, File imageFile, int entranceYIn, int exitYIn, boolean procedualIN, int screenWidth, int screenHeight) throws Exception {
 		mazegen.file = imageFile;
 		mazegen.width = widthIn;
 		mazegen.height = heightIn;
@@ -211,6 +211,13 @@ public class mazegen implements Runnable {
 		System.out.println("Graph Width: " + mazegen.width + " Graph Height: " + mazegen.height+
 				" Entrance Y: " + mazegen.entranceY + " Exit Y: " + mazegen.exitY + " Scale: "
 				+ mazegen.scale + " Filename: " + mazegen.file.getName());
+		
+		if(width > screenWidth || height > screenHeight) {
+			mazegen.renderObject = new renderless(width*2 +1, height*2 +1, scale);
+			gui.graphicsContext.fillText("Maze too big to be displayed", screenWidth / 2, screenHeight / 2);
+		} else {
+			mazegen.renderObject = new renderer(width*2 +1, height*2 +1, scale);
+		}
 		try {
 			mazeImage = new BufferedImage(width*2 +1, height*2 +1, BufferedImage.TYPE_INT_RGB);
 
@@ -218,7 +225,6 @@ public class mazegen implements Runnable {
 			
 			mazeImage.setAccelerationPriority(1);
 			
-			mazegen.renderObject = new renderer(width*2 +1, height*2 +1, scale);
 		} catch(Exception e) {
 			gui.showError("Window is too large!");
 			throw new Exception("Window too large");
