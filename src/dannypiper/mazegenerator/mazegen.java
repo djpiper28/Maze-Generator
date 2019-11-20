@@ -5,6 +5,9 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.Random;
 import javax.imageio.ImageIO;
+
+import dannypiper.mazegenerator.primms.primmsAdjMat;
+import dannypiper.mazegenerator.primms.primmsProcedual;
 import javafx.scene.paint.Color;
 
 public class mazegen implements Runnable {
@@ -28,9 +31,9 @@ public class mazegen implements Runnable {
 	public static short[][] adjMat;
 
 	public static LinkedList<Integer> pivotColumns;
+	public static int pivotColumnsLength;
 	public static boolean[] deletedRows;
 
-	public static int pivotColumnsLength;
 	
 	private static renderer renderObject;
 	private static Thread renderThread;
@@ -39,7 +42,8 @@ public class mazegen implements Runnable {
 
 	private static Random rand;
 	
-	public static void drawArc(int adjMatX, int adjMatY) {		
+	public static void drawArc(int adjMatX, int adjMatY) {			
+		
 		int x1 = ( (adjMatX % width) * 2 ) + 1;
 		int y1 = ( (adjMatX / width) * 2 ) + 1;
 	
@@ -48,7 +52,7 @@ public class mazegen implements Runnable {
 		
 		int x3 = (x1 + x2) / 2;
 		int y3 = (y1 + y2) / 2;
-		
+				
 		mazeImage.setRGB(x1, y1, white);
 		mazeImage.setRGB(x2, y2, white);
 		mazeImage.setRGB(x3, y3, white);
@@ -177,17 +181,9 @@ public class mazegen implements Runnable {
 			primmsProcedual();
 			System.out.println("Applied Primms procedual in "+(System.currentTimeMillis() - time)+"ms");
 		}
-		saveImage();
+		imageFile.saveImage(mazegen.mazeImage, mazegen.file);
 		
 		System.exit(0);
-	}
-	
-	private void saveImage(){
-		try {
-			ImageIO.write(mazeImage, "png", file);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public static void render() {
@@ -196,7 +192,7 @@ public class mazegen implements Runnable {
 		renderThread.start();
 	}
 
-	public mazegen(int widthIn, int heightIn, float scaleIn, File imageFile, int entranceYIn, int exitYIn, boolean procedualIN) {
+	public mazegen(int widthIn, int heightIn, float scaleIn, File imageFile, int entranceYIn, int exitYIn, boolean procedualIN) throws Exception {
 		mazegen.file = imageFile;
 		mazegen.width = widthIn;
 		mazegen.height = heightIn;
@@ -205,8 +201,9 @@ public class mazegen implements Runnable {
 		mazegen.exitY = exitYIn;
 		mazegen.procedual = procedualIN;
 		
-		assert(height>0);
-		assert(width>0);
+		assert(height>1);
+		assert(imageFile != null);
+		assert(width>1);
 		assert(scale>0);
 		
 		mazegen.rand = new Random();
@@ -214,14 +211,18 @@ public class mazegen implements Runnable {
 		System.out.println("Graph Width: " + mazegen.width + " Graph Height: " + mazegen.height+
 				" Entrance Y: " + mazegen.entranceY + " Exit Y: " + mazegen.exitY + " Scale: "
 				+ mazegen.scale + " Filename: " + mazegen.file.getName());
-		
-		mazeImage = new BufferedImage(width*2 +1, height*2 +1, BufferedImage.TYPE_INT_RGB);
-		
-		System.out.println("Image Width: "+mazeImage.getWidth()+" Image Height: "+mazeImage.getHeight());
-		
-		mazeImage.setAccelerationPriority(1);
-		
-		this.renderObject = new renderer(width*2 +1, height*2 +1, scale);	
+		try {
+			mazeImage = new BufferedImage(width*2 +1, height*2 +1, BufferedImage.TYPE_INT_RGB);
+
+			System.out.println("Image Width: "+mazeImage.getWidth()+" Image Height: "+mazeImage.getHeight());
+			
+			mazeImage.setAccelerationPriority(1);
+			
+			mazegen.renderObject = new renderer(width*2 +1, height*2 +1, scale);
+		} catch(Exception e) {
+			gui.showError("Window is too large!");
+			throw new Exception("Window too large");
+		}			
 	}
 	
 	@Override
@@ -230,7 +231,12 @@ public class mazegen implements Runnable {
 			generate();
 		} catch (Exception e) {
 			System.out.println("Critical error.");
-			System.exit(13);
+			String stackTraceMsg = "";
+			for(StackTraceElement error : e.getStackTrace()) {
+				stackTraceMsg += error.toString();
+			}
+			gui.showError("Critical error:\nParameters Width: " + mazegen.width+" Height: " + mazegen.height 
+					+ "\nError Details:\n" + stackTraceMsg);
 		}
 	}
 	

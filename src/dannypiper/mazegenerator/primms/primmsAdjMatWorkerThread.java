@@ -1,4 +1,6 @@
-package dannypiper.mazegenerator;
+package dannypiper.mazegenerator.primms;
+
+import dannypiper.mazegenerator.mazegen;
 
 public class primmsAdjMatWorkerThread implements Runnable {
 	

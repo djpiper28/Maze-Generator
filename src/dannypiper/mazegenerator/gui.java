@@ -2,7 +2,6 @@ package dannypiper.mazegenerator;
 
 import java.io.File;
 import javafx.application.Application;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -11,8 +10,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -25,6 +28,7 @@ public class gui extends Application {
 	
 	//Objects to parse
 	public static File imageFile;
+	public static boolean darkModeToggle;
 	
 	//parameters
 	private static int width;
@@ -35,7 +39,7 @@ public class gui extends Application {
 	public static int XMAX = 1920;
 	public static int YMAX = 1000;
 	public static final int progressBarY = 10;
-	public static final String Version = "1.2.1";
+	public static final String Version = "1.2.2";
 	
 	//javaFX
 	private final static String font = "Lucida Console";
@@ -77,23 +81,27 @@ public class gui extends Application {
 	private static Button selectImageButton;
 	private static Button generateButton;
 	
+	//Methods
 	private boolean validateInput() {
 		boolean out = false;
 		String errorText = "";
-		String procedualGenerationSatus = "Using adjacency matrix";
+		String procedualGenerationStatus = "Using adjacency matrix";
 				
 		if(imageFile==null) {
 			out=true;
 			errorText+="Please select a file.";
+			fileSelectedText.setFill(Color.DARKORANGE);
+		} else {
+			fileSelectedText.setFill(Color.LIGHTGREEN);
 		}
-		if(width <= 0) {
+		if(width <= 1) {
 			if(out) {
 				errorText+="\n";
 			}
 			out = true;
 			errorText+="Invalid width.";
 		}
-		if(height <= 0) {
+		if(height <= 1) {
 			if(out) {
 				errorText+="\n";
 			}
@@ -107,12 +115,12 @@ public class gui extends Application {
 			errorText+="Procedual generation must be used.";
 			procedualCheckBox.setSelected(true);
 			procedualCheckBox.setDisable(true);
-			procedualGenerationSatus = "Must procedual generation";
+			procedualGenerationStatus = "Must procedual generation";
 		} else {
 			procedualCheckBox.setDisable(false);
 		}
 		if(procedualCheckBox.isSelected()) {
-			procedualGenerationSatus = "Using procedual generation";
+			procedualGenerationStatus = "Using procedual generation";
 		}
 		if(EntranceY > height || EntranceY < 0) {
 			if(out) {
@@ -131,42 +139,37 @@ public class gui extends Application {
 		
 		if(!out) {
 			errorText = "All input valid. Maze Width: " + (width * 2 + 1) + " Maze Height: " + (height * 2 + 1);
-			generateButton.setText("Generate Maze\n" + procedualGenerationSatus);
+			errorsText.setFill(Color.LIGHTGREEN);	
+			generateButton.setText("Generate Maze\n" + procedualGenerationStatus);
+			generateButton.setTextFill(Color.LIGHTGREEN);
 		} else {
 			generateButton.setText("Invalid Input");
+			errorsText.setFill(Color.DARKRED);		
+			generateButton.setTextFill(Color.WHITE);	
 		}
 		
 		errorsText.setText(errorText);
 		if(!out) {
-			System.out.println("Input is: valid");			
+			System.out.println("Input is: valid");		
 		} else {
-			System.out.println("Input is: not valid");		
+			System.out.println("Input is: not valid");	
 		}		
 		
 		return out;		
-	}
-
-	//Methods	
-	private static boolean validNumericalParameter(String parameterStr) {
-		String validChars = "0123456789";
-		String[] parameterStrArray = parameterStr.split(""); //split after each char
-		for (int i = 0; i<parameterStrArray.length; i++) {
-			if (!validChars.contains(parameterStrArray[i])) {
-				return false;
-			}
-		}
-		return true;
 	}
 	
 	private void openFileChooser() {
 		FileChooser fileChooser = new FileChooser();
 		
 		fileChooser.getExtensionFilters().addAll(
-			     new FileChooser.ExtensionFilter("Maze Image", "*.png")
+			     new FileChooser.ExtensionFilter("Maze Image", "*.png"),
+			     new FileChooser.ExtensionFilter("Maze Image", "*.jpeg")
 			 );
 		try {
 			File selectedFile = fileChooser.showSaveDialog(stage);
-			imageFile = selectedFile;
+			if(selectedFile != null) {
+				imageFile = selectedFile;	//Keeps old file if dialog is closed
+			}
 			if(imageFile!=null) {
 				fileSelectedText.setText("Selected '"+imageFile.getName()+"'");
 			}
@@ -182,8 +185,9 @@ public class gui extends Application {
 		
 		entranceYField = new TextField("5");
 		entranceYField.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
+		
 		entranceYField.setOnKeyTyped(e -> {
-			if(validNumericalParameter(entranceYField.getText())) {
+			if(validation.validNumericalParameter(entranceYField.getText())) {
 				if(entranceYField.getText().length() > 0 && entranceYField.getText().length() < 8) {
 					EntranceY = Integer.valueOf(entranceYField.getText());
 				} else {
@@ -201,7 +205,7 @@ public class gui extends Application {
 		exitYField = new TextField("5");	
 		exitYField.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
 		exitYField.setOnKeyTyped(e -> {	
-			if(validNumericalParameter(exitYField.getText())) {		
+			if(validation.validNumericalParameter(exitYField.getText())) {		
 				if(exitYField.getText().length() > 0 && exitYField.getText().length() < 8) {
 					ExitY = Integer.valueOf(exitYField.getText());
 				} else {
@@ -229,7 +233,7 @@ public class gui extends Application {
 		widthField = new TextField("50");
 		widthField.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
 		widthField.setOnKeyTyped(e -> {				
-			if(validNumericalParameter(widthField.getText())) {		
+			if(validation.validNumericalParameter(widthField.getText())) {		
 				if(widthField.getText().length() > 0 && widthField.getText().length() < 8) {
 					width = Integer.valueOf(widthField.getText());
 				} else {
@@ -247,7 +251,7 @@ public class gui extends Application {
 		heightField = new TextField("50");	
 		heightField.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
 		heightField.setOnKeyTyped(e -> {		
-			if(validNumericalParameter(heightField.getText())) {		
+			if(validation.validNumericalParameter(heightField.getText())) {		
 				if(heightField.getText().length() > 0 && heightField.getText().length() < 8) {
 					height = Integer.valueOf(heightField.getText());
 				} else {
@@ -272,9 +276,11 @@ public class gui extends Application {
 	private void details() {
 		fileSelectedText = new Text("No file selected.");
 		fileSelectedText.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
+		fileSelectedText.setFill(Color.DARKORANGE);
 		
 		errorsText = new Text("Please select a file.");
 		errorsText.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
+		errorsText.setFill(Color.DARKRED);
 		
 		detailsBOX = new VBox(fileSelectedText, errorsText);
 		detailsBOX.setPadding(new Insets(20));
@@ -314,7 +320,53 @@ public class gui extends Application {
         buttonHBOX.setPadding(new Insets(20));
 	}
 	
-	private void initInputScene() {
+	private void darkMode() {
+		double greyConstant = 0.20d;
+		double greyConstantAccent = 0.3d;
+		
+		Background darkMode = new Background(new BackgroundFill(new Color(greyConstant, greyConstant, greyConstant ,1d)
+				, CornerRadii.EMPTY, Insets.EMPTY));
+		
+		Background darkModeAccent = new Background(new BackgroundFill(new Color(greyConstantAccent, greyConstantAccent
+				, greyConstantAccent ,1d), new CornerRadii(8d), Insets.EMPTY));
+		
+		
+		entranceExitParametersHBOX.setBackground(darkMode);
+		graphParametersHBOX.setBackground(darkMode);
+		detailsBOX.setBackground(darkModeAccent);
+		procedualHBOX.setBackground(darkMode);
+		buttonHBOX.setBackground(darkMode);	
+		vBox.setBackground(darkMode);
+		
+		widthField.setBackground(darkModeAccent);
+		widthField.setStyle("-fx-text-fill: white;");
+		
+		heightField.setBackground(darkModeAccent);
+		heightField.setStyle("-fx-text-fill: white;");
+		
+		exitYField.setBackground(darkModeAccent);
+		exitYField.setStyle("-fx-text-fill: white;");
+		
+		entranceYField.setBackground(darkModeAccent);
+		entranceYField.setStyle("-fx-text-fill: white;");
+		
+		procedualCheckBox.setTextFill(Color.WHITE);
+		widthLabel.setFill(Color.WHITE);
+		heightLabel.setFill(Color.WHITE);
+		entranceYLabel.setFill(Color.WHITE);
+		exitYLabel.setFill(Color.WHITE);
+		
+		procedualCheckBox.setBackground(darkModeAccent);
+		procedualHBOX.setPadding(new Insets(10));
+		
+		generateButton.setBackground(darkModeAccent);
+		generateButton.setTextFill(Color.WHITE);
+		
+		selectImageButton.setBackground(darkModeAccent);
+		selectImageButton.setTextFill(Color.WHITE);
+	}
+	
+	private void initInputScene() {		
 		entranceExitParameters();
 		graphParameters();
 		details();
@@ -327,13 +379,21 @@ public class gui extends Application {
 				procedualHBOX,
 				buttonHBOX);
 		vBox.setPadding(new Insets(20));
-		inputScene = new Scene(vBox, 500, 400);
+		if(darkModeToggle) {
+			darkMode();
+		}
+		
+		inputScene = new Scene(vBox, 500, 400, Color.BLACK);
 	}
 	
 	private void initGenerationScene() {
 		progress = new ProgressBar(0);
 		progress.setPrefHeight(progressBarY);
 		progress.setMinHeight(progressBarY);
+		progress.setPadding(new Insets(0));
+		progress.setBackground(new Background(new BackgroundFill(new Color(0d, 0d, 0d ,1d)
+				, CornerRadii.EMPTY, Insets.EMPTY)));
+		
 		
 		if(width* scale * 2 + scale <= XMAX && height* scale * 2 + scale <= (YMAX - progressBarY)) {
 			canvas = new Canvas(width* scale * 2 + scale, height* scale * 2 + scale);
@@ -357,10 +417,10 @@ public class gui extends Application {
 		stage.setScene(renderScene); 
 		stage.setResizable(false);
 		stage.setX(0);
-		stage.setY(0);			
-		stage.setFullScreen(true); //Fullscreen!
+		stage.setY(0);	
 		stage.setFullScreenExitHint("ESC to exit fullscreen mode"
-				+ "\nDouble click to go fullscreen");
+				+ "\nDouble click to go fullscreen");		
+		stage.setFullScreen(true); 
 		
 		graphicsContext = canvas.getGraphicsContext2D();
 	}
@@ -378,7 +438,7 @@ public class gui extends Application {
 			scale = 1f;
 			
 			float scalex = XMAX / (width * 2 + 1);
-			float scaley = (YMAX - 30) / (height * 2 + 1);
+			float scaley = YMAX / (height * 2 + 1);
 			
 			if(scalex < 1 || scaley < 1) {
 				scale = 1f;
@@ -397,12 +457,40 @@ public class gui extends Application {
 			initGenerationScene();
 
 			System.out.println("Started Generation, scale: "+scale);
-			mazegen generator = new mazegen(width, height, scale, imageFile, EntranceY, ExitY, procedualCheckBox.isSelected());
-			Thread generatorThread = new Thread(generator, "Generator Thread");
-			generatorThread.start();
+			try {
+				mazegen generator = new mazegen(width, height, scale, imageFile, EntranceY, ExitY, procedualCheckBox.isSelected());
+				Thread generatorThread = new Thread(generator, "Generator Thread");
+				generatorThread.start();
+			} catch(Exception e ) {
+				e.printStackTrace();
+			}
 		} else {
 			System.out.println("Invalid input");
 		}
+	}
+	
+	public static void showError(String errorMessage) {
+		Text errorText = new Text(errorMessage);
+		errorText.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
+		errorText.setFill(Color.DARKRED);
+
+		Button okayButton = new Button("Okay");
+		
+		okayButton.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
+		okayButton.setOnAction(e -> {
+			System.exit(13);
+		});
+		
+		VBox errorVbox = new VBox(errorText, okayButton);
+		errorVbox.setPadding(new Insets(20));
+		
+		Scene errorScene = new Scene(errorVbox, Color.BLACK);
+				
+		stage.setScene(errorScene);
+		stage.sizeToScene();
+		stage.show();
+		stage.centerOnScreen();
+		stage.setResizable(false);
 	}
 	
 	public static void setProgress(double percentage) {
@@ -442,6 +530,14 @@ public class gui extends Application {
 	}
 	
 	public static void main(String[] args) {
+		darkModeToggle = true;
+		for(String arg: args) {
+			if(arg == "lightMode") {
+				darkModeToggle = false;
+				break;
+			}
+		}
+		
 		System.out.println("GUI Initialising...");
 
 		launch();

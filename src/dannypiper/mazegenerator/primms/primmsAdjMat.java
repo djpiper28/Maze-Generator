@@ -1,6 +1,9 @@
-package dannypiper.mazegenerator;
+package dannypiper.mazegenerator.primms;
 
 import java.util.LinkedList;
+
+import dannypiper.mazegenerator.gui;
+import dannypiper.mazegenerator.mazegen;
 
 public class primmsAdjMat {
 		

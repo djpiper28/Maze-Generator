@@ -1,4 +1,6 @@
-package dannypiper.mazegenerator;
+package dannypiper.mazegenerator.primms;
+
+import dannypiper.mazegenerator.mazegen;
 
 public class primmsProcedualWorkerThread implements Runnable {
 
@@ -27,10 +29,10 @@ public class primmsProcedualWorkerThread implements Runnable {
 		int y = this.columnInput / mazegen.width;
 		int Coord = columnInput;
 		
-		boolean yCurrentXPlusDeleted = false;
-		boolean yCurrentXMinusDeleted = false;
-		boolean yDownDeleted = false;
-		boolean yUpDeleted = false;
+		boolean yCurrentXPlusDeleted = true;
+		boolean yCurrentXMinusDeleted = true;
+		boolean yDownDeleted = true;
+		boolean yUpDeleted = true;
 		
 		if(x < mazegen.width - 1) {
 			yCurrentXPlusDeleted = mazegen.deletedRows[Coord + 1];
@@ -45,38 +47,35 @@ public class primmsProcedualWorkerThread implements Runnable {
 			yDownDeleted = mazegen.deletedRows[Coord - mazegen.width];
 		}
 		
-		if(!(yCurrentXPlusDeleted && yCurrentXMinusDeleted && yUpDeleted && yDownDeleted)) {	
-			if(x < mazegen.width - 1 && !yCurrentXPlusDeleted) {
-				short value = mazegen.randInt();
-				if(value < minValue) {
-					minValue = value;
-					row = Coord + 1;
-				}
+		if(!yCurrentXPlusDeleted) {
+			short value = mazegen.randInt();
+			if(value < minValue) {
+				minValue = value;
+				row = Coord + 1;
 			}
-			if(x > 0 && !yCurrentXMinusDeleted) {
-				short value = mazegen.randInt();
-				if(value < minValue) {
-					minValue = value;
-					row = Coord - 1;
-				}
-			}				
-			if(y < mazegen.height - 1 && !yUpDeleted) {
-				short value = mazegen.randInt();
-				if(value < minValue) {
-					minValue = value;
-					row = Coord + mazegen.width;
-				}
-			}
-			if(y > 0 && !yDownDeleted) {
-				short value = mazegen.randInt();
-				if(value < minValue) {
-					minValue = value;
-					row = Coord - mazegen.width;
-				}
-			}			
-		} else {
-			this.delete = true;
 		}
+		if(!yCurrentXMinusDeleted) {
+			short value = mazegen.randInt();
+			if(value < minValue) {
+				minValue = value;
+				row = Coord - 1;
+			}
+		}				
+		if(!yUpDeleted) {
+			short value = mazegen.randInt();
+			if(value < minValue) {
+				minValue = value;
+				row = Coord + mazegen.width;
+			}
+		}
+		if(!yDownDeleted) {
+			short value = mazegen.randInt();
+			if(value < minValue) {
+				minValue = value;
+				row = Coord - mazegen.width;
+			}
+		}			
+		this.delete = yCurrentXPlusDeleted && yCurrentXMinusDeleted && yUpDeleted && yDownDeleted;
 
 		finished = true;
 		this.minValue = minValue;

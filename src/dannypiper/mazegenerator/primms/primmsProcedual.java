@@ -1,6 +1,9 @@
-package dannypiper.mazegenerator;
+package dannypiper.mazegenerator.primms;
 
 import java.util.LinkedList;
+
+import dannypiper.mazegenerator.gui;
+import dannypiper.mazegenerator.mazegen;
 
 public class primmsProcedual {
 	
@@ -19,7 +22,7 @@ public class primmsProcedual {
 		}		
 		
 		mazegen.pivotColumns.add(mazegen.entranceY * mazegen.width);
-		mazegen.deletedRows[0] = true;
+		mazegen.deletedRows[mazegen.entranceY * mazegen.width] = true;
 		
 		mazegen.pivotColumnsLength = 1;
 		
@@ -48,10 +51,11 @@ public class primmsProcedual {
 			
 			column = mazegen.pivotColumns.get(mazegen.pivotColumnsLength - 1);			
 
-			boolean yCurrentXPlusDeleted = false;
-			boolean yCurrentXMinusDeleted = false;
-			boolean yDownDeleted = false;
-			boolean yUpDeleted = false;
+			//Detect deleted rows
+			boolean yCurrentXPlusDeleted = true;
+			boolean yCurrentXMinusDeleted = true;
+			boolean yDownDeleted = true;
+			boolean yUpDeleted = true;
 			
 			if(x < mazegen.width - 1) {
 				yCurrentXPlusDeleted = mazegen.deletedRows[Coord + 1];
@@ -66,29 +70,30 @@ public class primmsProcedual {
 				yDownDeleted = mazegen.deletedRows[Coord - mazegen.width];
 			}
 
+			//Find shortest local arc
 			if(!(yCurrentXPlusDeleted && yCurrentXMinusDeleted && yUpDeleted && yDownDeleted)) {				
-				if(x < mazegen.width - 1 && !yCurrentXPlusDeleted) {
+				if(!yCurrentXPlusDeleted) {
 					short value = mazegen.randInt();
 					if(value < minValue) {
 						minValue = value;
 						row = Coord + 1;
 					}
 				}
-				if(x > 0 && !yCurrentXMinusDeleted) {
+				if(!yCurrentXMinusDeleted) {
 					short value = mazegen.randInt();
 					if(value < minValue) {
 						minValue = value;
 						row = Coord - 1;
 					}
 				}				
-				if(y < mazegen.height - 1 && !yUpDeleted) {
+				if(!yUpDeleted) {
 					short value = mazegen.randInt();
 					if(value < minValue) {
 						minValue = value;
 						row = Coord + mazegen.width;
 					}
 				}
-				if(y > 0 && !yDownDeleted) {
+				if(!yDownDeleted) {
 					short value = mazegen.randInt();
 					if(value < minValue) {
 						minValue = value;
@@ -100,8 +105,10 @@ public class primmsProcedual {
 				mazegen.pivotColumns.remove(mazegen.pivotColumnsLength);
 			}
 			
-			if(minValue <= mazegen.halfMaxRand) {
+			//If an arc can be expanded from the latest node do it
+			if(minValue <= mazegen.maxRand) {
 				
+				//commit arc
 				mazegen.deletedRows[row] = true;
 		
 				mazegen.pivotColumns.add(row);
@@ -110,7 +117,8 @@ public class primmsProcedual {
 				mazegen.drawArc(column, row);
 				
 			} else {
-				//Start up worker threads
+				//Start up worker threads and look for another arc to expand from
+				//Then clear dead nodes
 				for(int i = 0; i < mazegen.pivotColumnsLength - 1; i++) {
 					int columnValue = mazegen.pivotColumns.get(i);
 					
@@ -120,7 +128,7 @@ public class primmsProcedual {
 					workers[i].start();
 				}						
 				
-				//wait for all to be complete and get the minimum value.
+				//Wait for all to be complete and get the minimum value.
 				boolean finished = false;
 				boolean breakStatmentRepalcement = false;
 				while(!finished) {
@@ -133,16 +141,18 @@ public class primmsProcedual {
 								column = worker[i].column;
 								if(minValue == 0) {
 									finished = true;	
-									breakStatmentRepalcement = true;
+									breakStatmentRepalcement = true;	
+									//^ escape for loop without a break to appease Mark Laver
 								}
 							}
 						}
-						finished &= worker[i].finished;
+						finished &= worker[i].finished;					
 					}
 				}
 
+				//Delete finished nodes from queue
 				int offSet = 0;	
-				for(int i = 0; i<mazegen.pivotColumnsLength -1 ; i++) {
+				for(int i = 0; i < mazegen.pivotColumnsLength -1 ; i++) {
 					if(worker[i].delete) {
 						mazegen.pivotColumnsLength--;
 						try {
@@ -155,15 +165,16 @@ public class primmsProcedual {
 					}
 				}
 				
+				//Delete row that is committed to image
 				mazegen.deletedRows[row] = true;
 		
+				//Add it as a pivot
 				mazegen.pivotColumns.add(row);
 				mazegen.pivotColumnsLength++;
 				
-				mazegen.drawArc(column, row);
-				
-			}	
-			
+				//Draw arc
+				mazegen.drawArc(column, row);				
+			}				
 			if(System.currentTimeMillis() - frameControlTime >= mazegen.frameRate) {				
 				frameControlTime = System.currentTimeMillis();
 				mazegen.render();
