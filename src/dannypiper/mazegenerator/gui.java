@@ -1,6 +1,8 @@
 package dannypiper.mazegenerator;
 
 import java.io.File;
+
+import dannypiper.mazegenerator.kuskals.sorting.sortType;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -9,7 +11,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -25,6 +29,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class gui extends Application {
+	
+	private static CheckBox primmsCheckBox;
 	
 	//Objects to parse
 	public static File imageFile;
@@ -46,7 +52,8 @@ public class gui extends Application {
 	private static Stage stage;
 	private static Scene inputScene;	
 	
-	private static VBox vBox;		
+	private static VBox vBox;	
+	private static VBox kruskalsRadioBoxes;		
 	private static HBox entranceExitParametersHBOX;
 	private static HBox graphParametersHBOX;
 	private static VBox detailsBOX;
@@ -71,7 +78,7 @@ public class gui extends Application {
 	private static TextField widthField;
 	private static Text heightLabel;
 	private static TextField heightField;
-	private static CheckBox procedualCheckBox;
+	private static CheckBox primmsTypeCheckBox;
 
 	//Details
 	private static Text fileSelectedText;
@@ -81,7 +88,56 @@ public class gui extends Application {
 	private static Button selectImageButton;
 	private static Button generateButton;
 	
-	//Methods
+	//Kruskals radioButtons
+	private static Text radioButtonLabels;
+	private static RadioButton bubbleSort; 
+	private static RadioButton insersionSort;
+	private static RadioButton quickSort; 
+	private static RadioButton countingSort; 
+	private static ToggleGroup group;
+	
+	//Kruskals Methods
+	private void setUpRadioButtons() {
+		group = new ToggleGroup();
+		
+		radioButtonLabels = new Text("Select Sorting Type");
+		bubbleSort = new RadioButton("Bubble Sort");
+		insersionSort = new RadioButton("Insersion Sort");
+		quickSort = new RadioButton("Quick Sort");		
+		countingSort = new RadioButton("Couting Sort");
+		
+		bubbleSort.setToggleGroup(group);
+		insersionSort.setToggleGroup(group);
+		quickSort.setToggleGroup(group);
+		countingSort.setToggleGroup(group);
+		countingSort.setSelected(true);
+
+		radioButtonLabels.setFill(Color.WHITE);
+		radioButtonLabels.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
+
+		bubbleSort.setStyle("-fx-text-fill: white;");	
+		bubbleSort.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
+
+		insersionSort.setStyle("-fx-text-fill: white;");	
+		insersionSort.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
+
+		quickSort.setStyle("-fx-text-fill: white;");	
+		quickSort.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
+
+		countingSort.setStyle("-fx-text-fill: white;");	
+		countingSort.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));		
+		
+		kruskalsRadioBoxes = new VBox(radioButtonLabels, bubbleSort, insersionSort, quickSort, countingSort);
+		kruskalsRadioBoxes.setPadding(new Insets(5));
+	}
+	
+	private void updateGUI() {
+		kruskalsRadioBoxes.setVisible(!primmsCheckBox.isSelected());
+		primmsTypeCheckBox.setVisible(primmsCheckBox.isSelected());
+	}	
+	
+	//Primms Methods
+	@SuppressWarnings("unused")
 	private boolean validateInput() {
 		boolean out = false;
 		String errorText = "";
@@ -108,18 +164,18 @@ public class gui extends Application {
 			out = true;
 			errorText+="Invalid height.";
 		}
-		if(height >= mazegen.procedualThreshold || width >= mazegen.procedualThreshold) {
+		if((height >= mazegen.procedualThreshold || width >= mazegen.procedualThreshold) && primmsCheckBox.isSelected()) {
 			if(out) {
 				errorText+="\n";
 			}
 			errorText+="Procedual generation must be used.";
-			procedualCheckBox.setSelected(true);
-			procedualCheckBox.setDisable(true);
+			primmsTypeCheckBox.setSelected(true);
+			primmsTypeCheckBox.setDisable(true);
 			procedualGenerationStatus = "Must procedual generation";
 		} else {
-			procedualCheckBox.setDisable(false);
+			primmsTypeCheckBox.setDisable(false);
 		}
-		if(procedualCheckBox.isSelected()) {
+		if(primmsTypeCheckBox.isSelected() && primmsCheckBox.isSelected()) {
 			procedualGenerationStatus = "Using procedual generation";
 		}
 		if(EntranceY > height || EntranceY < 0) {
@@ -140,7 +196,7 @@ public class gui extends Application {
 		if(!out) {
 			errorText = "All input valid. Maze Width: " + (width * 2 + 1) + " Maze Height: " + (height * 2 + 1);
 			errorsText.setFill(Color.LIGHTGREEN);	
-			generateButton.setText("Generate Maze\n" + procedualGenerationStatus);
+			generateButton.setText("Generate Maze");
 			generateButton.setTextFill(Color.LIGHTGREEN);
 		} else {
 			generateButton.setText("Invalid Input");
@@ -285,17 +341,25 @@ public class gui extends Application {
 		detailsBOX = new VBox(fileSelectedText, errorsText);
 		detailsBOX.setPadding(new Insets(20));
 	}
+
+	//Primms
+	private void checkBoxes() {	
+		primmsTypeCheckBox = new CheckBox("Procedual Generation (Uses less RAM)");
+		primmsTypeCheckBox.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
+		primmsTypeCheckBox.setSelected(true);
 	
-	private void procedualCheckBox() {	
-		procedualCheckBox = new CheckBox("Procedual Generation (Uses less RAM)");
-		procedualCheckBox.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
-		procedualCheckBox.setSelected(true);
-	
-		procedualCheckBox.setOnAction(e -> {
+		primmsTypeCheckBox.setOnAction(e -> {
 			validateInput();
 		});
 		
-		procedualHBOX = new HBox(procedualCheckBox);
+		primmsCheckBox = new CheckBox("Use Primm's Algorithm");
+		primmsCheckBox.setStyle("-fx-text-fill: white;");	
+		primmsCheckBox.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
+		primmsCheckBox.setOnMouseClicked(e -> {
+			updateGUI();
+		});
+		
+		procedualHBOX = new HBox(primmsTypeCheckBox);
 		procedualHBOX.setPadding(new Insets(20));
 	}
 
@@ -350,14 +414,17 @@ public class gui extends Application {
 		entranceYField.setBackground(darkModeAccent);
 		entranceYField.setStyle("-fx-text-fill: white;");
 		
-		procedualCheckBox.setTextFill(Color.WHITE);
+		primmsTypeCheckBox.setTextFill(Color.WHITE);
 		widthLabel.setFill(Color.WHITE);
 		heightLabel.setFill(Color.WHITE);
 		entranceYLabel.setFill(Color.WHITE);
 		exitYLabel.setFill(Color.WHITE);
 		
-		procedualCheckBox.setBackground(darkModeAccent);
+		primmsTypeCheckBox.setBackground(darkModeAccent);
 		procedualHBOX.setPadding(new Insets(10));
+		
+		primmsCheckBox.setBackground(darkModeAccent);
+		
 		
 		generateButton.setBackground(darkModeAccent);
 		generateButton.setTextFill(Color.WHITE);
@@ -371,19 +438,27 @@ public class gui extends Application {
 		graphParameters();
 		details();
 		buttons();
-		procedualCheckBox();
+		checkBoxes();
+		setUpRadioButtons();
 		
-		vBox = new VBox(entranceExitParametersHBOX,
+		vBox = new VBox(primmsCheckBox,
+				entranceExitParametersHBOX,
 				graphParametersHBOX,
 				detailsBOX,
 				procedualHBOX,
+				kruskalsRadioBoxes,
 				buttonHBOX);
 		vBox.setPadding(new Insets(20));
+		
 		if(darkModeToggle) {
 			darkMode();
 		}
+
+		primmsCheckBox.setSelected(true);		
 		
-		inputScene = new Scene(vBox, 500, 400, Color.BLACK);
+		inputScene = new Scene(vBox, 500, 450, Color.BLACK);
+
+		updateGUI();
 	}
 	
 	private void initGenerationScene() {
@@ -395,7 +470,7 @@ public class gui extends Application {
 				, CornerRadii.EMPTY, Insets.EMPTY)));
 		
 		
-		if(width* scale * 2 + scale <= XMAX && height* scale * 2 + scale <= (YMAX - progressBarY)) {
+		if(width* scale * 2 + scale <= XMAX * 2 && height* scale * 2 + scale <= (YMAX - progressBarY) * 2) {
 			canvas = new Canvas(width* scale * 2 + scale, height* scale * 2 + scale);
 			progress.setPrefWidth(width* scale * 2 + scale);
 			vBox = new VBox(progress, canvas);	
@@ -462,7 +537,17 @@ public class gui extends Application {
 
 			System.out.println("Started Generation, scale: "+scale);
 			try {
-				mazegen generator = new mazegen(width, height, scale, imageFile, EntranceY, ExitY, procedualCheckBox.isSelected(), XMAX, YMAX);
+				sortType type = sortType.countingSort;
+				if(bubbleSort.isSelected()) {
+					type=sortType.bubbleSort;
+				} else if(insersionSort.isSelected()) {
+					type=sortType.insersionSort;
+				} else if(quickSort.isSelected()) {
+					type=sortType.quickSort;
+				} else if(countingSort.isSelected()) {
+					type=sortType.countingSort;
+				}
+				mazegen generator = new mazegen(width, height, scale, imageFile, EntranceY, ExitY, primmsTypeCheckBox.isSelected(), XMAX, YMAX, primmsCheckBox.isSelected(), type);
 				Thread generatorThread = new Thread(generator, "Generator Thread");
 				generatorThread.start();
 			} catch(Exception e ) {

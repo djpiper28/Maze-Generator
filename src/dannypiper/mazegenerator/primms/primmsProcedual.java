@@ -11,18 +11,18 @@ public class primmsProcedual {
 		long frameControlTime = System.currentTimeMillis();
 		
 		int nodesFound = 0;
-		int nodesNeeded = mazegen.height * ( mazegen.width - 1) + mazegen.width * ( mazegen.height - 1);
-		nodesNeeded = mazegen.max - 1;// mazegen.height * mazegen.width - 1;
+		int nodesNeeded = mazegen.width * mazegen.height - 1;
 		
 		mazegen.pivotColumns = new LinkedList<Integer>();
-		mazegen.deletedRows = new boolean[mazegen.max];
+		mazegen.visitedRows = new boolean[mazegen.max];
 		
 		for(int i = 0; i< mazegen.max; i++) {
-			mazegen.deletedRows[i] = false;
+			mazegen.visitedRows[i] = false;
 		}		
 		
-		mazegen.pivotColumns.add(mazegen.entranceY * mazegen.width);
-		mazegen.deletedRows[mazegen.entranceY * mazegen.width] = true;
+		int start = mazegen.entranceY * mazegen.width;
+		mazegen.pivotColumns.add(start);
+		mazegen.visitedRows[start] = true;
 		
 		mazegen.pivotColumnsLength = 1;
 		
@@ -58,16 +58,16 @@ public class primmsProcedual {
 			boolean yUpDeleted = true;
 			
 			if(x < mazegen.width - 1) {
-				yCurrentXPlusDeleted = mazegen.deletedRows[Coord + 1];
+				yCurrentXPlusDeleted = mazegen.visitedRows[Coord + 1];
 			}
 			if(x > 0) {
-				yCurrentXMinusDeleted = mazegen.deletedRows[Coord - 1];
+				yCurrentXMinusDeleted = mazegen.visitedRows[Coord - 1];
 			}
 			if(y < mazegen.height - 1) {
-				yUpDeleted = mazegen.deletedRows[Coord + mazegen.width];
+				yUpDeleted = mazegen.visitedRows[Coord + mazegen.width];
 			}
 			if(y > 0) {
-				yDownDeleted = mazegen.deletedRows[Coord - mazegen.width];
+				yDownDeleted = mazegen.visitedRows[Coord - mazegen.width];
 			}
 
 			//Find shortest local arc
@@ -109,13 +109,13 @@ public class primmsProcedual {
 			if(minValue <= mazegen.maxRand) {
 				
 				//commit arc
-				mazegen.deletedRows[row] = true;
+				mazegen.visitedRows[row] = true;
 		
 				mazegen.pivotColumns.add(row);
 				mazegen.pivotColumnsLength++;
 		
 				mazegen.drawArc(column, row);
-				
+				nodesFound++;				
 			} else {
 				//Start up worker threads and look for another arc to expand from
 				//Then clear dead nodes
@@ -151,38 +151,34 @@ public class primmsProcedual {
 				}
 
 				//Delete finished nodes from queue
-				int offSet = 0;	
 				for(int i = 0; i < mazegen.pivotColumnsLength -1 ; i++) {
 					if(worker[i].delete) {
 						mazegen.pivotColumnsLength--;
 						try {
-							mazegen.pivotColumns.remove(i - offSet);
+							mazegen.pivotColumns.remove((Integer) worker[i].columnInput);
 						} catch(Exception e) {
 							
 						}
-						offSet++;
-						worker[i].delete = false;
 					}
 				}
 				
 				//Delete row that is committed to image
-				mazegen.deletedRows[row] = true;
+				mazegen.visitedRows[row] = true;
 		
 				//Add it as a pivot
 				mazegen.pivotColumns.add(row);
 				mazegen.pivotColumnsLength++;
 				
 				//Draw arc
-				mazegen.drawArc(column, row);				
+				mazegen.drawArc(column, row);	
+				nodesFound++;			
 			}				
 			if(System.currentTimeMillis() - frameControlTime >= mazegen.frameRate) {				
 				frameControlTime = System.currentTimeMillis();
 				mazegen.render();
 				double percentage = (double) nodesFound / (double) nodesNeeded;
 				gui.setProgress(percentage);
-			}
-			
-			nodesFound++;
+			}			
 		}
 	}
 }

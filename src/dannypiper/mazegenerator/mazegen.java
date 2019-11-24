@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.Random;
 import javax.imageio.ImageIO;
 
+import dannypiper.mazegenerator.kuskals.kruskals;
+import dannypiper.mazegenerator.kuskals.sorting.sortType;
 import dannypiper.mazegenerator.primms.primmsAdjMat;
 import dannypiper.mazegenerator.primms.primmsProcedual;
 import javafx.scene.paint.Color;
@@ -13,6 +15,9 @@ import javafx.scene.paint.Color;
 public class mazegen implements Runnable {
 	
 	@SuppressWarnings("exports")
+	private boolean primms;
+	private sortType type;
+	
 	public static BufferedImage mazeImage;
 	
 	public static int width;
@@ -32,8 +37,7 @@ public class mazegen implements Runnable {
 
 	public static LinkedList<Integer> pivotColumns;
 	public static int pivotColumnsLength;
-	public static boolean[] deletedRows;
-
+	public static boolean[] visitedRows;
 	
 	private static renderer renderObject;
 	private static Thread renderThread;
@@ -152,34 +156,43 @@ public class mazegen implements Runnable {
 		max = height*(width+1);
 		
 		loadingScreen();
-		
-		if(Runtime.getRuntime().totalMemory()/1024/1024 < 700) {
-			mazegen.procedual = true;
-		}
-		
-		if( (mazegen.width < mazegen.procedualThreshold && mazegen.height < mazegen.procedualThreshold) 
-				&& !(mazegen.procedual)) {				
-			time = System.currentTimeMillis();
-			System.out.println("Populating adjacency matrix");
-			populateAdjMat();
-			System.out.println("Populated adjacency matrix");
-			System.out.println("Populated adjacency matrix in "+(System.currentTimeMillis() - time)+"ms");
-			System.out.println("Memory usage: " + (Runtime.getRuntime().totalMemory() 
-					- Runtime.getRuntime().freeMemory()) /1024 /1024 + "MB in use.");
-						
-			time = System.currentTimeMillis();
-			System.out.println("Applying Primms adj mat ...");
-			primmsAdjMat();
-			System.out.println("Applied Primms adj mat in "+(System.currentTimeMillis() - time)+"ms");
-		} else {
+		if(this.primms) {
+			if(Runtime.getRuntime().totalMemory()/1024/1024 < 700) {
+				mazegen.procedual = true;
+			}
 			
-			time = System.currentTimeMillis();
-			System.out.println("Applying Primms procedual...");
-			primmsProcedual();
-			System.out.println("Applied Primms procedual in "+(System.currentTimeMillis() - time)+"ms");
+			if( (mazegen.width < mazegen.procedualThreshold && mazegen.height < mazegen.procedualThreshold) 
+					&& !(mazegen.procedual)) {				
+				time = System.currentTimeMillis();
+				System.out.println("Populating adjacency matrix");
+				populateAdjMat();
+				System.out.println("Populated adjacency matrix");
+				System.out.println("Populated adjacency matrix in "+(System.currentTimeMillis() - time)+"ms");
+				System.out.println("Memory usage: " + (Runtime.getRuntime().totalMemory() 
+						- Runtime.getRuntime().freeMemory()) /1024 /1024 + "MB in use.");
+							
+				time = System.currentTimeMillis();
+				System.out.println("Applying Primms adj mat ...");
+				primmsAdjMat();
+				System.out.println("Applied Primms adj mat in "+(System.currentTimeMillis() - time)+"ms");
+			} else {
+				
+				time = System.currentTimeMillis();
+				System.out.println("Applying Primms procedual...");
+				primmsProcedual();
+				System.out.println("Applied Primms procedual in "+(System.currentTimeMillis() - time)+"ms");
+			}
+		} else {
+			System.out.println("Applying Kruskals...");
+			kruskals Kruskals = new kruskals(this.type);
+			Kruskals.run();
+			System.out.println("Applied Kruskals in "+(System.currentTimeMillis() - time)+"ms");
 		}
-		imageFile.saveImage(mazegen.mazeImage, mazegen.file);
 		
+		render();
+		
+		imageFile.saveImage(mazegen.mazeImage, mazegen.file);
+				
 		System.exit(0);
 	}
 
@@ -189,7 +202,8 @@ public class mazegen implements Runnable {
 		renderThread.start();
 	}
 
-	public mazegen(int widthIn, int heightIn, float scaleIn, File imageFile, int entranceYIn, int exitYIn, boolean procedualIN, int screenWidth, int screenHeight) throws Exception {
+	public mazegen(int widthIn, int heightIn, float scaleIn, File imageFile, int entranceYIn,
+			int exitYIn, boolean procedualIN, int screenWidth, int screenHeight, boolean primms, sortType type) throws Exception {
 		mazegen.file = imageFile;
 		mazegen.width = widthIn;
 		mazegen.height = heightIn;
@@ -197,6 +211,8 @@ public class mazegen implements Runnable {
 		mazegen.entranceY = entranceYIn;
 		mazegen.exitY = exitYIn;
 		mazegen.procedual = procedualIN;
+		this.primms = primms;
+		this.type = type;
 		
 		assert(height>1);
 		assert(imageFile != null);
@@ -209,7 +225,7 @@ public class mazegen implements Runnable {
 				" Entrance Y: " + mazegen.entranceY + " Exit Y: " + mazegen.exitY + " Scale: "
 				+ mazegen.scale + " Filename: " + mazegen.file.getName());
 		
-		if(width > screenWidth || height > screenHeight) {
+		if(width > screenWidth * 2 || height > screenHeight * 2) {
 			mazegen.renderObject = new renderless(width*2 +1, height*2 +1, scale);
 			gui.graphicsContext.fillText("Maze too big to be displayed", 10, 10);
 		} else {
