@@ -10,6 +10,7 @@ import dannypiper.mazegenerator.kuskals.kruskals;
 import dannypiper.mazegenerator.kuskals.sorting.sortType;
 import dannypiper.mazegenerator.primms.primmsAdjMat;
 import dannypiper.mazegenerator.primms.primmsProcedual;
+import dannypiper.mazegenerator.primms.primmsUtils;
 import javafx.scene.paint.Color;
 
 public class mazegen implements Runnable {
@@ -33,11 +34,6 @@ public class mazegen implements Runnable {
 	public static final int procedualThreshold = 100;
 	public static final short maxRand = 500;	
 	public static final short halfMaxRand = maxRand / 2;
-	public static short[][] adjMat;
-
-	public static LinkedList<Integer> pivotColumns;
-	public static int pivotColumnsLength;
-	public static boolean[] visitedRows;
 	
 	private static renderer renderObject;
 	private static Thread renderThread;
@@ -78,45 +74,7 @@ public class mazegen implements Runnable {
 		return (short) (random % maxRand);
 	}
 	
-	private void randIntAdjMat(int x, int y) {
-		int random = rand.nextInt();
-		if (random < 0) {
-			random *= -1;			
-		} 
-		adjMat[x][y] = (short) (random % maxRand);
-	}
-
-	private void populateAdjMat() {
-		adjMat = new short[max][max];
-		for(int x = 0; x < max; x++) {
-			for(int y =0; y < max; y++) {
-				adjMat[x][y] = 0;
-			}
-		}
-		
-		for(int x = 0; x < width; x++) {
-			for(int y = 0; y < height; y++) {
-				int Coord = (width * y) + x;
-				
-				if(x < width - 1) {
-					randIntAdjMat(Coord + 1, Coord);
-					randIntAdjMat(Coord, Coord + 1);
-				}
-				if(x > 0) {
-					randIntAdjMat(Coord - 1, Coord);
-					randIntAdjMat(Coord, Coord - 1);
-				}
-				if(y < height - 1) {
-					randIntAdjMat(Coord + width, Coord );
-					randIntAdjMat(Coord, Coord + width);
-				}
-				if(y > 0) {
-					randIntAdjMat(Coord - width, Coord);
-					randIntAdjMat(Coord, Coord - width);
-				}				
-			}
-		}
-	}
+	
 
 	private void addEntranceAndExit() {
 		mazeImage.setRGB(0, entranceY*2+1, white);
@@ -165,7 +123,7 @@ public class mazegen implements Runnable {
 					&& !(mazegen.procedual)) {				
 				time = System.currentTimeMillis();
 				System.out.println("Populating adjacency matrix");
-				populateAdjMat();
+				primmsUtils.populateAdjMat();
 				System.out.println("Populated adjacency matrix");
 				System.out.println("Populated adjacency matrix in "+(System.currentTimeMillis() - time)+"ms");
 				System.out.println("Memory usage: " + (Runtime.getRuntime().totalMemory() 

@@ -35,16 +35,16 @@ public class primmsProcedualWorkerThread implements Runnable {
 		boolean yUpDeleted = true;
 		
 		if(x < mazegen.width - 1) {
-			yCurrentXPlusDeleted = mazegen.visitedRows[Coord + 1];
+			yCurrentXPlusDeleted = primmsUtils.visitedRows[Coord + 1];
 		}
 		if(x > 0) {
-			yCurrentXMinusDeleted = mazegen.visitedRows[Coord - 1];
+			yCurrentXMinusDeleted = primmsUtils.visitedRows[Coord - 1];
 		}
 		if(y < mazegen.height - 1) {
-			yUpDeleted = mazegen.visitedRows[Coord + mazegen.width];
+			yUpDeleted = primmsUtils.visitedRows[Coord + mazegen.width];
 		}
 		if(y > 0) {
-			yDownDeleted = mazegen.visitedRows[Coord - mazegen.width];
+			yDownDeleted = primmsUtils.visitedRows[Coord - mazegen.width];
 		}
 		
 		if(!yCurrentXPlusDeleted) {

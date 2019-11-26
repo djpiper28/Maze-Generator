@@ -45,7 +45,7 @@ public class gui extends Application {
 	public static int XMAX = 1920;
 	public static int YMAX = 1000;
 	public static final int progressBarY = 10;
-	public static final String Version = "1.2.2";
+	public static final String Version = "1.3.0";
 	
 	//javaFX
 	private final static String font = "Lucida Console";

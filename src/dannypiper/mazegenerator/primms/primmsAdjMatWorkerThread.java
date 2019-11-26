@@ -34,40 +34,40 @@ public class primmsAdjMatWorkerThread implements Runnable {
 		boolean yUpDeleted = false;
 		
 		if(x < mazegen.width - 1) {
-			yCurrentXPlusDeleted = mazegen.visitedRows[Coord + 1];
+			yCurrentXPlusDeleted = primmsUtils.visitedRows[Coord + 1];
 		}
 		if(x > 0) {
-			yCurrentXMinusDeleted = mazegen.visitedRows[Coord - 1];
+			yCurrentXMinusDeleted = primmsUtils.visitedRows[Coord - 1];
 		}
 		if(y < mazegen.height - 1) {
-			yUpDeleted = mazegen.visitedRows[Coord + mazegen.width];
+			yUpDeleted = primmsUtils.visitedRows[Coord + mazegen.width];
 		}
 		if(y > 0) {
-			yDownDeleted = mazegen.visitedRows[Coord - mazegen.width];
+			yDownDeleted = primmsUtils.visitedRows[Coord - mazegen.width];
 		}
 		
 		if(!(yCurrentXPlusDeleted && yCurrentXMinusDeleted && yUpDeleted && yDownDeleted)) {	
 			if(x < mazegen.width - 1 && !yCurrentXPlusDeleted) {
-				if(mazegen.adjMat[Coord][Coord+1] < minValue) {
-					minValue = mazegen.adjMat[Coord][Coord+1];
+				if(primmsUtils.adjMat[Coord][Coord+1] < minValue) {
+					minValue = primmsUtils.adjMat[Coord][Coord+1];
 					row = Coord+1;
 				}
 			}
 			if(x > 0 && !yCurrentXMinusDeleted) {
-				if(mazegen.adjMat[Coord][Coord-1] < minValue) {
-					minValue = mazegen.adjMat[Coord][Coord-1];
+				if(primmsUtils.adjMat[Coord][Coord-1] < minValue) {
+					minValue = primmsUtils.adjMat[Coord][Coord-1];
 					row = Coord-1;
 				}
 			}			
 			if(y < mazegen.height - 1 && !yUpDeleted) {
-				if(mazegen.adjMat[Coord][Coord + mazegen.width] < minValue) {
-					minValue = mazegen.adjMat[Coord][Coord + mazegen.width];
+				if(primmsUtils.adjMat[Coord][Coord + mazegen.width] < minValue) {
+					minValue = primmsUtils.adjMat[Coord][Coord + mazegen.width];
 					row = Coord + mazegen.width;
 				}
 			}
 			if(y > 0 && !yDownDeleted) {
-				if(mazegen.adjMat[Coord][Coord - mazegen.width] < minValue) {
-					minValue = mazegen.adjMat[Coord][Coord - mazegen.width];
+				if(primmsUtils.adjMat[Coord][Coord - mazegen.width] < minValue) {
+					minValue = primmsUtils.adjMat[Coord][Coord - mazegen.width];
 					row = Coord - mazegen.width;
 				}
 			}			

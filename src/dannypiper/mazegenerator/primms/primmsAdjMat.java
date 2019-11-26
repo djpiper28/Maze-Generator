@@ -13,18 +13,18 @@ public class primmsAdjMat {
 		int nodesFound = 0;
 		int nodesNeeded = mazegen.width * mazegen.height - 1;
 		
-		mazegen.pivotColumns = new LinkedList<Integer>();
-		mazegen.visitedRows = new boolean[mazegen.max];
+		primmsUtils.pivotColumns = new LinkedList<Integer>();
+		primmsUtils.visitedRows = new boolean[mazegen.max];
 		
 		for(int i = 0; i< mazegen.max; i++) {
-			mazegen.visitedRows[i] = false;
+			primmsUtils.visitedRows[i] = false;
 		}		
 		
 		int start = mazegen.entranceY * mazegen.width;
-		mazegen.pivotColumns.add(start);
-		mazegen.visitedRows[start] = true;
+		primmsUtils.pivotColumns.add(start);
+		primmsUtils.visitedRows[start] = true;
 		
-		mazegen.pivotColumnsLength = 1;
+		primmsUtils.pivotColumnsLength = 1;
 		
 		Thread[] workers = new Thread[nodesNeeded];
 		primmsAdjMatWorkerThread[] worker = new primmsAdjMatWorkerThread[nodesNeeded];
@@ -46,11 +46,11 @@ public class primmsAdjMat {
 			row = 0;
 			
 			//Main thread			
-			int x = mazegen.pivotColumns.get(mazegen.pivotColumnsLength - 1) % mazegen.width; 
-			int y = mazegen.pivotColumns.get(mazegen.pivotColumnsLength - 1) / mazegen.width;
+			int x = primmsUtils.pivotColumns.get(primmsUtils.pivotColumnsLength - 1) % mazegen.width; 
+			int y = primmsUtils.pivotColumns.get(primmsUtils.pivotColumnsLength - 1) / mazegen.width;
 			Coord = (mazegen.width * y) + x;
 			
-			column = mazegen.pivotColumns.get(mazegen.pivotColumnsLength - 1);			
+			column = primmsUtils.pivotColumns.get(primmsUtils.pivotColumnsLength - 1);			
 
 			boolean yCurrentXPlusDeleted = false;
 			boolean yCurrentXMinusDeleted = false;
@@ -58,61 +58,61 @@ public class primmsAdjMat {
 			boolean yUpDeleted = false;
 			
 			if(x < mazegen.width - 1) {
-				yCurrentXPlusDeleted = mazegen.visitedRows[Coord + 1];
+				yCurrentXPlusDeleted = primmsUtils.visitedRows[Coord + 1];
 			}
 			if(x > 0) {
-				yCurrentXMinusDeleted = mazegen.visitedRows[Coord - 1];
+				yCurrentXMinusDeleted = primmsUtils.visitedRows[Coord - 1];
 			}
 			if(y < mazegen.height - 1) {
-				yUpDeleted = mazegen.visitedRows[Coord + mazegen.width];
+				yUpDeleted = primmsUtils.visitedRows[Coord + mazegen.width];
 			}
 			if(y > 0) {
-				yDownDeleted = mazegen.visitedRows[Coord - mazegen.width];
+				yDownDeleted = primmsUtils.visitedRows[Coord - mazegen.width];
 			}
 
 			if(!(yCurrentXPlusDeleted && yCurrentXMinusDeleted && yUpDeleted && yDownDeleted)) {				
 				if(x < mazegen.width - 1 && !yCurrentXPlusDeleted) {
-					if(mazegen.adjMat[Coord][Coord+1] < minValue) {
-						minValue = mazegen.adjMat[Coord][Coord+1];
+					if(primmsUtils.adjMat[Coord][Coord+1] < minValue) {
+						minValue = primmsUtils.adjMat[Coord][Coord+1];
 						row = Coord + 1;
 					}
 				}
 				if(x > 0 && !yCurrentXMinusDeleted) {
-					if(mazegen.adjMat[Coord][Coord-1] < minValue) {
-						minValue = mazegen.adjMat[Coord][Coord-1];
+					if(primmsUtils.adjMat[Coord][Coord-1] < minValue) {
+						minValue = primmsUtils.adjMat[Coord][Coord-1];
 						row = Coord - 1;
 					}
 				}				
 				if(y < mazegen.height - 1 && !yUpDeleted) {
-					if(mazegen.adjMat[Coord][Coord + mazegen.width] < minValue) {
-						minValue = mazegen.adjMat[Coord][Coord + mazegen.width];
+					if(primmsUtils.adjMat[Coord][Coord + mazegen.width] < minValue) {
+						minValue = primmsUtils.adjMat[Coord][Coord + mazegen.width];
 						row = Coord + mazegen.width;
 					}
 				}
 				if(y > 0 && !yDownDeleted) {
-					if(mazegen.adjMat[Coord][Coord - mazegen.width] < minValue) {
-						minValue = mazegen.adjMat[Coord][Coord - mazegen.width];
+					if(primmsUtils.adjMat[Coord][Coord - mazegen.width] < minValue) {
+						minValue = primmsUtils.adjMat[Coord][Coord - mazegen.width];
 						row = Coord - mazegen.width;
 					}
 				}	
 			} else {	
-				mazegen.pivotColumnsLength--;	
-				mazegen.pivotColumns.remove(mazegen.pivotColumnsLength);
+				primmsUtils.pivotColumnsLength--;	
+				primmsUtils.pivotColumns.remove(primmsUtils.pivotColumnsLength);
 			}
 			
 			if(minValue <= mazegen.halfMaxRand) {
 				
-				mazegen.visitedRows[row] = true;
+				primmsUtils.visitedRows[row] = true;
 		
-				mazegen.pivotColumns.add(row);
-				mazegen.pivotColumnsLength++;
+				primmsUtils.pivotColumns.add(row);
+				primmsUtils.pivotColumnsLength++;
 		
 				mazegen.drawArc(column, row);
 				nodesFound++;				
 			} else {
 				//Start up worker threads
-				for(int i = 0; i < mazegen.pivotColumnsLength - 1; i++) {
-					int columnValue = mazegen.pivotColumns.get(i);
+				for(int i = 0; i < primmsUtils.pivotColumnsLength - 1; i++) {
+					int columnValue = primmsUtils.pivotColumns.get(i);
 					
 					worker [i].columnInput = columnValue;
 					worker [i].finished = false;
@@ -125,7 +125,7 @@ public class primmsAdjMat {
 				boolean breakStatmentRepalcement = false;
 				while(!finished) {
 					finished = true;
-					for(int i = 0; (i < mazegen.pivotColumnsLength - 1) && !breakStatmentRepalcement ; i++) {
+					for(int i = 0; (i < primmsUtils.pivotColumnsLength - 1) && !breakStatmentRepalcement ; i++) {
 						if(worker[i].finished) {
 							if(worker[i].minValue < minValue) {
 								minValue = worker[i].minValue;
@@ -141,11 +141,11 @@ public class primmsAdjMat {
 					}
 				}
 
-				for(int i = 0; i<mazegen.pivotColumnsLength -1 ; i++) {
+				for(int i = 0; i<primmsUtils.pivotColumnsLength -1 ; i++) {
 					if(worker[i].delete) {
-						mazegen.pivotColumnsLength--;
+						primmsUtils.pivotColumnsLength--;
 						try {
-							mazegen.pivotColumns.remove((Integer) worker[i].columnInput);
+							primmsUtils.pivotColumns.remove((Integer) worker[i].columnInput);
 						} catch(Exception e) {
 							
 						}
@@ -153,10 +153,10 @@ public class primmsAdjMat {
 					}
 				}
 				
-				mazegen.visitedRows[row] = true;
+				primmsUtils.visitedRows[row] = true;
 		
-				mazegen.pivotColumns.add(row);
-				mazegen.pivotColumnsLength++;
+				primmsUtils.pivotColumns.add(row);
+				primmsUtils.pivotColumnsLength++;
 				
 				mazegen.drawArc(column, row);
 				nodesFound++;				
