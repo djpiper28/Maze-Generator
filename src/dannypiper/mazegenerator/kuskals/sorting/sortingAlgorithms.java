@@ -1,9 +1,7 @@
 package dannypiper.mazegenerator.kuskals.sorting;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
 import dannypiper.mazegenerator.mazegen;
 import dannypiper.mazegenerator.kuskals.arc;
 import dannypiper.mazegenerator.kuskals.arcWeighted;
@@ -83,6 +81,20 @@ public class sortingAlgorithms {
 	
 		return a;
 	}
+
+	
+	public static List<arcWeighted> quickSortThreaded(List<arcWeighted> data){
+		
+		quickSortThread a = new quickSortThread ( data );
+		(new Thread(a)).start ( );
+		
+		while(!a.finished) {
+			
+		}	
+		
+		return a.data;
+	}
+	
 	
 	public static List<arc> countingSort(List<arcWeighted> arcs, int maxRand) {
 		@SuppressWarnings("unchecked")
@@ -106,4 +118,61 @@ public class sortingAlgorithms {
 		
 		return output;
 	}
+}
+class quickSortThread implements Runnable{
+
+	public List<arcWeighted> data;
+	public boolean finished;
+	
+	public quickSortThread(List<arcWeighted> data) {
+		this.data = data;
+		this.finished = false;
+	}
+	
+	@Override
+	public void run ( ) {
+		this.data = quickSort(data);		
+		this.finished = true;
+	}
+
+	//ascending order
+	private List<arcWeighted> quickSort(List<arcWeighted> Data) {
+		List<arcWeighted> a = new LinkedList<arcWeighted>();
+		List<arcWeighted> b = new LinkedList<arcWeighted>();
+		int Pivot = Data.size() / 2;
+		
+		if(Data.size() <= 1) {
+			return Data;
+		}	
+			
+		for(int i = 0; i<Data.size(); i++) {			
+			if(i!=Pivot) {
+				if(Data.get(Pivot).weight <= Data.get(i).weight) {
+					a.add(Data.get(i));
+				} else {
+					b.add(Data.get(i));
+				}
+			} 
+		}
+		
+		quickSortThread aObj = new quickSortThread(a);
+		quickSortThread bObj = new quickSortThread(b);
+		
+		(new Thread(aObj)).start ( );
+		(new Thread(bObj)).start ( );
+		
+		while(!(aObj.finished && bObj.finished)) {
+			
+		}
+			
+		a = aObj.data;		
+		b = bObj.data;	
+			
+		//merge
+		a.add(Data.get(Pivot));
+		a.addAll(b);	
+	
+		return a;
+	}	
+	
 }

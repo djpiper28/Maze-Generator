@@ -2,6 +2,7 @@ package dannypiper.mazegenerator.kuskals;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import dannypiper.mazegenerator.gui;
 import dannypiper.mazegenerator.mazegen;
@@ -10,7 +11,7 @@ import dannypiper.mazegenerator.kuskals.sorting.sortType;
 
 public class kruskals implements Runnable{
 	
-	private List<arc> sortedData;
+	private Queue<arc> sortedData;
 	private sortType type;
 	private int[] disjointSet;
 	
@@ -19,13 +20,14 @@ public class kruskals implements Runnable{
 	}
 	
 	private int find(int v) {
-		List<Integer> queue = new LinkedList<Integer>();
+		Queue <Integer> queue = new LinkedList < Integer > ( );
 		while (disjointSet[v] >= 0) {
 			queue.add(v);
 			v = disjointSet[v];
 		}
-		for (int i : queue) {
-			disjointSet[i] = v;
+
+		while(!queue.isEmpty ( )) {
+			disjointSet[queue.remove ( )] = v;
 		}
 		return v;
 	}	
@@ -36,6 +38,7 @@ public class kruskals implements Runnable{
 		if (r0 == r1) {
 			return false;
 		}
+
 		if (disjointSet[r0] < disjointSet[r1]) {
 			disjointSet[r1] = r0;
 		}
@@ -48,17 +51,17 @@ public class kruskals implements Runnable{
 		    	disjointSet[r0] -= 1;
 		    }
 		}
+		
 		return true;
 	}
 	
 	private void executeKruskals() {
-		int i = 0;
 		int nodesFound = 0;
 		int nodesNeeded = mazegen.width * mazegen.height - 1;
 		long frameControlTime = System.currentTimeMillis();
 		
 		while(nodesFound < nodesNeeded) {
-			arc Arc = this.sortedData.get(i);
+			arc Arc = this.sortedData.remove();
 			if( isCyclic(Arc) ) {
 				mazegen.drawArc(Arc.startingNode, Arc.endingNode);
 				nodesFound++;
@@ -70,7 +73,6 @@ public class kruskals implements Runnable{
 				double percentage = (double) nodesFound / (double) nodesNeeded;
 				gui.setProgress(percentage);
 			}
-			i++;
 		}
 	}
 	
@@ -107,8 +109,8 @@ public class kruskals implements Runnable{
 		return data;
 	}
 	
-	private void sortData(List<arcWeighted> datain, sortType type) throws Exception {
-		kruskalsSortManager sortManager =  new kruskalsSortManager(type, datain);
+	private void sortData(List<arcWeighted> dataIn, sortType type) throws Exception {
+		kruskalsSortManager sortManager =  new kruskalsSortManager(type, dataIn);
 		this.sortedData = sortManager.sortedData();
 	}
 
@@ -116,13 +118,17 @@ public class kruskals implements Runnable{
 	public void run() {
 
 		List<arcWeighted> unsortedData = new LinkedList<arcWeighted>();
-		
+
+		long time = System.currentTimeMillis ( );
+		System.out.println("Generting arcs...");
 		unsortedData = generateNodes(mazegen.width, mazegen.height, unsortedData);
+		System.out.println("Generated in "+(System.currentTimeMillis ( ) - time)+"ms");
 		
 		try {
+			time = System.currentTimeMillis ( );
 			System.out.println("Sorting...");
 			sortData(unsortedData, type);	
-			System.out.println("Sorted");		
+			System.out.println("Sorted in "+(System.currentTimeMillis ( ) - time)+"ms");		
 			assert(sortedData.size() != 0);
 			initNodesVisited();	
 			executeKruskals();

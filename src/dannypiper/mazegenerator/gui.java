@@ -354,6 +354,7 @@ public class gui extends Application {
 		
 		primmsCheckBox = new CheckBox("Use Primm's Algorithm");
 		primmsCheckBox.setStyle("-fx-text-fill: white;");	
+		primmsCheckBox.setSelected ( false );
 		primmsCheckBox.setFont(Font.font(font, FontWeight.BOLD, FontPosture.REGULAR, 14));
 		primmsCheckBox.setOnMouseClicked(e -> {
 			updateGUI();
@@ -452,9 +453,7 @@ public class gui extends Application {
 		
 		if(darkModeToggle) {
 			darkMode();
-		}
-
-		primmsCheckBox.setSelected(true);		
+		}	
 		
 		inputScene = new Scene(vBox, 500, 450, Color.BLACK);
 

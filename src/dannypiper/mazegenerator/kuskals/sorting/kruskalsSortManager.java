@@ -2,6 +2,8 @@ package dannypiper.mazegenerator.kuskals.sorting;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+
 import dannypiper.mazegenerator.mazegen;
 import dannypiper.mazegenerator.kuskals.arc;
 import dannypiper.mazegenerator.kuskals.arcWeighted;
@@ -16,7 +18,7 @@ public class kruskalsSortManager {
 		this.data = data;
 	}
 	
-	public List<arc> sortedData() throws Exception{
+	public Queue<arc> sortedData() throws Exception{
 		if(this.type != sortType.countingSort) {
 			List<arcWeighted> sortedData = new LinkedList<arcWeighted>(); 
 			switch(this.type) {
@@ -36,9 +38,9 @@ public class kruskalsSortManager {
 				System.out.println("ERROR at line 36");
 				throw new Exception("Assertion error at line 36");		
 			}	
-			return postSortUtils.arcWeightedListToArcList(sortedData);
+			return ( Queue < arc > ) postSortUtils.arcWeightedListToArcList(sortedData);
 		} else {
-			return sortingAlgorithms.countingSort(this.data, mazegen.maxRand);
+			return ( Queue < arc > ) sortingAlgorithms.countingSort(this.data, mazegen.maxRand);
 		}
 	}
 }
