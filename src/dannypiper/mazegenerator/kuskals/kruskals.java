@@ -83,7 +83,8 @@ public class kruskals implements Runnable{
 		}
 	}
 	
-	private List<arcWeighted> generateNodes(int width, int height, List<arcWeighted> data) {
+	private List<arcWeighted> generateNodes(int width, int height) {
+		List<arcWeighted> data = new LinkedList<arcWeighted>();
 		for(int x = 0; x < width; x++) {
 			for(int y = 0; y < height; y++) {
 				int Coord = (width * y) + x;
@@ -113,15 +114,12 @@ public class kruskals implements Runnable{
 		kruskalsSortManager sortManager =  new kruskalsSortManager(type, dataIn);
 		this.sortedData = sortManager.sortedData();
 	}
-
+	
 	@Override
 	public void run() {
-
-		List<arcWeighted> unsortedData = new LinkedList<arcWeighted>();
-
 		long time = System.currentTimeMillis ( );
 		System.out.println("Generting arcs...");
-		unsortedData = generateNodes(mazegen.width, mazegen.height, unsortedData);
+		List<arcWeighted> unsortedData  = generateNodes(mazegen.width, mazegen.height);
 		System.out.println("Generated in "+(System.currentTimeMillis ( ) - time)+"ms");
 		
 		try {

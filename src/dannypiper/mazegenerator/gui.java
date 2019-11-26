@@ -498,7 +498,6 @@ public class gui extends Application {
 		stage.setY(0);	
 		stage.setFullScreenExitHint("ESC to exit fullscreen mode"
 				+ "\nDouble click to go fullscreen");		
-		stage.setFullScreen(true); 
 		
 		graphicsContext = canvas.getGraphicsContext2D();
 	}

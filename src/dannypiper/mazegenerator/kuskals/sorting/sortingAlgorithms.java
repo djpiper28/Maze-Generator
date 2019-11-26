@@ -2,6 +2,8 @@ package dannypiper.mazegenerator.kuskals.sorting;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+
 import dannypiper.mazegenerator.mazegen;
 import dannypiper.mazegenerator.kuskals.arc;
 import dannypiper.mazegenerator.kuskals.arcWeighted;
@@ -98,7 +100,7 @@ public class sortingAlgorithms {
 	
 	public static List<arc> countingSort(List<arcWeighted> arcs, int maxRand) {
 		@SuppressWarnings("unchecked")
-		List<arcWeighted>[] categories = new LinkedList[maxRand];
+		Queue<arcWeighted>[] categories = new LinkedList[maxRand];
 		
 		for(int i = 0; i< mazegen.maxRand; i++) {
 			categories[i] = new LinkedList<arcWeighted>();
@@ -110,9 +112,9 @@ public class sortingAlgorithms {
 		
 		List<arc> output = new LinkedList<arc>();
 		
-		for(List<arcWeighted> category: categories) {
-			for(arcWeighted Arc: category) {
-				output.add(Arc);
+		for(int i = 0; i < maxRand; i++){
+			while(! categories[i].isEmpty ( )) {
+				output.add(categories[i].remove ( ));
 			}
 		}
 		
