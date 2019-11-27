@@ -208,6 +208,7 @@ public class mazegen implements Runnable {
 		try {
 			generate();
 		} catch (Exception e) {
+			e.printStackTrace ( );
 			System.out.println("Critical error.");
 			String stackTraceMsg = "";
 			for(StackTraceElement error : e.getStackTrace()) {

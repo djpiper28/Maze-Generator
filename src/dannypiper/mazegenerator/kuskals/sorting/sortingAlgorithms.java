@@ -18,14 +18,16 @@ public class sortingAlgorithms {
 	}
 			
 	//ascending order
-	public static List<arcWeighted>bubbleSort(List<arcWeighted> data) {
+	public static arcWeighted [ ] bubbleSort(arcWeighted [ ] data) {
 		boolean finished = false;
 		while(!finished) {
 			finished = true;
-			for(int i = 0; i<data.size() ; i++) {
-				for(int j = 0;j<data.size(); j++) {
-					if(data.get(j).weight < data.get(i).weight && i < j) {
-						data = swap(i, j, data);
+			for(int i = 0; i<data.length ; i++) {
+				for(int j = 0;j<data.length; j++) {
+					if(data[j].weight < data[i].weight && i < j) {
+						arcWeighted temp = data[j];
+						data[j] = data[i];
+						data[i] = temp;
 						finished = false;
 					}
 				}
@@ -34,42 +36,48 @@ public class sortingAlgorithms {
 		return data;
 	}
 		//ascending order
-	public static List<arcWeighted> insertionSort(List<arcWeighted> Data) {
+	public static List < arc > insertionSort(arcWeighted [ ] data) {
 		List<arcWeighted> output = new LinkedList<arcWeighted>();
 		
-		output.set(0, Data.get(0)); //need an item to compare to.
+		output.set(0, data[0]); //need an item to compare to.
 		
-		for(int i = 1; i< Data.size(); i++) {
+		for(int i = 1; i< data.length; i++) {
 			for(int j = 0; j<i ;j++) {
-				if(output.get(j).weight <= Data.get(i).weight) {
-					output.add(j, Data.get(i));
+				if(output.get(j).weight <= data[i].weight) {
+					output.add(j, data[i]);
 					break;
 				}
 				if(j+1==i) {
-					output.set(j+1, Data.get(i));
+					output.set(j+1, data[i]);
 				}
 			}
 		}
+		
+		List<arc> outputTwo = new LinkedList<arc>();
+		
+		while(!output.isEmpty ( )) {
+			outputTwo.add ( output.remove ( 0 ) );
+		}
 			
-		return output;
+		return outputTwo;
 	}
 	
 	//ascending order
-	public static List<arcWeighted> quickSort(List<arcWeighted> Data) {
+	public static List<arcWeighted> quickSort(List<arcWeighted> data) {
 		List<arcWeighted> a = new LinkedList<arcWeighted>();
 		List<arcWeighted> b = new LinkedList<arcWeighted>();
-		int Pivot = Data.size() / 2;
+		int Pivot = data.size() / 2;
 		
-		if(Data.size() <= 1) {
-			return Data;
+		if(data.size() <= 1) {
+			return data;
 		}	
 			
-		for(int i = 0; i<Data.size(); i++) {			
+		for(int i = 0; i<data.size(); i++) {			
 			if(i!=Pivot) {
-				if(Data.get(Pivot).weight <= Data.get(i).weight) {
-					a.add(Data.get(i));
+				if(data.get(Pivot).weight <= data.get(i).weight) {
+					a.add(data.get(i));
 				} else {
-					b.add(Data.get(i));
+					b.add(data.get(i));
 				}
 			} 
 		}
@@ -78,7 +86,7 @@ public class sortingAlgorithms {
 		b = quickSort(b);
 			
 		//merge
-		a.add(Data.get(Pivot));
+		a.add(data.get(Pivot));
 		a.addAll(b);	
 	
 		return a;
@@ -98,15 +106,15 @@ public class sortingAlgorithms {
 	}
 	
 	
-	public static List<arc> countingSort(List<arcWeighted> arcs, int maxRand) {
+	public static List<arc> countingSort(arcWeighted [ ] data, int maxRand) {
 		@SuppressWarnings("unchecked")
-		Queue<arcWeighted>[] categories = new LinkedList[maxRand];
+		Queue<arc>[] categories = new LinkedList[maxRand];
 		
 		for(int i = 0; i< mazegen.maxRand; i++) {
-			categories[i] = new LinkedList<arcWeighted>();
+			categories[i] = new LinkedList<arc>();
 		}
 		
-		for(arcWeighted currentArc: arcs) {
+		for(arcWeighted currentArc: data) {
 			categories[currentArc.weight].add(currentArc);
 		}
 		

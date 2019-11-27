@@ -83,43 +83,44 @@ public class kruskals implements Runnable{
 		}
 	}
 	
-	private List<arcWeighted> generateNodes(int width, int height) {
-		List<arcWeighted> data = new LinkedList<arcWeighted>();
+	private arcWeighted[] generateArcs(short width, short height) {
+		arcWeighted[] data = new arcWeighted[ 2 * ( width * (height - 1) + height * (width - 1) )];
+		int i = 0;
 		for(int x = 0; x < width; x++) {
 			for(int y = 0; y < height; y++) {
-				int Coord = (width * y) + x;
+				int Coord = (width * y) + x ;
 				
 				if(x < width - 1) {
-					data.add(new arcWeighted(Coord + 1, Coord));
-					data.add(new arcWeighted(Coord, Coord + 1));
+					data[i] = new arcWeighted(Coord, Coord + 1 );
+					i++;
 				}
 				if(x > 0) {
-					data.add(new arcWeighted(Coord - 1, Coord));
-					data.add(new arcWeighted(Coord, Coord - 1));
+					data[i] = new arcWeighted(Coord,  Coord - 1 );
+					i++;
 				}
 				if(y < height - 1) {
-					data.add(new arcWeighted(Coord + width, Coord));
-					data.add(new arcWeighted(Coord, Coord + width));
+					data[i] = new arcWeighted(Coord, Coord + width );
+					i++;
 				}
 				if(y > 0) {
-					data.add(new arcWeighted(Coord - width, Coord));
-					data.add(new arcWeighted(Coord, Coord - width));
+					data[i] = new arcWeighted(Coord, Coord - width );
+					i++;
 				}				
 			}
 		}
 		return data;
 	}
 	
-	private void sortData(List<arcWeighted> dataIn, sortType type) throws Exception {
-		kruskalsSortManager sortManager =  new kruskalsSortManager(type, dataIn);
+	private void sortData(arcWeighted [ ] unsortedData, sortType type) throws Exception {
+		kruskalsSortManager sortManager =  new kruskalsSortManager(type, unsortedData);
 		this.sortedData = sortManager.sortedData();
 	}
 	
 	@Override
 	public void run() {
 		long time = System.currentTimeMillis ( );
-		System.out.println("Generting arcs...");
-		List<arcWeighted> unsortedData  = generateNodes(mazegen.width, mazegen.height);
+		System.out.println("Generating arcs...");
+		arcWeighted [ ] unsortedData  = generateArcs((short) mazegen.width, (short) mazegen.height);
 		System.out.println("Generated in "+(System.currentTimeMillis ( ) - time)+"ms");
 		
 		try {
