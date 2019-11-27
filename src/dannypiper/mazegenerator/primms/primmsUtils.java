@@ -8,8 +8,7 @@ import dannypiper.mazegenerator.mazegen;
 public class primmsUtils {	
 
 	public static LinkedList<Integer> pivotColumns;
-	public static int pivotColumnsLength;
-	public static boolean[] visitedRows;
+	public static boolean[] deletedRows;
 	public static short[][] adjMat;
 	private static Random rand;
 	

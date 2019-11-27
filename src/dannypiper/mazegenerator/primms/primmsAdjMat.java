@@ -14,17 +14,16 @@ public class primmsAdjMat {
 		int nodesNeeded = mazegen.width * mazegen.height - 1;
 		
 		primmsUtils.pivotColumns = new LinkedList<Integer>();
-		primmsUtils.visitedRows = new boolean[mazegen.max];
+		primmsUtils.deletedRows = new boolean[mazegen.max];
 		
 		for(int i = 0; i< mazegen.max; i++) {
-			primmsUtils.visitedRows[i] = false;
+			primmsUtils.deletedRows[i] = false;
 		}		
 		
 		int start = mazegen.entranceY * mazegen.width;
 		primmsUtils.pivotColumns.add(start);
-		primmsUtils.visitedRows[start] = true;
+		primmsUtils.deletedRows[start] = true;
 		
-		primmsUtils.pivotColumnsLength = 1;
 		
 		Thread[] workers = new Thread[nodesNeeded];
 		primmsAdjMatWorkerThread[] worker = new primmsAdjMatWorkerThread[nodesNeeded];
@@ -46,11 +45,11 @@ public class primmsAdjMat {
 			row = 0;
 			
 			//Main thread			
-			int x = primmsUtils.pivotColumns.get(primmsUtils.pivotColumnsLength - 1) % mazegen.width; 
-			int y = primmsUtils.pivotColumns.get(primmsUtils.pivotColumnsLength - 1) / mazegen.width;
+			int x = primmsUtils.pivotColumns.get(primmsUtils.pivotColumns.size ( )  - 1) % mazegen.width; 
+			int y = primmsUtils.pivotColumns.get(primmsUtils.pivotColumns.size ( )  - 1) / mazegen.width;
 			Coord = (mazegen.width * y) + x;
 			
-			column = primmsUtils.pivotColumns.get(primmsUtils.pivotColumnsLength - 1);			
+			column = primmsUtils.pivotColumns.get(primmsUtils.pivotColumns.size ( )  - 1);			
 
 			boolean yCurrentXPlusDeleted = false;
 			boolean yCurrentXMinusDeleted = false;
@@ -58,16 +57,16 @@ public class primmsAdjMat {
 			boolean yUpDeleted = false;
 			
 			if(x < mazegen.width - 1) {
-				yCurrentXPlusDeleted = primmsUtils.visitedRows[Coord + 1];
+				yCurrentXPlusDeleted = primmsUtils.deletedRows[Coord + 1];
 			}
 			if(x > 0) {
-				yCurrentXMinusDeleted = primmsUtils.visitedRows[Coord - 1];
+				yCurrentXMinusDeleted = primmsUtils.deletedRows[Coord - 1];
 			}
 			if(y < mazegen.height - 1) {
-				yUpDeleted = primmsUtils.visitedRows[Coord + mazegen.width];
+				yUpDeleted = primmsUtils.deletedRows[Coord + mazegen.width];
 			}
 			if(y > 0) {
-				yDownDeleted = primmsUtils.visitedRows[Coord - mazegen.width];
+				yDownDeleted = primmsUtils.deletedRows[Coord - mazegen.width];
 			}
 
 			if(!(yCurrentXPlusDeleted && yCurrentXMinusDeleted && yUpDeleted && yDownDeleted)) {				
@@ -96,22 +95,20 @@ public class primmsAdjMat {
 					}
 				}	
 			} else {	
-				primmsUtils.pivotColumnsLength--;	
-				primmsUtils.pivotColumns.remove(primmsUtils.pivotColumnsLength);
+				primmsUtils.pivotColumns.removeLast ( );
 			}
 			
 			if(minValue <= mazegen.halfMaxRand) {
 				
-				primmsUtils.visitedRows[row] = true;
+				primmsUtils.deletedRows[row] = true;
 		
 				primmsUtils.pivotColumns.add(row);
-				primmsUtils.pivotColumnsLength++;
 		
 				mazegen.drawArc(column, row);
 				nodesFound++;				
 			} else {
 				//Start up worker threads
-				for(int i = 0; i < primmsUtils.pivotColumnsLength - 1; i++) {
+				for(int i = 0; i < primmsUtils.pivotColumns.size ( ) - 1; i++) {
 					int columnValue = primmsUtils.pivotColumns.get(i);
 					
 					worker [i].columnInput = columnValue;
@@ -125,7 +122,7 @@ public class primmsAdjMat {
 				boolean breakStatmentRepalcement = false;
 				while(!finished) {
 					finished = true;
-					for(int i = 0; (i < primmsUtils.pivotColumnsLength - 1) && !breakStatmentRepalcement ; i++) {
+					for(int i = 0; (i < primmsUtils.pivotColumns.size ( )  - 1) && !breakStatmentRepalcement ; i++) {
 						if(worker[i].finished) {
 							if(worker[i].minValue < minValue) {
 								minValue = worker[i].minValue;
@@ -141,9 +138,8 @@ public class primmsAdjMat {
 					}
 				}
 
-				for(int i = 0; i<primmsUtils.pivotColumnsLength -1 ; i++) {
+				for(int i = 0; i<primmsUtils.pivotColumns.size ( )  -1 ; i++) {
 					if(worker[i].delete) {
-						primmsUtils.pivotColumnsLength--;
 						try {
 							primmsUtils.pivotColumns.remove((Integer) worker[i].columnInput);
 						} catch(Exception e) {
@@ -153,10 +149,9 @@ public class primmsAdjMat {
 					}
 				}
 				
-				primmsUtils.visitedRows[row] = true;
+				primmsUtils.deletedRows[row] = true;
 		
 				primmsUtils.pivotColumns.add(row);
-				primmsUtils.pivotColumnsLength++;
 				
 				mazegen.drawArc(column, row);
 				nodesFound++;				

@@ -14,18 +14,16 @@ public class primmsProcedual {
 		int nodesNeeded = mazegen.width * mazegen.height - 1;
 		
 		primmsUtils.pivotColumns = new LinkedList<Integer>();
-		primmsUtils.visitedRows = new boolean[mazegen.max];
+		primmsUtils.deletedRows = new boolean[mazegen.max];
 		
 		for(int i = 0; i< mazegen.max; i++) {
-			primmsUtils.visitedRows[i] = false;
+			primmsUtils.deletedRows[i] = false;
 		}		
 		
 		int start = mazegen.entranceY * mazegen.width;
 		primmsUtils.pivotColumns.add(start);
-		primmsUtils.visitedRows[start] = true;
-		
-		primmsUtils.pivotColumnsLength = 1;
-		
+		primmsUtils.deletedRows[start] = true;
+				
 		Thread[] workers = new Thread[nodesNeeded];
 		primmsProcedualWorkerThread[] worker = new primmsProcedualWorkerThread[nodesNeeded];
 		
@@ -45,11 +43,11 @@ public class primmsProcedual {
 			row = 0;
 			
 			//Main thread			
-			int x = primmsUtils.pivotColumns.get(primmsUtils.pivotColumnsLength - 1) % mazegen.width; 
-			int y = primmsUtils.pivotColumns.get(primmsUtils.pivotColumnsLength - 1) / mazegen.width;
+			int x = primmsUtils.pivotColumns.get(primmsUtils.pivotColumns.size ( ) - 1) % mazegen.width; 
+			int y = primmsUtils.pivotColumns.get(primmsUtils.pivotColumns.size ( )  - 1) / mazegen.width;
 			Coord = (mazegen.width * y) + x;
 			
-			column = primmsUtils.pivotColumns.get(primmsUtils.pivotColumnsLength - 1);			
+			column = primmsUtils.pivotColumns.get(primmsUtils.pivotColumns.size ( )  - 1);			
 
 			//Detect deleted rows
 			boolean yCurrentXPlusDeleted = true;
@@ -58,16 +56,16 @@ public class primmsProcedual {
 			boolean yUpDeleted = true;
 			
 			if(x < mazegen.width - 1) {
-				yCurrentXPlusDeleted = primmsUtils.visitedRows[Coord + 1];
+				yCurrentXPlusDeleted = primmsUtils.deletedRows[Coord + 1];
 			}
 			if(x > 0) {
-				yCurrentXMinusDeleted = primmsUtils.visitedRows[Coord - 1];
+				yCurrentXMinusDeleted = primmsUtils.deletedRows[Coord - 1];
 			}
 			if(y < mazegen.height - 1) {
-				yUpDeleted = primmsUtils.visitedRows[Coord + mazegen.width];
+				yUpDeleted = primmsUtils.deletedRows[Coord + mazegen.width];
 			}
 			if(y > 0) {
-				yDownDeleted = primmsUtils.visitedRows[Coord - mazegen.width];
+				yDownDeleted = primmsUtils.deletedRows[Coord - mazegen.width];
 			}
 
 			//Find shortest local arc
@@ -101,25 +99,22 @@ public class primmsProcedual {
 					}
 				}	
 			} else {	
-				primmsUtils.pivotColumnsLength--;	
-				primmsUtils.pivotColumns.add (primmsUtils.pivotColumnsLength);
+				primmsUtils.pivotColumns.removeLast ( );
 			}
 			
 			//If an arc can be expanded from the latest node do it
-			if(minValue <= mazegen.maxRand) {
-				
+			if(minValue <= mazegen.maxRand) {				
 				//commit arc
-				primmsUtils.visitedRows[row] = true;
+				primmsUtils.deletedRows[row] = true;
 		
 				primmsUtils.pivotColumns.add(row);
-				primmsUtils.pivotColumnsLength++;
 		
 				mazegen.drawArc(column, row);
 				nodesFound++;				
 			} else {
 				//Start up worker threads and look for another arc to expand from
 				//Then clear dead nodes
-				for(int i = 0; i < primmsUtils.pivotColumnsLength - 1; i++) {
+				for(int i = 0; i < primmsUtils.pivotColumns.size ( ) - 1; i++) {
 					int columnValue = primmsUtils.pivotColumns.get(i);
 					
 					worker [i].columnInput = columnValue;
@@ -133,7 +128,7 @@ public class primmsProcedual {
 				boolean breakStatmentRepalcement = false;
 				while(!finished) {
 					finished = true;
-					for(int i = 0; (i < primmsUtils.pivotColumnsLength - 1) && !breakStatmentRepalcement ; i++) {
+					for(int i = 0; (i < primmsUtils.pivotColumns.size ( ) - 1) && !breakStatmentRepalcement ; i++) {
 						if(worker[i].finished) {
 							if(worker[i].minValue < minValue) {
 								minValue = worker[i].minValue;
@@ -142,7 +137,7 @@ public class primmsProcedual {
 								if(minValue == 0) {
 									finished = true;	
 									breakStatmentRepalcement = true;	
-									//^ escape for loop without a break to appease Mark Laver
+									//^ escape for loop without a break to appease Mark
 								}
 							}
 						}
@@ -151,9 +146,8 @@ public class primmsProcedual {
 				}
 
 				//Delete finished nodes from queue
-				for(int i = 0; i < primmsUtils.pivotColumnsLength -1 ; i++) {
+				for(int i = 0; i < primmsUtils.pivotColumns.size ( ) - 1 ; i++) {
 					if(worker[i].delete) {
-						primmsUtils.pivotColumnsLength--;
 						try {
 							primmsUtils.pivotColumns.remove((Integer) worker[i].columnInput);
 						} catch(Exception e) {
@@ -163,11 +157,10 @@ public class primmsProcedual {
 				}
 				
 				//Delete row that is committed to image
-				primmsUtils.visitedRows[row] = true;
+				primmsUtils.deletedRows[row] = true;
 		
 				//Add it as a pivot
 				primmsUtils.pivotColumns.add(row);
-				primmsUtils.pivotColumnsLength++;
 				
 				//Draw arc
 				mazegen.drawArc(column, row);	

@@ -1,7 +1,6 @@
 package dannypiper.mazegenerator;
 
 import java.io.File;
-
 import dannypiper.mazegenerator.kuskals.sorting.sortType;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -10,6 +9,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -18,6 +18,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -95,6 +96,8 @@ public class gui extends Application {
 	private static RadioButton quickSort; 
 	private static RadioButton countingSort; 
 	private static ToggleGroup group;
+	private final static double greyConstant = 0.20d;
+	private final static double greyConstantAccent = 0.3d;
 	
 	//Kruskals Methods
 	private void setUpRadioButtons() {
@@ -385,53 +388,64 @@ public class gui extends Application {
         buttonHBOX.setPadding(new Insets(20));
 	}
 	
-	private void darkMode() {
-		double greyConstant = 0.20d;
-		double greyConstantAccent = 0.3d;
-		
+	private void darkModeify(Region ...nodes) {
 		Background darkMode = new Background(new BackgroundFill(new Color(greyConstant, greyConstant, greyConstant ,1d)
 				, CornerRadii.EMPTY, Insets.EMPTY));
-		
+		for(Region n:nodes) {
+			n.setBackground(darkMode);
+			n.setStyle("-fx-text-fill: white;");
+		}
+	}
+	
+	private void darkModeify(Labeled ...nodes) {
+		for(Labeled n:nodes) {
+			n.setTextFill(Color.WHITE);
+		}
+	}
+	
+	private void darkModeify(Text ...nodes) {
+		for(Text n:nodes) {
+			n.setFill(Color.WHITE);
+		}
+	}
+	
+	private void darkModeAccent(Region ...nodes) {
 		Background darkModeAccent = new Background(new BackgroundFill(new Color(greyConstantAccent, greyConstantAccent
-				, greyConstantAccent ,1d), new CornerRadii(8d), Insets.EMPTY));
+			, greyConstantAccent ,1d), new CornerRadii(8d), Insets.EMPTY));
+	
+		for(Region n:nodes) {
+			n.setBackground(darkModeAccent);
+			n.setStyle("-fx-text-fill: white;");
+		}
+	}
+	
+	private void applyDarkMode() {
+		darkModeify(entranceExitParametersHBOX,
+				graphParametersHBOX,
+				procedualHBOX,
+				buttonHBOX,
+				vBox);
 		
+		darkModeify(primmsTypeCheckBox,
+				generateButton,
+				selectImageButton);
 		
-		entranceExitParametersHBOX.setBackground(darkMode);
-		graphParametersHBOX.setBackground(darkMode);
-		detailsBOX.setBackground(darkModeAccent);
-		procedualHBOX.setBackground(darkMode);
-		buttonHBOX.setBackground(darkMode);	
-		vBox.setBackground(darkMode);
-		
-		widthField.setBackground(darkModeAccent);
-		widthField.setStyle("-fx-text-fill: white;");
-		
-		heightField.setBackground(darkModeAccent);
-		heightField.setStyle("-fx-text-fill: white;");
-		
-		exitYField.setBackground(darkModeAccent);
-		exitYField.setStyle("-fx-text-fill: white;");
-		
-		entranceYField.setBackground(darkModeAccent);
-		entranceYField.setStyle("-fx-text-fill: white;");
-		
-		primmsTypeCheckBox.setTextFill(Color.WHITE);
-		widthLabel.setFill(Color.WHITE);
-		heightLabel.setFill(Color.WHITE);
-		entranceYLabel.setFill(Color.WHITE);
-		exitYLabel.setFill(Color.WHITE);
-		
-		primmsTypeCheckBox.setBackground(darkModeAccent);
+		darkModeify (widthLabel,
+				heightLabel,
+				entranceYLabel,
+				exitYLabel);
+				
 		procedualHBOX.setPadding(new Insets(10));
 		
-		primmsCheckBox.setBackground(darkModeAccent);
-		
-		
-		generateButton.setBackground(darkModeAccent);
-		generateButton.setTextFill(Color.WHITE);
-		
-		selectImageButton.setBackground(darkModeAccent);
-		selectImageButton.setTextFill(Color.WHITE);
+		darkModeAccent (primmsCheckBox,
+				primmsTypeCheckBox,
+				entranceYField,
+				detailsBOX,
+				exitYField,
+				heightField,
+				widthField,	
+				generateButton,	
+				selectImageButton);		
 	}
 	
 	private void initInputScene() {		
@@ -452,7 +466,7 @@ public class gui extends Application {
 		vBox.setPadding(new Insets(20));
 		
 		if(darkModeToggle) {
-			darkMode();
+			applyDarkMode();
 		}	
 		
 		inputScene = new Scene(vBox, 500, 450, Color.BLACK);
@@ -595,8 +609,8 @@ public class gui extends Application {
 		if(Runtime.getRuntime().totalMemory()/1024/1024<700) {
 			memStatus += "Low RAM! ";
 		}
-		memStatus+=Runtime.getRuntime().totalMemory()/1024/1024+"MB RAM Default.";
-		stage.setTitle("Maze Generator v"+Version+" - "+memStatus);
+		memStatus+=Runtime.getRuntime().totalMemory()/1024/1024+" MB of RAM";
+		stage.setTitle("Maze Generator v"+Version+" - "+memStatus+".");
 		initInputScene();
 		
 		//Get primary screen and adjust canvas size for it.

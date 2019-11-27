@@ -115,7 +115,7 @@ public class mazegen implements Runnable {
 		
 		loadingScreen();
 		if(this.primms) {
-			if(Runtime.getRuntime().totalMemory()/1024/1024 < 700) {
+			if(Runtime.getRuntime().totalMemory()/1024/1024 <= 500) {
 				mazegen.procedual = true;
 			}
 			
