@@ -426,10 +426,6 @@ public class gui extends Application {
 				buttonHBOX,
 				vBox);
 		
-		darkModeify(primmsTypeCheckBox,
-				generateButton,
-				selectImageButton);
-		
 		darkModeify (widthLabel,
 				heightLabel,
 				entranceYLabel,
