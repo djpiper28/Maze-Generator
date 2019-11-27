@@ -5,51 +5,63 @@ import java.util.Random;
 
 import dannypiper.mazegenerator.mazegen;
 
-public class primmsUtils {	
+public class primmsUtils {
 
-	public static LinkedList<Integer> pivotColumns;
-	public static boolean[] deletedRows;
-	public static short[][] adjMat;
+	public static LinkedList < Integer > pivotColumns;
+	public static boolean [ ] deletedRows;
+	public static short [ ] [ ] adjMat;
 	private static Random rand;
-	
-	private static void randIntAdjMat(int x, int y) {
-		int random = rand.nextInt();
-		if (random < 0) {
-			random *= -1;			
-		} 
-		adjMat[x][y] = (short) (random % mazegen.maxRand);
+
+	public static void populateAdjMat ( ) {
+		primmsUtils.rand = new Random ( );
+		primmsUtils.adjMat = new short [ mazegen.max ] [ mazegen.max ];
+
+		for ( int x = 0; x < mazegen.max; x ++ ) {
+
+			for ( int y = 0; y < mazegen.max; y ++ ) {
+				primmsUtils.adjMat [ x ] [ y ] = 0;
+			}
+
+		}
+
+		for ( int x = 0; x < mazegen.width; x ++ ) {
+
+			for ( int y = 0; y < mazegen.height; y ++ ) {
+				final int Coord = ( mazegen.width * y ) + x;
+
+				if ( x < ( mazegen.width - 1 ) ) {
+					primmsUtils.randIntAdjMat ( Coord + 1, Coord );
+					primmsUtils.randIntAdjMat ( Coord, Coord + 1 );
+				}
+
+				if ( x > 0 ) {
+					primmsUtils.randIntAdjMat ( Coord - 1, Coord );
+					primmsUtils.randIntAdjMat ( Coord, Coord - 1 );
+				}
+
+				if ( y < ( mazegen.height - 1 ) ) {
+					primmsUtils.randIntAdjMat ( Coord + mazegen.width, Coord );
+					primmsUtils.randIntAdjMat ( Coord, Coord + mazegen.width );
+				}
+
+				if ( y > 0 ) {
+					primmsUtils.randIntAdjMat ( Coord - mazegen.width, Coord );
+					primmsUtils.randIntAdjMat ( Coord, Coord - mazegen.width );
+				}
+
+			}
+
+		}
+
 	}
 
-	public static void populateAdjMat() {
-		rand = new Random();
-		adjMat = new short[mazegen.max][mazegen.max];
-		for(int x = 0; x < mazegen.max; x++) {
-			for(int y =0; y < mazegen.max; y++) {
-				adjMat[x][y] = 0;
-			}
+	private static void randIntAdjMat ( final int x, final int y ) {
+		int random = primmsUtils.rand.nextInt ( );
+
+		if ( random < 0 ) {
+			random *= - 1;
 		}
-		
-		for(int x = 0; x < mazegen.width; x++) {
-			for(int y = 0; y < mazegen.height; y++) {
-				int Coord = (mazegen.width * y) + x;
-				
-				if(x < mazegen.width - 1) {
-					randIntAdjMat(Coord + 1, Coord);
-					randIntAdjMat(Coord, Coord + 1);
-				}
-				if(x > 0) {
-					randIntAdjMat(Coord - 1, Coord);
-					randIntAdjMat(Coord, Coord - 1);
-				}
-				if(y < mazegen.height - 1) {
-					randIntAdjMat(Coord + mazegen.width, Coord );
-					randIntAdjMat(Coord, Coord + mazegen.width);
-				}
-				if(y > 0) {
-					randIntAdjMat(Coord - mazegen.width, Coord);
-					randIntAdjMat(Coord, Coord - mazegen.width);
-				}				
-			}
-		}
+
+		primmsUtils.adjMat [ x ] [ y ] = ( short ) ( random % mazegen.maxRand );
 	}
 }
