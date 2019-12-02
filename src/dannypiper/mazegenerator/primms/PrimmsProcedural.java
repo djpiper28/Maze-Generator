@@ -3,7 +3,7 @@ package dannypiper.mazegenerator.primms;
 import java.util.LinkedList;
 
 import dannypiper.mazegenerator.Gui;
-import dannypiper.mazegenerator.Mazegen;
+import dannypiper.mazegenerator.MazeGen;
 
 public class PrimmsProcedural {
 
@@ -15,16 +15,16 @@ public class PrimmsProcedural {
 		long frameControlTime = System.currentTimeMillis ( );
 
 		int nodesFound = 0;
-		final int nodesNeeded = ( Mazegen.width * Mazegen.height ) - 1;
+		final int nodesNeeded = ( MazeGen.width * MazeGen.height ) - 1;
 
 		PrimmsUtils.pivotColumns = new LinkedList <> ( );
-		PrimmsUtils.deletedRows = new boolean [ Mazegen.max ];
+		PrimmsUtils.deletedRows = new boolean [ MazeGen.max ];
 
-		for ( int i = 0; i < Mazegen.max; i ++ ) {
+		for ( int i = 0; i < MazeGen.max; i ++ ) {
 			PrimmsUtils.deletedRows [ i ] = false;
 		}
 
-		final int start = Mazegen.entranceY * Mazegen.width;
+		final int start = MazeGen.entranceY * MazeGen.width;
 		PrimmsUtils.pivotColumns.add ( start );
 		PrimmsUtils.deletedRows [ start ] = true;
 
@@ -35,21 +35,21 @@ public class PrimmsProcedural {
 			worker [ i ] = new PrimmsProceduralWorkerThread ( );
 		}
 
-		short minValue = Mazegen.maxRand + 1;
+		short minValue = MazeGen.maxRand + 1;
 		int column = 0;
 		int row = 0;
 		int Coord;
 
 		while ( nodesFound < nodesNeeded ) {
 			// PRIMMS
-			minValue = Mazegen.maxRand + 1;
+			minValue = MazeGen.maxRand + 1;
 			column = 0;
 			row = 0;
 
 			// Main thread
-			final int x = PrimmsUtils.pivotColumns.get ( PrimmsUtils.pivotColumns.size ( ) - 1 ) % Mazegen.width;
-			final int y = PrimmsUtils.pivotColumns.get ( PrimmsUtils.pivotColumns.size ( ) - 1 ) / Mazegen.width;
-			Coord = ( Mazegen.width * y ) + x;
+			final int x = PrimmsUtils.pivotColumns.get ( PrimmsUtils.pivotColumns.size ( ) - 1 ) % MazeGen.width;
+			final int y = PrimmsUtils.pivotColumns.get ( PrimmsUtils.pivotColumns.size ( ) - 1 ) / MazeGen.width;
+			Coord = ( MazeGen.width * y ) + x;
 
 			column = PrimmsUtils.pivotColumns.get ( PrimmsUtils.pivotColumns.size ( ) - 1 );
 
@@ -59,7 +59,7 @@ public class PrimmsProcedural {
 			boolean yDownDeleted = true;
 			boolean yUpDeleted = true;
 
-			if ( x < ( Mazegen.width - 1 ) ) {
+			if ( x < ( MazeGen.width - 1 ) ) {
 				yCurrentXPlusDeleted = PrimmsUtils.deletedRows [ Coord + 1 ];
 			}
 
@@ -67,19 +67,19 @@ public class PrimmsProcedural {
 				yCurrentXMinusDeleted = PrimmsUtils.deletedRows [ Coord - 1 ];
 			}
 
-			if ( y < ( Mazegen.height - 1 ) ) {
-				yUpDeleted = PrimmsUtils.deletedRows [ Coord + Mazegen.width ];
+			if ( y < ( MazeGen.height - 1 ) ) {
+				yUpDeleted = PrimmsUtils.deletedRows [ Coord + MazeGen.width ];
 			}
 
 			if ( y > 0 ) {
-				yDownDeleted = PrimmsUtils.deletedRows [ Coord - Mazegen.width ];
+				yDownDeleted = PrimmsUtils.deletedRows [ Coord - MazeGen.width ];
 			}
 
 			// Find shortest local arc
 			if ( ! ( yCurrentXPlusDeleted && yCurrentXMinusDeleted && yUpDeleted && yDownDeleted ) ) {
 
 				if ( ! yCurrentXPlusDeleted ) {
-					final short value = Mazegen.randInt ( );
+					final short value = MazeGen.randInt ( );
 
 					if ( value < minValue ) {
 						minValue = value;
@@ -89,7 +89,7 @@ public class PrimmsProcedural {
 				}
 
 				if ( ! yCurrentXMinusDeleted ) {
-					final short value = Mazegen.randInt ( );
+					final short value = MazeGen.randInt ( );
 
 					if ( value < minValue ) {
 						minValue = value;
@@ -99,21 +99,21 @@ public class PrimmsProcedural {
 				}
 
 				if ( ! yUpDeleted ) {
-					final short value = Mazegen.randInt ( );
+					final short value = MazeGen.randInt ( );
 
 					if ( value < minValue ) {
 						minValue = value;
-						row = Coord + Mazegen.width;
+						row = Coord + MazeGen.width;
 					}
 
 				}
 
 				if ( ! yDownDeleted ) {
-					final short value = Mazegen.randInt ( );
+					final short value = MazeGen.randInt ( );
 
 					if ( value < minValue ) {
 						minValue = value;
-						row = Coord - Mazegen.width;
+						row = Coord - MazeGen.width;
 					}
 
 				}
@@ -124,13 +124,13 @@ public class PrimmsProcedural {
 			}
 
 			// If an arc can be expanded from the latest node do it
-			if ( minValue <= Mazegen.maxRand ) {
+			if ( minValue <= MazeGen.maxRand ) {
 				// commit arc
 				PrimmsUtils.deletedRows [ row ] = true;
 
 				PrimmsUtils.pivotColumns.add ( row );
 
-				Mazegen.drawArc ( column, row );
+				MazeGen.drawArc ( column, row );
 				nodesFound ++ ;
 			}
 			else {
@@ -201,13 +201,13 @@ public class PrimmsProcedural {
 				PrimmsUtils.pivotColumns.add ( row );
 
 				// Draw arc
-				Mazegen.drawArc ( column, row );
+				MazeGen.drawArc ( column, row );
 				nodesFound ++ ;
 			}
 
-			if ( ( System.currentTimeMillis ( ) - frameControlTime ) >= Mazegen.frameRate ) {
+			if ( ( System.currentTimeMillis ( ) - frameControlTime ) >= MazeGen.frameRate ) {
 				frameControlTime = System.currentTimeMillis ( );
-				Mazegen.render ( );
+				MazeGen.render ( );
 				final double percentage = ( double ) nodesFound / ( double ) nodesNeeded;
 				Gui.setProgress ( percentage );
 			}

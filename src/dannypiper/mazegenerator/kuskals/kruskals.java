@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import dannypiper.mazegenerator.Gui;
-import dannypiper.mazegenerator.Mazegen;
+import dannypiper.mazegenerator.MazeGen;
 import dannypiper.mazegenerator.kuskals.sorting.KruskalsSortManager;
 import dannypiper.mazegenerator.kuskals.sorting.sortType;
 
@@ -20,20 +20,20 @@ public class Kruskals implements Runnable {
 
 	private void executeKruskals ( ) {
 		int nodesFound = 0;
-		final int nodesNeeded = ( Mazegen.width * Mazegen.height ) - 1;
+		final int nodesNeeded = ( MazeGen.width * MazeGen.height ) - 1;
 		long frameControlTime = System.currentTimeMillis ( );
 
 		while ( nodesFound < nodesNeeded ) {
 			final Arc Arc = this.sortedData.remove ( );
 
 			if ( this.union ( Arc ) ) {
-				Mazegen.drawArc ( Arc.startingNode, Arc.endingNode );
+				MazeGen.drawArc ( Arc.startingNode, Arc.endingNode );
 				nodesFound ++ ;
 			}
 
-			if ( ( System.currentTimeMillis ( ) - frameControlTime ) >= Mazegen.frameRate ) {
+			if ( ( System.currentTimeMillis ( ) - frameControlTime ) >= MazeGen.frameRate ) {
 				frameControlTime = System.currentTimeMillis ( );
-				Mazegen.render ( );
+				MazeGen.render ( );
 				final double percentage = ( double ) nodesFound / ( double ) nodesNeeded;
 				Gui.setProgress ( percentage );
 			}
@@ -95,9 +95,9 @@ public class Kruskals implements Runnable {
 	}
 
 	private void initNodesVisited ( ) {
-		this.disjointSet = new int [ Mazegen.max ];
+		this.disjointSet = new int [ MazeGen.max ];
 
-		for ( int i = 0; i < Mazegen.max; i ++ ) {
+		for ( int i = 0; i < MazeGen.max; i ++ ) {
 			this.disjointSet [ i ] = - 1;
 		}
 
@@ -107,7 +107,7 @@ public class Kruskals implements Runnable {
 	public void run ( ) {
 		long time = System.currentTimeMillis ( );
 		System.out.println ( "Generating arcs..." );
-		final ArcWeighted [ ] unsortedData = this.generateArcs ( ( short ) Mazegen.width, ( short ) Mazegen.height );
+		final ArcWeighted [ ] unsortedData = this.generateArcs ( ( short ) MazeGen.width, ( short ) MazeGen.height );
 		System.out.println ( "Generated in " + ( System.currentTimeMillis ( ) - time ) + "ms" );
 
 		try {

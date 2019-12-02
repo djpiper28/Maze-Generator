@@ -11,7 +11,7 @@ import dannypiper.mazegenerator.primms.PrimmsProcedural;
 import dannypiper.mazegenerator.primms.PrimmsUtils;
 import javafx.scene.paint.Color;
 
-public class Mazegen implements Runnable {
+public class MazeGen implements Runnable {
 
 	public static BufferedImage mazeImage;
 	public static int width;
@@ -28,7 +28,7 @@ public class Mazegen implements Runnable {
 
 	public static final int proceduralThreshold = 100;
 	public static final short maxRand = 500;
-	public static final short halfMaxRand = Mazegen.maxRand / 2;
+	public static final short halfMaxRand = MazeGen.maxRand / 2;
 	private static Renderer renderObject;
 	private static Thread renderThread;
 
@@ -37,34 +37,34 @@ public class Mazegen implements Runnable {
 
 	public static void drawArc ( final int adjMatX, final int adjMatY ) {
 
-		final int x1 = ( ( adjMatX % Mazegen.width ) * 2 ) + 1;
-		final int y1 = ( ( adjMatX / Mazegen.width ) * 2 ) + 1;
+		final int x1 = ( ( adjMatX % MazeGen.width ) * 2 ) + 1;
+		final int y1 = ( ( adjMatX / MazeGen.width ) * 2 ) + 1;
 
-		final int x2 = ( ( adjMatY % Mazegen.width ) * 2 ) + 1;
-		final int y2 = ( ( adjMatY / Mazegen.width ) * 2 ) + 1;
+		final int x2 = ( ( adjMatY % MazeGen.width ) * 2 ) + 1;
+		final int y2 = ( ( adjMatY / MazeGen.width ) * 2 ) + 1;
 
 		final int x3 = ( x1 + x2 ) / 2;
 		final int y3 = ( y1 + y2 ) / 2;
 
-		Mazegen.mazeImage.setRGB ( x1, y1, Mazegen.white );
-		Mazegen.mazeImage.setRGB ( x2, y2, Mazegen.white );
-		Mazegen.mazeImage.setRGB ( x3, y3, Mazegen.white );
+		MazeGen.mazeImage.setRGB ( x1, y1, MazeGen.white );
+		MazeGen.mazeImage.setRGB ( x2, y2, MazeGen.white );
+		MazeGen.mazeImage.setRGB ( x3, y3, MazeGen.white );
 	}
 
 	public static short randInt ( ) {
-		int random = Mazegen.rand.nextInt ( );
+		int random = MazeGen.rand.nextInt ( );
 
 		if ( random < 0 ) {
 			random *= - 1;
 		}
 
-		return ( short ) ( random % Mazegen.maxRand );
+		return ( short ) ( random % MazeGen.maxRand );
 	}
 
 	public static void render ( ) {
-		Mazegen.renderThread = new Thread ( Mazegen.renderObject, "Render Thread" );
-		Mazegen.renderThread.setPriority ( 10 );
-		Mazegen.renderThread.start ( );
+		MazeGen.renderThread = new Thread ( MazeGen.renderObject, "Render Thread" );
+		MazeGen.renderThread.setPriority ( 10 );
+		MazeGen.renderThread.start ( );
 	}
 
 	@SuppressWarnings ( "exports" )
@@ -72,49 +72,50 @@ public class Mazegen implements Runnable {
 
 	private final sortType type;
 
-	public Mazegen ( final int widthIn, final int heightIn, final float scaleIn, final File imageFile,
+	public MazeGen ( final int widthIn, final int heightIn, final float scaleIn, final File imageFile,
 	        final int entranceYIn, final int exitYIn, final boolean procedualIN, final int screenWidth,
 	        final int screenHeight, final boolean primms, final sortType type ) throws Exception {
-		Mazegen.file = imageFile;
-		Mazegen.width = widthIn;
-		Mazegen.height = heightIn;
-		Mazegen.scale = scaleIn;
-		Mazegen.entranceY = entranceYIn;
-		Mazegen.exitY = exitYIn;
-		Mazegen.procedural = procedualIN;
+		MazeGen.file = imageFile;
+		MazeGen.width = widthIn;
+		MazeGen.height = heightIn;
+		MazeGen.scale = scaleIn;
+		MazeGen.entranceY = entranceYIn;
+		MazeGen.exitY = exitYIn;
+		MazeGen.procedural = procedualIN;
 		this.primms = primms;
 		this.type = type;
 
-		assert ( Mazegen.height > 1 );
-		assert ( imageFile != null );
-		assert ( Mazegen.width > 1 );
-		assert ( Mazegen.scale > 0 );
+		assert ( MazeGen.height > 1 );
+		assert ( imageFile.isFile ( ) && imageFile.canWrite ( )
+		        && imageFile.getFreeSpace ( ) >= ( widthIn * 2 + 1 ) * ( heightIn * 2 + 1 ) * 8 );
+		assert ( MazeGen.width > 1 );
+		assert ( MazeGen.scale > 0 );
 
-		Mazegen.rand = new Random ( );
+		MazeGen.rand = new Random ( );
 
-		System.out.println ( "Graph Width: " + Mazegen.width + " Graph Height: " + Mazegen.height + " Entrance Y: "
-		        + Mazegen.entranceY + " Exit Y: " + Mazegen.exitY + " Scale: " + Mazegen.scale + " Filename: "
-		        + Mazegen.file.getName ( ) );
+		System.out.println ( "Graph Width: " + MazeGen.width + " Graph Height: " + MazeGen.height + " Entrance Y: "
+		        + MazeGen.entranceY + " Exit Y: " + MazeGen.exitY + " Scale: " + MazeGen.scale + " Filename: "
+		        + MazeGen.file.getName ( ) );
 
-		if ( ( Mazegen.width > ( screenWidth * 2 ) ) || ( Mazegen.height > ( screenHeight * 2 ) ) ) {
-			Mazegen.renderObject = new Renderless ( ( Mazegen.width * 2 ) + 1, ( Mazegen.height * 2 ) + 1,
-			        Mazegen.scale );
+		if ( ( MazeGen.width * 2 + 1 >= ( screenWidth * 2 ) ) || ( MazeGen.height * 2 + 1 >= ( screenHeight * 2 ) ) ) {
+			MazeGen.renderObject = new Renderless ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1,
+			        MazeGen.scale );
 			Gui.graphicsContext.fillText ( "Maze too big to be displayed", 10, 10 );
 		}
 		else {
-			Mazegen.renderObject = new Renderer ( ( Mazegen.width * 2 ) + 1, ( Mazegen.height * 2 ) + 1,
-			        Mazegen.scale );
+			MazeGen.renderObject = new Renderer ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1,
+			        MazeGen.scale );
 			this.setBGToGrey ( );
 		}
 
 		try {
-			Mazegen.mazeImage = new BufferedImage ( ( Mazegen.width * 2 ) + 1, ( Mazegen.height * 2 ) + 1,
+			MazeGen.mazeImage = new BufferedImage ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1,
 			        BufferedImage.TYPE_INT_RGB );
 
-			System.out.println ( "Image Width: " + Mazegen.mazeImage.getWidth ( ) + " Image Height: "
-			        + Mazegen.mazeImage.getHeight ( ) );
+			System.out.println ( "Image Width: " + MazeGen.mazeImage.getWidth ( ) + " Image Height: "
+			        + MazeGen.mazeImage.getHeight ( ) );
 
-			Mazegen.mazeImage.setAccelerationPriority ( 1 );
+			MazeGen.mazeImage.setAccelerationPriority ( 1 );
 
 		}
 		catch ( final Exception e ) {
@@ -125,8 +126,8 @@ public class Mazegen implements Runnable {
 	}
 
 	private void addEntranceAndExit ( ) {
-		Mazegen.mazeImage.setRGB ( 0, ( Mazegen.entranceY * 2 ) + 1, Mazegen.white );
-		Mazegen.mazeImage.setRGB ( Mazegen.width * 2, ( Mazegen.exitY * 2 ) + 1, Mazegen.white );
+		MazeGen.mazeImage.setRGB ( 0, ( MazeGen.entranceY * 2 ) + 1, MazeGen.white );
+		MazeGen.mazeImage.setRGB ( MazeGen.width * 2, ( MazeGen.exitY * 2 ) + 1, MazeGen.white );
 	}
 
 	private void generate ( ) {
@@ -142,18 +143,18 @@ public class Mazegen implements Runnable {
 		System.out.println ( "Added entrance and exit" );
 		System.out.println ( "Added entrance and exit in " + ( System.currentTimeMillis ( ) - time ) + "ms" );
 
-		Mazegen.max = Mazegen.height * ( Mazegen.width + 1 );
+		MazeGen.max = MazeGen.height * ( MazeGen.width + 1 );
 
 		this.loadingScreen ( );
 
 		if ( this.primms ) {
 
 			if ( ( Runtime.getRuntime ( ).totalMemory ( ) / 1024 / 1024 ) <= 500 ) {
-				Mazegen.procedural = true;
+				MazeGen.procedural = true;
 			}
 
-			if ( ( ( Mazegen.width < Mazegen.proceduralThreshold ) && ( Mazegen.height < Mazegen.proceduralThreshold ) )
-			        && ! ( Mazegen.procedural ) ) {
+			if ( ( ( MazeGen.width < MazeGen.proceduralThreshold ) && ( MazeGen.height < MazeGen.proceduralThreshold ) )
+			        && ! ( MazeGen.procedural ) ) {
 				time = System.currentTimeMillis ( );
 				System.out.println ( "Populating adjacency matrix" );
 				PrimmsUtils.populateAdjMat ( );
@@ -186,9 +187,9 @@ public class Mazegen implements Runnable {
 			System.out.println ( "Applied Kruskals in " + ( System.currentTimeMillis ( ) - time ) + "ms" );
 		}
 
-		Mazegen.render ( );
+		MazeGen.render ( );
 
-		ImageFile.saveImage ( Mazegen.mazeImage, Mazegen.file );
+		ImageFile.saveImage ( MazeGen.mazeImage, MazeGen.file );
 
 		System.exit ( 0 );
 	}
@@ -220,7 +221,7 @@ public class Mazegen implements Runnable {
 				stackTraceMsg += error.toString ( );
 			}
 
-			Gui.showError ( "Critical error:\nParameters Width: " + Mazegen.width + " Height: " + Mazegen.height
+			Gui.showError ( "Critical error:\nParameters Width: " + MazeGen.width + " Height: " + MazeGen.height
 			        + "\nError Details:\n" + stackTraceMsg );
 		}
 
@@ -233,10 +234,10 @@ public class Mazegen implements Runnable {
 
 	private void setImageToBlack ( ) {
 
-		for ( int x = 0; x < ( ( Mazegen.width * 2 ) + 1 ); x ++ ) {
+		for ( int x = 0; x < ( ( MazeGen.width * 2 ) + 1 ); x ++ ) {
 
-			for ( int y = 0; y < ( ( Mazegen.height * 2 ) + 1 ); y ++ ) {
-				Mazegen.mazeImage.setRGB ( x, y, 0 );
+			for ( int y = 0; y < ( ( MazeGen.height * 2 ) + 1 ); y ++ ) {
+				MazeGen.mazeImage.setRGB ( x, y, 0 );
 			}
 
 		}

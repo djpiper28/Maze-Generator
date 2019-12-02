@@ -3,7 +3,7 @@ package dannypiper.mazegenerator.primms;
 import java.util.LinkedList;
 
 import dannypiper.mazegenerator.Gui;
-import dannypiper.mazegenerator.Mazegen;
+import dannypiper.mazegenerator.MazeGen;
 
 public class PrimmsAdjMat {
 
@@ -11,16 +11,16 @@ public class PrimmsAdjMat {
 		long frameControlTime = System.currentTimeMillis ( );
 
 		int nodesFound = 0;
-		final int nodesNeeded = ( Mazegen.width * Mazegen.height ) - 1;
+		final int nodesNeeded = ( MazeGen.width * MazeGen.height ) - 1;
 
 		PrimmsUtils.pivotColumns = new LinkedList <> ( );
-		PrimmsUtils.deletedRows = new boolean [ Mazegen.max ];
+		PrimmsUtils.deletedRows = new boolean [ MazeGen.max ];
 
-		for ( int i = 0; i < Mazegen.max; i ++ ) {
+		for ( int i = 0; i < MazeGen.max; i ++ ) {
 			PrimmsUtils.deletedRows [ i ] = false;
 		}
 
-		final int start = Mazegen.entranceY * Mazegen.width;
+		final int start = MazeGen.entranceY * MazeGen.width;
 		PrimmsUtils.pivotColumns.add ( start );
 		PrimmsUtils.deletedRows [ start ] = true;
 
@@ -31,7 +31,7 @@ public class PrimmsAdjMat {
 			worker [ i ] = new PrimmsAdjMatWorkerThread ( );
 		}
 
-		short minValue = Mazegen.maxRand + 1;
+		short minValue = MazeGen.maxRand + 1;
 		int column = 0;
 		int row = 0;
 		int Coord;
@@ -39,14 +39,14 @@ public class PrimmsAdjMat {
 		while ( nodesFound < nodesNeeded ) {
 
 			// PRIMMS
-			minValue = Mazegen.maxRand + 1;
+			minValue = MazeGen.maxRand + 1;
 			column = 0;
 			row = 0;
 
 			// Main thread
-			final int x = PrimmsUtils.pivotColumns.get ( PrimmsUtils.pivotColumns.size ( ) - 1 ) % Mazegen.width;
-			final int y = PrimmsUtils.pivotColumns.get ( PrimmsUtils.pivotColumns.size ( ) - 1 ) / Mazegen.width;
-			Coord = ( Mazegen.width * y ) + x;
+			final int x = PrimmsUtils.pivotColumns.get ( PrimmsUtils.pivotColumns.size ( ) - 1 ) % MazeGen.width;
+			final int y = PrimmsUtils.pivotColumns.get ( PrimmsUtils.pivotColumns.size ( ) - 1 ) / MazeGen.width;
+			Coord = ( MazeGen.width * y ) + x;
 
 			column = PrimmsUtils.pivotColumns.get ( PrimmsUtils.pivotColumns.size ( ) - 1 );
 
@@ -55,7 +55,7 @@ public class PrimmsAdjMat {
 			boolean yDownDeleted = false;
 			boolean yUpDeleted = false;
 
-			if ( x < ( Mazegen.width - 1 ) ) {
+			if ( x < ( MazeGen.width - 1 ) ) {
 				yCurrentXPlusDeleted = PrimmsUtils.deletedRows [ Coord + 1 ];
 			}
 
@@ -63,17 +63,17 @@ public class PrimmsAdjMat {
 				yCurrentXMinusDeleted = PrimmsUtils.deletedRows [ Coord - 1 ];
 			}
 
-			if ( y < ( Mazegen.height - 1 ) ) {
-				yUpDeleted = PrimmsUtils.deletedRows [ Coord + Mazegen.width ];
+			if ( y < ( MazeGen.height - 1 ) ) {
+				yUpDeleted = PrimmsUtils.deletedRows [ Coord + MazeGen.width ];
 			}
 
 			if ( y > 0 ) {
-				yDownDeleted = PrimmsUtils.deletedRows [ Coord - Mazegen.width ];
+				yDownDeleted = PrimmsUtils.deletedRows [ Coord - MazeGen.width ];
 			}
 
 			if ( ! ( yCurrentXPlusDeleted && yCurrentXMinusDeleted && yUpDeleted && yDownDeleted ) ) {
 
-				if ( ( x < ( Mazegen.width - 1 ) ) && ! yCurrentXPlusDeleted ) {
+				if ( ( x < ( MazeGen.width - 1 ) ) && ! yCurrentXPlusDeleted ) {
 
 					if ( PrimmsUtils.adjMat [ Coord ] [ Coord + 1 ] < minValue ) {
 						minValue = PrimmsUtils.adjMat [ Coord ] [ Coord + 1 ];
@@ -91,20 +91,20 @@ public class PrimmsAdjMat {
 
 				}
 
-				if ( ( y < ( Mazegen.height - 1 ) ) && ! yUpDeleted ) {
+				if ( ( y < ( MazeGen.height - 1 ) ) && ! yUpDeleted ) {
 
-					if ( PrimmsUtils.adjMat [ Coord ] [ Coord + Mazegen.width ] < minValue ) {
-						minValue = PrimmsUtils.adjMat [ Coord ] [ Coord + Mazegen.width ];
-						row = Coord + Mazegen.width;
+					if ( PrimmsUtils.adjMat [ Coord ] [ Coord + MazeGen.width ] < minValue ) {
+						minValue = PrimmsUtils.adjMat [ Coord ] [ Coord + MazeGen.width ];
+						row = Coord + MazeGen.width;
 					}
 
 				}
 
 				if ( ( y > 0 ) && ! yDownDeleted ) {
 
-					if ( PrimmsUtils.adjMat [ Coord ] [ Coord - Mazegen.width ] < minValue ) {
-						minValue = PrimmsUtils.adjMat [ Coord ] [ Coord - Mazegen.width ];
-						row = Coord - Mazegen.width;
+					if ( PrimmsUtils.adjMat [ Coord ] [ Coord - MazeGen.width ] < minValue ) {
+						minValue = PrimmsUtils.adjMat [ Coord ] [ Coord - MazeGen.width ];
+						row = Coord - MazeGen.width;
 					}
 
 				}
@@ -114,13 +114,13 @@ public class PrimmsAdjMat {
 				PrimmsUtils.pivotColumns.removeLast ( );
 			}
 
-			if ( minValue <= Mazegen.halfMaxRand ) {
+			if ( minValue <= MazeGen.halfMaxRand ) {
 
 				PrimmsUtils.deletedRows [ row ] = true;
 
 				PrimmsUtils.pivotColumns.add ( row );
 
-				Mazegen.drawArc ( column, row );
+				MazeGen.drawArc ( column, row );
 				nodesFound ++ ;
 			}
 			else {
@@ -186,13 +186,13 @@ public class PrimmsAdjMat {
 
 				PrimmsUtils.pivotColumns.add ( row );
 
-				Mazegen.drawArc ( column, row );
+				MazeGen.drawArc ( column, row );
 				nodesFound ++ ;
 			}
 
-			if ( ( System.currentTimeMillis ( ) - frameControlTime ) >= Mazegen.frameRate ) {
+			if ( ( System.currentTimeMillis ( ) - frameControlTime ) >= MazeGen.frameRate ) {
 				frameControlTime = System.currentTimeMillis ( );
-				Mazegen.render ( );
+				MazeGen.render ( );
 				final double percentage = ( double ) nodesFound / ( double ) nodesNeeded;
 				Gui.setProgress ( percentage );
 			}

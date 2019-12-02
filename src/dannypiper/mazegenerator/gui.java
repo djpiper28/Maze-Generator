@@ -107,7 +107,7 @@ public class Gui extends Application {
 
 			if ( arg.toLowerCase ( ) == "lightMode" ) {
 				Gui.darkModeToggle = false;
-				System.out.println("light mode");
+				System.out.println ( "light mode" );
 				break;
 			}
 
@@ -368,7 +368,7 @@ public class Gui extends Application {
 					type = sortType.COUNTINGSORT;
 				}
 
-				final Mazegen generator = new Mazegen ( Gui.width, Gui.height, Gui.scale, Gui.imageFile, Gui.EntranceY,
+				final MazeGen generator = new MazeGen ( Gui.width, Gui.height, Gui.scale, Gui.imageFile, Gui.EntranceY,
 				        Gui.ExitY, Gui.primmsTypeCheckBox.isSelected ( ), Gui.XMAX, Gui.YMAX,
 				        Gui.primmsCheckBox.isSelected ( ), type );
 				final Thread generatorThread = new Thread ( generator, "Generator Thread" );
@@ -451,8 +451,8 @@ public class Gui extends Application {
 		Gui.progress.setBackground ( new Background (
 		        new BackgroundFill ( new Color ( 0d, 0d, 0d, 1d ), CornerRadii.EMPTY, Insets.EMPTY ) ) );
 
-		if ( ( ( ( Gui.width * Gui.scale * 2 ) + Gui.scale ) <= ( Gui.XMAX * 2 ) )
-		        && ( ( ( Gui.height * Gui.scale * 2 ) + Gui.scale ) <= ( ( Gui.YMAX - Gui.progressBarY ) * 2 ) ) ) {
+		if ( ( ( Gui.width * 2 + 1 ) <= ( Gui.XMAX * 2 ) )
+		        && ( Gui.height * 2 + 1 <= ( ( Gui.YMAX - Gui.progressBarY ) * 2 ) ) ) {
 			Gui.canvas = new Canvas ( ( Gui.width * Gui.scale * 2 ) + Gui.scale,
 			        ( Gui.height * Gui.scale * 2 ) + Gui.scale );
 			Gui.progress.setPrefWidth ( ( Gui.width * Gui.scale * 2 ) + Gui.scale );
@@ -650,7 +650,7 @@ public class Gui extends Application {
 			errorText += "Invalid height.";
 		}
 
-		if ( ( ( Gui.height >= Mazegen.proceduralThreshold ) || ( Gui.width >= Mazegen.proceduralThreshold ) )
+		if ( ( ( Gui.height >= MazeGen.proceduralThreshold ) || ( Gui.width >= MazeGen.proceduralThreshold ) )
 		        && Gui.primmsCheckBox.isSelected ( ) ) {
 
 			if ( out ) {

@@ -3,7 +3,7 @@ package dannypiper.mazegenerator.primms;
 import java.util.LinkedList;
 import java.util.Random;
 
-import dannypiper.mazegenerator.Mazegen;
+import dannypiper.mazegenerator.MazeGen;
 
 public class PrimmsUtils {
 
@@ -18,22 +18,22 @@ public class PrimmsUtils {
 
 	public static void populateAdjMat ( ) {
 		PrimmsUtils.rand = new Random ( );
-		PrimmsUtils.adjMat = new short [ Mazegen.max ] [ Mazegen.max ];
+		PrimmsUtils.adjMat = new short [ MazeGen.max ] [ MazeGen.max ];
 
-		for ( int x = 0; x < Mazegen.max; x ++ ) {
+		for ( int x = 0; x < MazeGen.max; x ++ ) {
 
-			for ( int y = 0; y < Mazegen.max; y ++ ) {
+			for ( int y = 0; y < MazeGen.max; y ++ ) {
 				PrimmsUtils.adjMat [ x ] [ y ] = 0;
 			}
 
 		}
 
-		for ( int x = 0; x < Mazegen.width; x ++ ) {
+		for ( int x = 0; x < MazeGen.width; x ++ ) {
 
-			for ( int y = 0; y < Mazegen.height; y ++ ) {
-				final int Coord = ( Mazegen.width * y ) + x;
+			for ( int y = 0; y < MazeGen.height; y ++ ) {
+				final int Coord = ( MazeGen.width * y ) + x;
 
-				if ( x < ( Mazegen.width - 1 ) ) {
+				if ( x < ( MazeGen.width - 1 ) ) {
 					PrimmsUtils.randIntAdjMat ( Coord + 1, Coord );
 					PrimmsUtils.randIntAdjMat ( Coord, Coord + 1 );
 				}
@@ -43,14 +43,14 @@ public class PrimmsUtils {
 					PrimmsUtils.randIntAdjMat ( Coord, Coord - 1 );
 				}
 
-				if ( y < ( Mazegen.height - 1 ) ) {
-					PrimmsUtils.randIntAdjMat ( Coord + Mazegen.width, Coord );
-					PrimmsUtils.randIntAdjMat ( Coord, Coord + Mazegen.width );
+				if ( y < ( MazeGen.height - 1 ) ) {
+					PrimmsUtils.randIntAdjMat ( Coord + MazeGen.width, Coord );
+					PrimmsUtils.randIntAdjMat ( Coord, Coord + MazeGen.width );
 				}
 
 				if ( y > 0 ) {
-					PrimmsUtils.randIntAdjMat ( Coord - Mazegen.width, Coord );
-					PrimmsUtils.randIntAdjMat ( Coord, Coord - Mazegen.width );
+					PrimmsUtils.randIntAdjMat ( Coord - MazeGen.width, Coord );
+					PrimmsUtils.randIntAdjMat ( Coord, Coord - MazeGen.width );
 				}
 
 			}
@@ -66,6 +66,6 @@ public class PrimmsUtils {
 			random *= - 1;
 		}
 
-		PrimmsUtils.adjMat [ x ] [ y ] = ( short ) ( random % Mazegen.maxRand );
+		PrimmsUtils.adjMat [ x ] [ y ] = ( short ) ( random % MazeGen.maxRand );
 	}
 }

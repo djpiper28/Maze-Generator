@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import dannypiper.mazegenerator.Mazegen;
+import dannypiper.mazegenerator.MazeGen;
 import dannypiper.mazegenerator.kuskals.Arc;
 import dannypiper.mazegenerator.kuskals.ArcWeighted;
 
@@ -66,9 +66,10 @@ public class KruskalsSortManager {
 					break;
 
 				case QUICKSORT :
-					sortedData = this
-					        .correctType ( sortingAlgorithms.quickSort ( this.arrayToListWeighted ( this.arcsToSort ) ) );
+					sortedData = this.correctType (
+					        sortingAlgorithms.quickSort ( this.arrayToListWeighted ( this.arcsToSort ) ) );
 					break;
+
 				default :
 					break;
 			}
@@ -76,7 +77,7 @@ public class KruskalsSortManager {
 			return ( Queue < Arc > ) sortedData;
 		}
 		else {
-			return ( Queue < Arc > ) sortingAlgorithms.countingSort ( this.arcsToSort, Mazegen.maxRand );
+			return ( Queue < Arc > ) sortingAlgorithms.countingSort ( this.arcsToSort, MazeGen.maxRand );
 		}
 
 	}

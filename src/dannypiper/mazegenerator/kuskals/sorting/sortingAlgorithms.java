@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import dannypiper.mazegenerator.Mazegen;
+import dannypiper.mazegenerator.MazeGen;
 import dannypiper.mazegenerator.kuskals.Arc;
 import dannypiper.mazegenerator.kuskals.ArcWeighted;
 
@@ -104,7 +104,7 @@ public class sortingAlgorithms {
 		@SuppressWarnings ( "unchecked" )
 		final Queue < Arc > [ ] categories = new LinkedList [ maxRand ];
 
-		for ( int i = 0; i < Mazegen.maxRand; i ++ ) {
+		for ( int i = 0; i < MazeGen.maxRand; i ++ ) {
 			categories [ i ] = new LinkedList <> ( );
 		}
 

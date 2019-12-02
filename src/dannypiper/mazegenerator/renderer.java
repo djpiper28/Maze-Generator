@@ -37,7 +37,7 @@ public class Renderer implements Runnable {
 		final long time = System.currentTimeMillis ( );
 
 		if ( this.scale != 1 ) {
-			this.after = this.scaleOp.filter ( Mazegen.mazeImage, this.after );
+			this.after = this.scaleOp.filter ( MazeGen.mazeImage, this.after );
 
 			Image image = SwingFXUtils.toFXImage ( this.after, null );
 
@@ -47,7 +47,7 @@ public class Renderer implements Runnable {
 			this.after = null;
 		}
 		else {
-			Image image = SwingFXUtils.toFXImage ( Mazegen.mazeImage, null );
+			Image image = SwingFXUtils.toFXImage ( MazeGen.mazeImage, null );
 
 			Gui.graphicsContext.drawImage ( image, 0, 0 );
 
