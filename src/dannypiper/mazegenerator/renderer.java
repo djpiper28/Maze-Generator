@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
-public class renderer implements Runnable {
+public class Renderer implements Runnable {
 
 	public int width;
 	public int height;
@@ -16,7 +16,7 @@ public class renderer implements Runnable {
 	protected AffineTransform affineTransform;
 	protected AffineTransformOp scaleOp;
 
-	public renderer ( final int width, final int height, final float scale ) {
+	public Renderer ( final int width, final int height, final float scale ) {
 		this.width = width;
 		this.height = height;
 		this.scale = scale;
@@ -37,19 +37,19 @@ public class renderer implements Runnable {
 		final long time = System.currentTimeMillis ( );
 
 		if ( this.scale != 1 ) {
-			this.after = this.scaleOp.filter ( mazegen.mazeImage, this.after );
+			this.after = this.scaleOp.filter ( Mazegen.mazeImage, this.after );
 
 			Image image = SwingFXUtils.toFXImage ( this.after, null );
 
-			gui.graphicsContext.drawImage ( image, 0, 0 );
+			Gui.graphicsContext.drawImage ( image, 0, 0 );
 
 			image = null;
 			this.after = null;
 		}
 		else {
-			Image image = SwingFXUtils.toFXImage ( mazegen.mazeImage, null );
+			Image image = SwingFXUtils.toFXImage ( Mazegen.mazeImage, null );
 
-			gui.graphicsContext.drawImage ( image, 0, 0 );
+			Gui.graphicsContext.drawImage ( image, 0, 0 );
 
 			image = null;
 		}

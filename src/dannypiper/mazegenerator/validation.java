@@ -1,6 +1,6 @@
 package dannypiper.mazegenerator;
 
-public class validation {
+public class Validation {
 
 	// Methods
 	public static boolean validNumericalParameter ( final String parameterStr ) {

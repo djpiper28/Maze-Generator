@@ -3,39 +3,39 @@ package dannypiper.mazegenerator.kuskals;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import dannypiper.mazegenerator.gui;
-import dannypiper.mazegenerator.mazegen;
-import dannypiper.mazegenerator.kuskals.sorting.kruskalsSortManager;
+import dannypiper.mazegenerator.Gui;
+import dannypiper.mazegenerator.Mazegen;
+import dannypiper.mazegenerator.kuskals.sorting.KruskalsSortManager;
 import dannypiper.mazegenerator.kuskals.sorting.sortType;
 
-public class kruskals implements Runnable {
+public class Kruskals implements Runnable {
 
-	private Queue < arc > sortedData;
+	private Queue < Arc > sortedData;
 	private final sortType type;
 	private int [ ] disjointSet;
 
-	public kruskals ( final sortType type ) {
+	public Kruskals ( final sortType type ) {
 		this.type = type;
 	}
 
 	private void executeKruskals ( ) {
 		int nodesFound = 0;
-		final int nodesNeeded = ( mazegen.width * mazegen.height ) - 1;
+		final int nodesNeeded = ( Mazegen.width * Mazegen.height ) - 1;
 		long frameControlTime = System.currentTimeMillis ( );
 
 		while ( nodesFound < nodesNeeded ) {
-			final arc Arc = this.sortedData.remove ( );
+			final Arc Arc = this.sortedData.remove ( );
 
 			if ( this.union ( Arc ) ) {
-				mazegen.drawArc ( Arc.startingNode, Arc.endingNode );
+				Mazegen.drawArc ( Arc.startingNode, Arc.endingNode );
 				nodesFound ++ ;
 			}
 
-			if ( ( System.currentTimeMillis ( ) - frameControlTime ) >= mazegen.frameRate ) {
+			if ( ( System.currentTimeMillis ( ) - frameControlTime ) >= Mazegen.frameRate ) {
 				frameControlTime = System.currentTimeMillis ( );
-				mazegen.render ( );
+				Mazegen.render ( );
 				final double percentage = ( double ) nodesFound / ( double ) nodesNeeded;
-				gui.setProgress ( percentage );
+				Gui.setProgress ( percentage );
 			}
 
 		}
@@ -43,7 +43,7 @@ public class kruskals implements Runnable {
 	}
 
 	private int find ( int v ) {
-		final Queue < Integer > queue = new LinkedList < > ( );
+		final Queue < Integer > queue = new LinkedList <> ( );
 
 		while ( this.disjointSet [ v ] >= 0 ) {
 			queue.add ( v );
@@ -57,8 +57,8 @@ public class kruskals implements Runnable {
 		return v;
 	}
 
-	private arcWeighted [ ] generateArcs ( final short width, final short height ) {
-		final arcWeighted [ ] data = new arcWeighted [ 2
+	private ArcWeighted [ ] generateArcs ( final short width, final short height ) {
+		final ArcWeighted [ ] data = new ArcWeighted [ 2
 		        * ( ( width * ( height - 1 ) ) + ( height * ( width - 1 ) ) ) ];
 		int i = 0;
 
@@ -68,22 +68,22 @@ public class kruskals implements Runnable {
 				final int Coord = ( width * y ) + x;
 
 				if ( x < ( width - 1 ) ) {
-					data [ i ] = new arcWeighted ( Coord, Coord + 1 );
+					data [ i ] = new ArcWeighted ( Coord, Coord + 1 );
 					i ++ ;
 				}
 
 				if ( x > 0 ) {
-					data [ i ] = new arcWeighted ( Coord, Coord - 1 );
+					data [ i ] = new ArcWeighted ( Coord, Coord - 1 );
 					i ++ ;
 				}
 
 				if ( y < ( height - 1 ) ) {
-					data [ i ] = new arcWeighted ( Coord, Coord + width );
+					data [ i ] = new ArcWeighted ( Coord, Coord + width );
 					i ++ ;
 				}
 
 				if ( y > 0 ) {
-					data [ i ] = new arcWeighted ( Coord, Coord - width );
+					data [ i ] = new ArcWeighted ( Coord, Coord - width );
 					i ++ ;
 				}
 
@@ -95,9 +95,9 @@ public class kruskals implements Runnable {
 	}
 
 	private void initNodesVisited ( ) {
-		this.disjointSet = new int [ mazegen.max ];
+		this.disjointSet = new int [ Mazegen.max ];
 
-		for ( int i = 0; i < mazegen.max; i ++ ) {
+		for ( int i = 0; i < Mazegen.max; i ++ ) {
 			this.disjointSet [ i ] = - 1;
 		}
 
@@ -107,7 +107,7 @@ public class kruskals implements Runnable {
 	public void run ( ) {
 		long time = System.currentTimeMillis ( );
 		System.out.println ( "Generating arcs..." );
-		final arcWeighted [ ] unsortedData = this.generateArcs ( ( short ) mazegen.width, ( short ) mazegen.height );
+		final ArcWeighted [ ] unsortedData = this.generateArcs ( ( short ) Mazegen.width, ( short ) Mazegen.height );
 		System.out.println ( "Generated in " + ( System.currentTimeMillis ( ) - time ) + "ms" );
 
 		try {
@@ -125,12 +125,12 @@ public class kruskals implements Runnable {
 
 	}
 
-	private void sortData ( final arcWeighted [ ] unsortedData, final sortType type ) throws Exception {
-		final kruskalsSortManager sortManager = new kruskalsSortManager ( type, unsortedData );
+	private void sortData ( final ArcWeighted [ ] unsortedData, final sortType type ) throws Exception {
+		final KruskalsSortManager sortManager = new KruskalsSortManager ( type, unsortedData );
 		this.sortedData = sortManager.sortedData ( );
 	}
 
-	private boolean union ( final arc a ) {
+	private boolean union ( final Arc a ) {
 		final int r0 = this.find ( a.startingNode );
 		final int r1 = this.find ( a.endingNode );
 

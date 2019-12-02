@@ -3,15 +3,15 @@ package dannypiper.mazegenerator.kuskals.sorting;
 import java.util.LinkedList;
 import java.util.List;
 
-import dannypiper.mazegenerator.kuskals.arc;
-import dannypiper.mazegenerator.kuskals.arcWeighted;
+import dannypiper.mazegenerator.kuskals.Arc;
+import dannypiper.mazegenerator.kuskals.ArcWeighted;
 
-public class postSortUtils {
+public class PostSortUtils {
 
-	public static List < arc > arcWeightedListToArcList ( final List < arcWeighted > listToConvert ) {
-		final List < arc > Data = new LinkedList < > ( );
+	public static List < Arc > arcWeightedListToArcList ( final List < ArcWeighted > listToConvert ) {
+		final List < Arc > Data = new LinkedList <> ( );
 
-		for ( final arcWeighted currentArc : listToConvert ) {
+		for ( final ArcWeighted currentArc : listToConvert ) {
 			Data.add ( currentArc );
 		}
 

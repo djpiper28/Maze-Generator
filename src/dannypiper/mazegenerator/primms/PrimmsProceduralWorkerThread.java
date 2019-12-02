@@ -1,8 +1,8 @@
 package dannypiper.mazegenerator.primms;
 
-import dannypiper.mazegenerator.mazegen;
+import dannypiper.mazegenerator.Mazegen;
 
-public class primmsProcedualWorkerThread implements Runnable {
+public class PrimmsProceduralWorkerThread implements Runnable {
 
 	public boolean finished;
 	public boolean delete;
@@ -11,7 +11,7 @@ public class primmsProcedualWorkerThread implements Runnable {
 	public int column;
 	public short minValue;
 
-	public primmsProcedualWorkerThread ( ) {
+	public PrimmsProceduralWorkerThread ( ) {
 		this.columnInput = - 1;
 	}
 
@@ -22,10 +22,10 @@ public class primmsProcedualWorkerThread implements Runnable {
 		this.row = 0;
 		this.column = this.columnInput;
 
-		short minValue = mazegen.maxRand + 1;
+		short minValue = Mazegen.maxRand + 1;
 
-		final int x = this.columnInput % mazegen.width;
-		final int y = this.columnInput / mazegen.width;
+		final int x = this.columnInput % Mazegen.width;
+		final int y = this.columnInput / Mazegen.width;
 		final int Coord = this.columnInput;
 
 		boolean yCurrentXPlusDeleted = true;
@@ -33,24 +33,24 @@ public class primmsProcedualWorkerThread implements Runnable {
 		boolean yDownDeleted = true;
 		boolean yUpDeleted = true;
 
-		if ( x < ( mazegen.width - 1 ) ) {
-			yCurrentXPlusDeleted = primmsUtils.deletedRows [ Coord + 1 ];
+		if ( x < ( Mazegen.width - 1 ) ) {
+			yCurrentXPlusDeleted = PrimmsUtils.deletedRows [ Coord + 1 ];
 		}
 
 		if ( x > 0 ) {
-			yCurrentXMinusDeleted = primmsUtils.deletedRows [ Coord - 1 ];
+			yCurrentXMinusDeleted = PrimmsUtils.deletedRows [ Coord - 1 ];
 		}
 
-		if ( y < ( mazegen.height - 1 ) ) {
-			yUpDeleted = primmsUtils.deletedRows [ Coord + mazegen.width ];
+		if ( y < ( Mazegen.height - 1 ) ) {
+			yUpDeleted = PrimmsUtils.deletedRows [ Coord + Mazegen.width ];
 		}
 
 		if ( y > 0 ) {
-			yDownDeleted = primmsUtils.deletedRows [ Coord - mazegen.width ];
+			yDownDeleted = PrimmsUtils.deletedRows [ Coord - Mazegen.width ];
 		}
 
 		if ( ! yCurrentXPlusDeleted ) {
-			final short value = mazegen.randInt ( );
+			final short value = Mazegen.randInt ( );
 
 			if ( value < minValue ) {
 				minValue = value;
@@ -60,7 +60,7 @@ public class primmsProcedualWorkerThread implements Runnable {
 		}
 
 		if ( ! yCurrentXMinusDeleted ) {
-			final short value = mazegen.randInt ( );
+			final short value = Mazegen.randInt ( );
 
 			if ( value < minValue ) {
 				minValue = value;
@@ -70,21 +70,21 @@ public class primmsProcedualWorkerThread implements Runnable {
 		}
 
 		if ( ! yUpDeleted ) {
-			final short value = mazegen.randInt ( );
+			final short value = Mazegen.randInt ( );
 
 			if ( value < minValue ) {
 				minValue = value;
-				this.row = Coord + mazegen.width;
+				this.row = Coord + Mazegen.width;
 			}
 
 		}
 
 		if ( ! yDownDeleted ) {
-			final short value = mazegen.randInt ( );
+			final short value = Mazegen.randInt ( );
 
 			if ( value < minValue ) {
 				minValue = value;
-				this.row = Coord - mazegen.width;
+				this.row = Coord - Mazegen.width;
 			}
 
 		}

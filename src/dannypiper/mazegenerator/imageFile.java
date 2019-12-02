@@ -5,7 +5,8 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-public class imageFile {
+public class ImageFile {
+	@SuppressWarnings ( "exports" )
 	public static void saveImage ( final BufferedImage mazeImage, final File file ) {
 
 		try {

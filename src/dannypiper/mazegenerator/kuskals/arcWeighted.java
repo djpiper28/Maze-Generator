@@ -1,13 +1,13 @@
 package dannypiper.mazegenerator.kuskals;
 
-import dannypiper.mazegenerator.mazegen;
+import dannypiper.mazegenerator.Mazegen;
 
-public class arcWeighted extends arc {
+public class ArcWeighted extends Arc {
 	public short weight;
 
-	public arcWeighted ( final int coord, final int i ) {
+	public ArcWeighted ( final int coord, final int i ) {
 		super ( coord, i );
-		this.weight = mazegen.randInt ( );
+		this.weight = Mazegen.randInt ( );
 	}
 
 }

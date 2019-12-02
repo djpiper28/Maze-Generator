@@ -4,22 +4,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import dannypiper.mazegenerator.mazegen;
-import dannypiper.mazegenerator.kuskals.arc;
-import dannypiper.mazegenerator.kuskals.arcWeighted;
+import dannypiper.mazegenerator.Mazegen;
+import dannypiper.mazegenerator.kuskals.Arc;
+import dannypiper.mazegenerator.kuskals.ArcWeighted;
 
-public class kruskalsSortManager {
+public class KruskalsSortManager {
 
-	public sortType type;
-	public arcWeighted [ ] data;
+	private sortType typeOfSort;
+	private ArcWeighted [ ] arcsToSort;
 
-	public kruskalsSortManager ( final sortType type, final arcWeighted [ ] unsortedData ) {
-		this.type = type;
-		this.data = unsortedData;
+	public KruskalsSortManager ( final sortType type, final ArcWeighted [ ] unsortedData ) {
+		this.typeOfSort = type;
+		this.arcsToSort = unsortedData;
 	}
 
-	private List < arc > arrayToList ( final arcWeighted [ ] data ) {
-		final List < arc > output = new LinkedList < > ( );
+	private List < Arc > arrayToList ( final ArcWeighted [ ] data ) {
+		final List < Arc > output = new LinkedList <> ( );
 
 		for ( int i = 0; i < data.length; i ++ ) {
 			output.add ( data [ i ] );
@@ -29,8 +29,8 @@ public class kruskalsSortManager {
 		return output;
 	}
 
-	private List < arcWeighted > arrayToListWeighted ( final arcWeighted [ ] data ) {
-		final List < arcWeighted > output = new LinkedList < > ( );
+	private List < ArcWeighted > arrayToListWeighted ( final ArcWeighted [ ] data ) {
+		final List < ArcWeighted > output = new LinkedList <> ( );
 
 		for ( int i = 0; i < data.length; i ++ ) {
 			output.add ( data [ i ] );
@@ -40,8 +40,8 @@ public class kruskalsSortManager {
 		return output;
 	}
 
-	private List < arc > correctType ( final List < arcWeighted > data ) {
-		final List < arc > output = new LinkedList < > ( );
+	private List < Arc > correctType ( final List < ArcWeighted > data ) {
+		final List < Arc > output = new LinkedList <> ( );
 
 		while ( ! data.isEmpty ( ) ) {
 			output.add ( data.remove ( 0 ) );
@@ -50,38 +50,33 @@ public class kruskalsSortManager {
 		return output;
 	}
 
-	public Queue < arc > sortedData ( ) throws Exception {
+	@SuppressWarnings ( "unchecked" )
+	public Queue < Arc > sortedData ( ) throws Exception {
 
-		if ( this.type != sortType.countingSort ) {
-			List < arc > sortedData = new LinkedList < > ( );
+		if ( this.typeOfSort != sortType.COUNTINGSORT ) {
+			List < Arc > sortedData = null;
 
-			switch ( this.type ) {
-				case countingSort :
-					System.out.println ( "ERROR at line 25" );
-					throw new Exception ( "Assertion error at line 25" );
-
-				case bubbleSort :
-					sortedData = this.arrayToList ( sortingAlgorithms.bubbleSort ( this.data ) );
+			switch ( this.typeOfSort ) {
+				case BUBBLESORT :
+					sortedData = this.arrayToList ( sortingAlgorithms.bubbleSort ( this.arcsToSort ) );
 					break;
 
-				case insersionSort :
-					sortedData = sortingAlgorithms.insertionSort ( this.data );
+				case INSERTIONSORT :
+					sortedData = sortingAlgorithms.insertionSort ( this.arcsToSort );
 					break;
 
-				case quickSort :
+				case QUICKSORT :
 					sortedData = this
-					        .correctType ( sortingAlgorithms.quickSort ( this.arrayToListWeighted ( this.data ) ) );
+					        .correctType ( sortingAlgorithms.quickSort ( this.arrayToListWeighted ( this.arcsToSort ) ) );
 					break;
-
 				default :
-					System.out.println ( "ERROR at line 36" );
-					throw new Exception ( "Assertion error at line 36" );
+					break;
 			}
 
-			return ( Queue < arc > ) sortedData;
+			return ( Queue < Arc > ) sortedData;
 		}
 		else {
-			return ( Queue < arc > ) sortingAlgorithms.countingSort ( this.data, mazegen.maxRand );
+			return ( Queue < Arc > ) sortingAlgorithms.countingSort ( this.arcsToSort, Mazegen.maxRand );
 		}
 
 	}

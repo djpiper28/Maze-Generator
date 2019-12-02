@@ -4,24 +4,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import dannypiper.mazegenerator.mazegen;
-import dannypiper.mazegenerator.kuskals.arc;
-import dannypiper.mazegenerator.kuskals.arcWeighted;
+import dannypiper.mazegenerator.Mazegen;
+import dannypiper.mazegenerator.kuskals.Arc;
+import dannypiper.mazegenerator.kuskals.ArcWeighted;
 
-class quickSortThread implements Runnable {
+class QuickSortThread implements Runnable {
 
-	public List < arcWeighted > data;
+	public List < ArcWeighted > data;
 	public boolean finished;
 
-	public quickSortThread ( final List < arcWeighted > data ) {
+	public QuickSortThread ( final List < ArcWeighted > data ) {
 		this.data = data;
 		this.finished = false;
 	}
 
 	// ascending order
-	private List < arcWeighted > quickSort ( final List < arcWeighted > Data ) {
-		List < arcWeighted > a = new LinkedList < > ( );
-		List < arcWeighted > b = new LinkedList < > ( );
+	private List < ArcWeighted > quickSort ( final List < ArcWeighted > Data ) {
+		List < ArcWeighted > a = new LinkedList <> ( );
+		List < ArcWeighted > b = new LinkedList <> ( );
 		final int Pivot = Data.size ( ) / 2;
 
 		if ( Data.size ( ) <= 1 ) {
@@ -43,8 +43,8 @@ class quickSortThread implements Runnable {
 
 		}
 
-		final quickSortThread aObj = new quickSortThread ( a );
-		final quickSortThread bObj = new quickSortThread ( b );
+		final QuickSortThread aObj = new QuickSortThread ( a );
+		final QuickSortThread bObj = new QuickSortThread ( b );
 
 		( new Thread ( aObj ) ).start ( );
 		( new Thread ( bObj ) ).start ( );
@@ -74,7 +74,7 @@ class quickSortThread implements Runnable {
 public class sortingAlgorithms {
 
 	// ascending order
-	public static arcWeighted [ ] bubbleSort ( final arcWeighted [ ] data ) {
+	public static ArcWeighted [ ] bubbleSort ( final ArcWeighted [ ] data ) {
 		boolean finished = false;
 
 		while ( ! finished ) {
@@ -85,7 +85,7 @@ public class sortingAlgorithms {
 				for ( int j = 0; j < data.length; j ++ ) {
 
 					if ( ( data [ j ].weight < data [ i ].weight ) && ( i < j ) ) {
-						final arcWeighted temp = data [ j ];
+						final ArcWeighted temp = data [ j ];
 						data [ j ] = data [ i ];
 						data [ i ] = temp;
 						finished = false;
@@ -100,19 +100,19 @@ public class sortingAlgorithms {
 		return data;
 	}
 
-	public static List < arc > countingSort ( final arcWeighted [ ] data, final int maxRand ) {
+	public static List < Arc > countingSort ( final ArcWeighted [ ] data, final int maxRand ) {
 		@SuppressWarnings ( "unchecked" )
-		final Queue < arc > [ ] categories = new LinkedList [ maxRand ];
+		final Queue < Arc > [ ] categories = new LinkedList [ maxRand ];
 
-		for ( int i = 0; i < mazegen.maxRand; i ++ ) {
-			categories [ i ] = new LinkedList < > ( );
+		for ( int i = 0; i < Mazegen.maxRand; i ++ ) {
+			categories [ i ] = new LinkedList <> ( );
 		}
 
-		for ( final arcWeighted currentArc : data ) {
+		for ( final ArcWeighted currentArc : data ) {
 			categories [ currentArc.weight ].add ( currentArc );
 		}
 
-		final List < arc > output = new LinkedList < > ( );
+		final List < Arc > output = new LinkedList <> ( );
 
 		for ( int i = 0; i < maxRand; i ++ ) {
 
@@ -126,8 +126,8 @@ public class sortingAlgorithms {
 	}
 
 	// ascending order
-	public static List < arc > insertionSort ( final arcWeighted [ ] data ) {
-		final List < arcWeighted > output = new LinkedList < > ( );
+	public static List < Arc > insertionSort ( final ArcWeighted [ ] data ) {
+		final List < ArcWeighted > output = new LinkedList <> ( );
 
 		output.set ( 0, data [ 0 ] ); // need an item to compare to.
 
@@ -148,7 +148,7 @@ public class sortingAlgorithms {
 
 		}
 
-		final List < arc > outputTwo = new LinkedList < > ( );
+		final List < Arc > outputTwo = new LinkedList <> ( );
 
 		while ( ! output.isEmpty ( ) ) {
 			outputTwo.add ( output.remove ( 0 ) );
@@ -158,9 +158,9 @@ public class sortingAlgorithms {
 	}
 
 	// ascending order
-	public static List < arcWeighted > quickSort ( final List < arcWeighted > data ) {
-		List < arcWeighted > a = new LinkedList < > ( );
-		List < arcWeighted > b = new LinkedList < > ( );
+	public static List < ArcWeighted > quickSort ( final List < ArcWeighted > data ) {
+		List < ArcWeighted > a = new LinkedList <> ( );
+		List < ArcWeighted > b = new LinkedList <> ( );
 		final int Pivot = data.size ( ) / 2;
 
 		if ( data.size ( ) <= 1 ) {
@@ -192,9 +192,9 @@ public class sortingAlgorithms {
 		return a;
 	}
 
-	public static List < arcWeighted > quickSortThreaded ( final List < arcWeighted > data ) {
+	public static List < ArcWeighted > quickSortThreaded ( final List < ArcWeighted > data ) {
 
-		final quickSortThread a = new quickSortThread ( data );
+		final QuickSortThread a = new QuickSortThread ( data );
 		( new Thread ( a ) ).start ( );
 
 		while ( ! a.finished ) {

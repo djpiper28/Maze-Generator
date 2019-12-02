@@ -1,8 +1,8 @@
 package dannypiper.mazegenerator.primms;
 
-import dannypiper.mazegenerator.mazegen;
+import dannypiper.mazegenerator.Mazegen;
 
-public class primmsAdjMatWorkerThread implements Runnable {
+public class PrimmsAdjMatWorkerThread implements Runnable {
 
 	public boolean finished;
 	public boolean delete;
@@ -11,7 +11,7 @@ public class primmsAdjMatWorkerThread implements Runnable {
 	public int column;
 	public short minValue;
 
-	public primmsAdjMatWorkerThread ( ) {
+	public PrimmsAdjMatWorkerThread ( ) {
 		this.columnInput = - 1;
 	}
 
@@ -22,10 +22,10 @@ public class primmsAdjMatWorkerThread implements Runnable {
 		this.row = 0;
 		this.column = this.columnInput;
 
-		short minValue = mazegen.maxRand + 1;
+		short minValue = Mazegen.maxRand + 1;
 
-		final int x = this.columnInput % mazegen.width;
-		final int y = this.columnInput / mazegen.width;
+		final int x = this.columnInput % Mazegen.width;
+		final int y = this.columnInput / Mazegen.width;
 		final int Coord = this.columnInput;
 
 		boolean yCurrentXPlusDeleted = false;
@@ -33,28 +33,28 @@ public class primmsAdjMatWorkerThread implements Runnable {
 		boolean yDownDeleted = false;
 		boolean yUpDeleted = false;
 
-		if ( x < ( mazegen.width - 1 ) ) {
-			yCurrentXPlusDeleted = primmsUtils.deletedRows [ Coord + 1 ];
+		if ( x < ( Mazegen.width - 1 ) ) {
+			yCurrentXPlusDeleted = PrimmsUtils.deletedRows [ Coord + 1 ];
 		}
 
 		if ( x > 0 ) {
-			yCurrentXMinusDeleted = primmsUtils.deletedRows [ Coord - 1 ];
+			yCurrentXMinusDeleted = PrimmsUtils.deletedRows [ Coord - 1 ];
 		}
 
-		if ( y < ( mazegen.height - 1 ) ) {
-			yUpDeleted = primmsUtils.deletedRows [ Coord + mazegen.width ];
+		if ( y < ( Mazegen.height - 1 ) ) {
+			yUpDeleted = PrimmsUtils.deletedRows [ Coord + Mazegen.width ];
 		}
 
 		if ( y > 0 ) {
-			yDownDeleted = primmsUtils.deletedRows [ Coord - mazegen.width ];
+			yDownDeleted = PrimmsUtils.deletedRows [ Coord - Mazegen.width ];
 		}
 
 		if ( ! ( yCurrentXPlusDeleted && yCurrentXMinusDeleted && yUpDeleted && yDownDeleted ) ) {
 
-			if ( ( x < ( mazegen.width - 1 ) ) && ! yCurrentXPlusDeleted ) {
+			if ( ( x < ( Mazegen.width - 1 ) ) && ! yCurrentXPlusDeleted ) {
 
-				if ( primmsUtils.adjMat [ Coord ] [ Coord + 1 ] < minValue ) {
-					minValue = primmsUtils.adjMat [ Coord ] [ Coord + 1 ];
+				if ( PrimmsUtils.adjMat [ Coord ] [ Coord + 1 ] < minValue ) {
+					minValue = PrimmsUtils.adjMat [ Coord ] [ Coord + 1 ];
 					this.row = Coord + 1;
 				}
 
@@ -62,27 +62,27 @@ public class primmsAdjMatWorkerThread implements Runnable {
 
 			if ( ( x > 0 ) && ! yCurrentXMinusDeleted ) {
 
-				if ( primmsUtils.adjMat [ Coord ] [ Coord - 1 ] < minValue ) {
-					minValue = primmsUtils.adjMat [ Coord ] [ Coord - 1 ];
+				if ( PrimmsUtils.adjMat [ Coord ] [ Coord - 1 ] < minValue ) {
+					minValue = PrimmsUtils.adjMat [ Coord ] [ Coord - 1 ];
 					this.row = Coord - 1;
 				}
 
 			}
 
-			if ( ( y < ( mazegen.height - 1 ) ) && ! yUpDeleted ) {
+			if ( ( y < ( Mazegen.height - 1 ) ) && ! yUpDeleted ) {
 
-				if ( primmsUtils.adjMat [ Coord ] [ Coord + mazegen.width ] < minValue ) {
-					minValue = primmsUtils.adjMat [ Coord ] [ Coord + mazegen.width ];
-					this.row = Coord + mazegen.width;
+				if ( PrimmsUtils.adjMat [ Coord ] [ Coord + Mazegen.width ] < minValue ) {
+					minValue = PrimmsUtils.adjMat [ Coord ] [ Coord + Mazegen.width ];
+					this.row = Coord + Mazegen.width;
 				}
 
 			}
 
 			if ( ( y > 0 ) && ! yDownDeleted ) {
 
-				if ( primmsUtils.adjMat [ Coord ] [ Coord - mazegen.width ] < minValue ) {
-					minValue = primmsUtils.adjMat [ Coord ] [ Coord - mazegen.width ];
-					this.row = Coord - mazegen.width;
+				if ( PrimmsUtils.adjMat [ Coord ] [ Coord - Mazegen.width ] < minValue ) {
+					minValue = PrimmsUtils.adjMat [ Coord ] [ Coord - Mazegen.width ];
+					this.row = Coord - Mazegen.width;
 				}
 
 			}
