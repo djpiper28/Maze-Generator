@@ -125,6 +125,49 @@ public class MazeGen implements Runnable {
 
 	}
 
+	public MazeGen ( final int widthIn, final int heightIn, final float scaleIn, final File imageFile,
+	        final int entranceYIn, final int exitYIn, final boolean procedualIN, final int screenWidth,
+	        final int screenHeight, final boolean primms ) throws Exception {
+		MazeGen.file = imageFile;
+		MazeGen.width = widthIn;
+		MazeGen.height = heightIn;
+		MazeGen.scale = scaleIn;
+		MazeGen.entranceY = entranceYIn;
+		MazeGen.exitY = exitYIn;
+		MazeGen.procedural = procedualIN;
+		this.primms = primms;
+		this.type = sortType.COUNTINGSORT;
+
+		assert ( MazeGen.height > 1 );
+		assert ( imageFile.isFile ( ) && imageFile.canWrite ( )
+		        && imageFile.getFreeSpace ( ) >= ( widthIn * 2 + 1 ) * ( heightIn * 2 + 1 ) * 8 );
+		assert ( MazeGen.width > 1 );
+		assert ( MazeGen.scale > 0 );
+
+		MazeGen.rand = new Random ( );
+
+		System.out.println ( "Graph Width: " + MazeGen.width + " Graph Height: " + MazeGen.height + " Entrance Y: "
+		        + MazeGen.entranceY + " Exit Y: " + MazeGen.exitY + " Scale: " + MazeGen.scale + " Filename: "
+		        + MazeGen.file.getName ( ) );
+
+		MazeGen.renderObject = new Renderless ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1, MazeGen.scale );
+
+		try {
+			MazeGen.mazeImage = new BufferedImage ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1,
+			        BufferedImage.TYPE_INT_RGB );
+
+			System.out.println ( "Image Width: " + MazeGen.mazeImage.getWidth ( ) + " Image Height: "
+			        + MazeGen.mazeImage.getHeight ( ) );
+
+			MazeGen.mazeImage.setAccelerationPriority ( 1 );
+
+		}
+		catch ( final Exception e ) {
+			throw new Exception ( "Window too large" );
+		}
+
+	}
+
 	private void addEntranceAndExit ( ) {
 		MazeGen.mazeImage.setRGB ( 0, ( MazeGen.entranceY * 2 ) + 1, MazeGen.white );
 		MazeGen.mazeImage.setRGB ( MazeGen.width * 2, ( MazeGen.exitY * 2 ) + 1, MazeGen.white );
@@ -144,8 +187,6 @@ public class MazeGen implements Runnable {
 		System.out.println ( "Added entrance and exit in " + ( System.currentTimeMillis ( ) - time ) + "ms" );
 
 		MazeGen.max = MazeGen.height * ( MazeGen.width + 1 );
-
-		this.loadingScreen ( );
 
 		if ( this.primms ) {
 
@@ -191,11 +232,10 @@ public class MazeGen implements Runnable {
 
 		ImageFile.saveImage ( MazeGen.mazeImage, MazeGen.file );
 
-		System.exit ( 0 );
-	}
+		if ( ! Gui.test ) {
+			System.exit ( 0 );
+		}
 
-	private void loadingScreen ( ) {
-		Gui.graphicsContext.fillText ( "A Really Good Loading Screen!", 1920 / 2, 1050 / 2 );
 	}
 
 	private void primmsAdjMat ( ) {

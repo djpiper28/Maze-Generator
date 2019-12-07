@@ -1,6 +1,8 @@
 package dannypiper.mazegenerator;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 import dannypiper.mazegenerator.kuskals.sorting.sortType;
 import javafx.application.Application;
@@ -47,7 +49,7 @@ public class Gui extends Application {
 	public static int XMAX = 1920;
 	public static int YMAX = 1000;
 	public static final int progressBarY = 10;
-	public static final String Version = Messages.getString("Gui.version"); //$NON-NLS-1$
+	public static final String Version = Messages.getString ( "Gui.version" ); //$NON-NLS-1$
 
 	// javaFX
 	private final static String font = "Lucida Console"; //$NON-NLS-1$
@@ -100,29 +102,117 @@ public class Gui extends Application {
 	private static final double greyConstant = 0.20d;
 	private static final double greyConstantAccent = 0.3d;
 
+	// Test parameters
+	public static boolean test = false;
+
 	public static void main ( final String [ ] args ) {
 		Gui.darkModeToggle = true;
+		String testFileName = "test.csv";
 
 		for ( final String arg : args ) {
 
-			if ( arg.toLowerCase ( ) == "lightMode" ) { //$NON-NLS-1$
-				Gui.darkModeToggle = false;
-				System.out.println ( "light mode" ); //$NON-NLS-1$
-				break;
+			switch ( arg.toLowerCase ( ) ) {
+				case "testmode" : {
+					System.out.println ( "Testing generation..." );
+					test = true;
+					break;
+				}
+
+				case "help" : {
+					System.out.println ( "Add testMode as a parameter to execute a generation test."
+					        + "\nUse the parameter filename-<filename> to store the log to <filename>." );
+					break;
+				}
+			}
+
+			if ( arg.contains ( "filename-" ) ) {
+				testFileName = arg.split ( "filename-" ) [ 1 ];
 			}
 
 		}
 
-		System.out.println ( "GUI Initialising..." ); //$NON-NLS-1$
+		if ( ! test ) {
+			System.out.println ( "GUI Initialising..." ); //$NON-NLS-1$
 
-		Application.launch ( );
+			Application.launch ( );
 
-		System.out.println ( "GUI Initialisation finished." ); //$NON-NLS-1$
-		System.out.println ( "Wait for gui events." ); //$NON-NLS-1$
+			System.out.println ( "GUI Initialisation finished." ); //$NON-NLS-1$
+			System.out.println ( "Wait for gui events." ); //$NON-NLS-1$
+		}
+		else {
+			int n = 5;
+			long primmsTime = 0;
+			long kruskalsTime = 0;
+			final long max = 60000;
+
+			File makeTESTFolder = new File ( "TEST" );
+
+			if ( ! makeTESTFolder.exists ( ) && ! makeTESTFolder.isDirectory ( ) ) {
+				makeTESTFolder.mkdir ( );
+			}
+
+			File logFile = new File ( testFileName );
+
+			if ( logFile.exists ( ) ) {
+				logFile.delete ( );
+			}
+
+			try {
+				System.out.println ( "Filename: " + testFileName );
+				PrintWriter fileWriter = new PrintWriter ( logFile );
+
+				fileWriter.println ( "n,primmsTime,KruskalsTime" );
+
+				while ( primmsTime < max || kruskalsTime < max ) {
+
+					System.out.println ( "[TEST]: n=" + n + "," );
+					fileWriter.print ( n + "," );
+
+					if ( primmsTime < max ) {
+						MazeGenTest testMazeGenPrimms = new MazeGenTest ( n, n,
+						        new File ( "TEST/Primms Test For ." + testFileName + ". n - " + n + ".png" ), true );
+						primmsTime = testMazeGenPrimms.runTest ( );
+
+						fileWriter.print ( primmsTime );
+						System.out.println ( "[TEST]: p=" + primmsTime );
+					}
+
+					fileWriter.print ( "," );
+
+					if ( kruskalsTime < max ) {
+						MazeGenTest testMazeGenKruskals = new MazeGenTest ( n, n,
+						        new File ( "TEST/" + "Kruskals Test For ." + testFileName + ". n is " + n ), false );
+						kruskalsTime = testMazeGenKruskals.runTest ( );
+
+						fileWriter.print ( kruskalsTime );
+						System.out.println ( "[TEST]: k=" + kruskalsTime );
+					}
+
+					n += 5;
+
+					fileWriter.println ( );
+
+				}
+
+				fileWriter.close ( );
+				System.out.println ( "Finished Tests." );
+				System.exit ( 0 );
+
+			}
+			catch ( Exception exception ) {
+				exception.printStackTrace ( );
+			}
+
+		}
+
 	}
 
 	public static void setProgress ( final double percentage ) {
-		Gui.progress.setProgress ( percentage );
+
+		if ( ! test ) {
+			Gui.progress.setProgress ( percentage );
+		}
+
 	}
 
 	public static void showError ( final String errorMessage ) {

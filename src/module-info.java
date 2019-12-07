@@ -1,17 +1,12 @@
-/**
- *
- */
-/**
- * @author djpip
- *
- */
 module mazeGenerator {
+	exports dannypiper.mazegenerator;
+	exports dannypiper.mazegenerator.kuskals;
+	exports dannypiper.mazegenerator.kuskals.sorting;
+	exports dannypiper.mazegenerator.primms;
 
 	requires java.desktop;
-	requires javafx.graphics;
-	requires javafx.controls;
-	requires javafx.swing;
 	requires javafx.base;
-
-	exports dannypiper.mazegenerator;
+	requires javafx.controls;
+	requires javafx.graphics;
+	requires javafx.swing;
 }
