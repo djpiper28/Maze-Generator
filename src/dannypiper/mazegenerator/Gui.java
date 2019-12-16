@@ -1,7 +1,6 @@
 package dannypiper.mazegenerator;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
 import dannypiper.mazegenerator.kuskals.sorting.sortType;
@@ -12,7 +11,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
@@ -117,7 +115,7 @@ public class Gui extends Application {
 			switch ( arg.toLowerCase ( ) ) {
 				case "testmode" : {
 					System.out.println ( "Testing generation..." );
-					test = true;
+					Gui.test = true;
 					break;
 				}
 
@@ -134,7 +132,7 @@ public class Gui extends Application {
 
 		}
 
-		if ( ! test ) {
+		if ( ! Gui.test ) {
 			System.out.println ( "GUI Initialising..." ); //$NON-NLS-1$
 
 			Application.launch ( );
@@ -148,13 +146,13 @@ public class Gui extends Application {
 			long kruskalsTime = 0;
 			final long max = 60000;
 
-			File makeTESTFolder = new File ( "TEST" );
+			final File makeTESTFolder = new File ( "TEST" );
 
 			if ( ! makeTESTFolder.exists ( ) && ! makeTESTFolder.isDirectory ( ) ) {
 				makeTESTFolder.mkdir ( );
 			}
 
-			File logFile = new File ( testFileName );
+			final File logFile = new File ( testFileName );
 
 			if ( logFile.exists ( ) ) {
 				logFile.delete ( );
@@ -162,17 +160,17 @@ public class Gui extends Application {
 
 			try {
 				System.out.println ( "Filename: " + testFileName );
-				PrintWriter fileWriter = new PrintWriter ( logFile );
+				final PrintWriter fileWriter = new PrintWriter ( logFile );
 
 				fileWriter.println ( "n,primmsTime,KruskalsTime" );
 
-				while ( primmsTime < max || kruskalsTime < max ) {
+				while ( ( primmsTime < max ) || ( kruskalsTime < max ) ) {
 
 					System.out.println ( "[TEST]: n=" + n + "," );
 					fileWriter.print ( n + "," );
 
 					if ( primmsTime < max ) {
-						MazeGenTest testMazeGenPrimms = new MazeGenTest ( n, n,
+						final MazeGenTest testMazeGenPrimms = new MazeGenTest ( n, n,
 						        new File ( "TEST/Primms Test For ." + testFileName + ". n - " + n + ".png" ), true );
 						primmsTime = testMazeGenPrimms.runTest ( );
 
@@ -183,7 +181,7 @@ public class Gui extends Application {
 					fileWriter.print ( "," );
 
 					if ( kruskalsTime < max ) {
-						MazeGenTest testMazeGenKruskals = new MazeGenTest ( n, n,
+						final MazeGenTest testMazeGenKruskals = new MazeGenTest ( n, n,
 						        new File ( "TEST/" + "Kruskals Test For ." + testFileName + ". n is " + n + ".png" ),
 						        false );
 						kruskalsTime = testMazeGenKruskals.runTest ( );
@@ -203,7 +201,7 @@ public class Gui extends Application {
 				System.exit ( 0 );
 
 			}
-			catch ( Exception exception ) {
+			catch ( final Exception exception ) {
 				exception.printStackTrace ( );
 			}
 
@@ -213,7 +211,7 @@ public class Gui extends Application {
 
 	public static void setProgress ( final double percentage ) {
 
-		if ( ! test ) {
+		if ( ! Gui.test ) {
 			Gui.progress.setProgress ( percentage );
 		}
 
@@ -308,15 +306,6 @@ public class Gui extends Application {
 		for ( final Region n : nodes ) {
 			n.setBackground ( darkModeAccent );
 			n.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
-		}
-
-	}
-
-	@SuppressWarnings ( "unused" )
-	private void darkModeify ( final Labeled... nodes ) {
-
-		for ( final Labeled n : nodes ) {
-			n.setTextFill ( Color.WHITE );
 		}
 
 	}
@@ -546,15 +535,15 @@ public class Gui extends Application {
 		Gui.progress.setBackground ( new Background (
 		        new BackgroundFill ( new Color ( 0d, 0d, 0d, 1d ), CornerRadii.EMPTY, Insets.EMPTY ) ) );
 
-		if ( ( ( Gui.width * 2 + 1 ) <= ( Gui.XMAX * Gui.maxScale ) )
-		        && ( Gui.height * 2 + 1 <= ( Gui.YMAX * Gui.maxScale ) ) ) {
+		if ( ( ( ( Gui.width * 2 ) + 1 ) <= ( Gui.XMAX * Gui.maxScale ) )
+		        && ( ( ( Gui.height * 2 ) + 1 ) <= ( Gui.YMAX * Gui.maxScale ) ) ) {
 			Gui.canvas = new Canvas ( ( Gui.width * Gui.scale * 2 ) + Gui.scale,
 			        ( Gui.height * Gui.scale * 2 ) + Gui.scale );
 			Gui.progress.setPrefWidth ( ( Gui.width * Gui.scale * 2 ) + Gui.scale );
 			ScrollPane scrollPane = new ScrollPane ( );
 
 			scrollPane = new ScrollPane ( );
-			scrollPane.setContent ( canvas );
+			scrollPane.setContent ( Gui.canvas );
 
 			scrollPane.setVbarPolicy ( ScrollBarPolicy.AS_NEEDED );
 			scrollPane.setHbarPolicy ( ScrollBarPolicy.AS_NEEDED );
@@ -569,7 +558,7 @@ public class Gui extends Application {
 			ScrollPane scrollPane = new ScrollPane ( );
 
 			scrollPane = new ScrollPane ( );
-			scrollPane.setContent ( canvas );
+			scrollPane.setContent ( Gui.canvas );
 
 			scrollPane.setVbarPolicy ( ScrollBarPolicy.AS_NEEDED );
 			scrollPane.setHbarPolicy ( ScrollBarPolicy.AS_NEEDED );
@@ -733,7 +722,6 @@ public class Gui extends Application {
 	private boolean validateInput ( ) {
 		boolean out = false;
 		String errorText = ""; //$NON-NLS-1$
-		String proceduralGenerationStatus = "Using adjacency matrix"; //$NON-NLS-1$
 
 		if ( Gui.imageFile == null ) {
 			out = true;
@@ -774,14 +762,12 @@ public class Gui extends Application {
 			errorText += "Procedural generation must be used."; //$NON-NLS-1$
 			Gui.primmsTypeCheckBox.setSelected ( true );
 			Gui.primmsTypeCheckBox.setDisable ( true );
-			proceduralGenerationStatus = "Must procedural generation"; //$NON-NLS-1$
 		}
 		else {
 			Gui.primmsTypeCheckBox.setDisable ( false );
 		}
 
 		if ( Gui.primmsTypeCheckBox.isSelected ( ) && Gui.primmsCheckBox.isSelected ( ) ) {
-			proceduralGenerationStatus = "Using procedural generation"; //$NON-NLS-1$
 		}
 
 		if ( ( Gui.EntranceY > Gui.height ) || ( Gui.EntranceY < 0 ) ) {

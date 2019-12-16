@@ -12,10 +12,6 @@ public class PrimmsUtils {
 	public static short [ ] [ ] adjMat;
 	private static Random rand;
 
-	private PrimmsUtils ( ) {
-		// Cannot instantiate the utils class
-	}
-
 	public static void populateAdjMat ( ) {
 		PrimmsUtils.rand = new Random ( );
 		PrimmsUtils.adjMat = new short [ MazeGen.max ] [ MazeGen.max ];
@@ -67,5 +63,9 @@ public class PrimmsUtils {
 		}
 
 		PrimmsUtils.adjMat [ x ] [ y ] = ( short ) ( random % MazeGen.maxRand );
+	}
+
+	private PrimmsUtils ( ) {
+		// Cannot instantiate the utils class
 	}
 }

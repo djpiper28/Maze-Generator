@@ -10,8 +10,8 @@ import dannypiper.mazegenerator.kuskals.ArcWeighted;
 
 public class KruskalsSortManager {
 
-	private sortType typeOfSort;
-	private ArcWeighted [ ] arcsToSort;
+	private final sortType typeOfSort;
+	private final ArcWeighted [ ] arcsToSort;
 
 	public KruskalsSortManager ( final sortType type, final ArcWeighted [ ] unsortedData ) {
 		this.typeOfSort = type;

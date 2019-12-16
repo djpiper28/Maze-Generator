@@ -75,60 +75,6 @@ public class MazeGen implements Runnable {
 
 	public MazeGen ( final int widthIn, final int heightIn, final float scaleIn, final File imageFile,
 	        final int entranceYIn, final int exitYIn, final boolean procedualIN, final int screenWidth,
-	        final int screenHeight, final boolean primms, final sortType type ) throws Exception {
-		MazeGen.file = imageFile;
-		MazeGen.width = widthIn;
-		MazeGen.height = heightIn;
-		MazeGen.scale = scaleIn;
-		MazeGen.entranceY = entranceYIn;
-		MazeGen.exitY = exitYIn;
-		MazeGen.procedural = procedualIN;
-		this.primms = primms;
-		this.type = type;
-
-		assert ( MazeGen.height > 1 );
-		assert ( imageFile.isFile ( ) && imageFile.canWrite ( )
-		        && imageFile.getFreeSpace ( ) >= ( widthIn * 2 + 1 ) * ( heightIn * 2 + 1 ) * 8 );
-		assert ( MazeGen.width > 1 );
-		assert ( MazeGen.scale > 0 );
-
-		MazeGen.rand = new Random ( );
-
-		System.out.println ( "Graph Width: " + MazeGen.width + " Graph Height: " + MazeGen.height + " Entrance Y: "
-		        + MazeGen.entranceY + " Exit Y: " + MazeGen.exitY + " Scale: " + MazeGen.scale + " Filename: "
-		        + MazeGen.file.getName ( ) );
-
-		if ( ( MazeGen.width * 2 + 1 >= ( screenWidth * Gui.maxScale ) )
-		        || ( MazeGen.height * 2 + 1 >= ( screenHeight * Gui.maxScale ) ) ) {
-			MazeGen.renderObject = new Renderless ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1,
-			        MazeGen.scale );
-			Gui.graphicsContext.fillText ( "Maze too big to be displayed", 10, 10 );
-		}
-		else {
-			MazeGen.renderObject = new Renderer ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1,
-			        MazeGen.scale );
-			this.setBGToGrey ( );
-		}
-
-		try {
-			MazeGen.mazeImage = new BufferedImage ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1,
-			        BufferedImage.TYPE_INT_RGB );
-
-			System.out.println ( "Image Width: " + MazeGen.mazeImage.getWidth ( ) + " Image Height: "
-			        + MazeGen.mazeImage.getHeight ( ) );
-
-			MazeGen.mazeImage.setAccelerationPriority ( 1 );
-
-		}
-		catch ( final Exception e ) {
-			Gui.showError ( "Window is too large!" );
-			throw new Exception ( "Window too large" );
-		}
-
-	}
-
-	public MazeGen ( final int widthIn, final int heightIn, final float scaleIn, final File imageFile,
-	        final int entranceYIn, final int exitYIn, final boolean procedualIN, final int screenWidth,
 	        final int screenHeight, final boolean primms ) throws Exception {
 		MazeGen.file = imageFile;
 		MazeGen.width = widthIn;
@@ -142,7 +88,7 @@ public class MazeGen implements Runnable {
 
 		assert ( MazeGen.height > 1 );
 		assert ( imageFile.isFile ( ) && imageFile.canWrite ( )
-		        && imageFile.getFreeSpace ( ) >= ( widthIn * 2 + 1 ) * ( heightIn * 2 + 1 ) * 8 );
+		        && ( imageFile.getFreeSpace ( ) >= ( ( ( widthIn * 2 ) + 1 ) * ( ( heightIn * 2 ) + 1 ) * 8 ) ) );
 		assert ( MazeGen.width > 1 );
 		assert ( MazeGen.scale > 0 );
 
@@ -165,6 +111,60 @@ public class MazeGen implements Runnable {
 
 		}
 		catch ( final Exception e ) {
+			throw new Exception ( "Window too large" );
+		}
+
+	}
+
+	public MazeGen ( final int widthIn, final int heightIn, final float scaleIn, final File imageFile,
+	        final int entranceYIn, final int exitYIn, final boolean procedualIN, final int screenWidth,
+	        final int screenHeight, final boolean primms, final sortType type ) throws Exception {
+		MazeGen.file = imageFile;
+		MazeGen.width = widthIn;
+		MazeGen.height = heightIn;
+		MazeGen.scale = scaleIn;
+		MazeGen.entranceY = entranceYIn;
+		MazeGen.exitY = exitYIn;
+		MazeGen.procedural = procedualIN;
+		this.primms = primms;
+		this.type = type;
+
+		assert ( MazeGen.height > 1 );
+		assert ( imageFile.isFile ( ) && imageFile.canWrite ( )
+		        && ( imageFile.getFreeSpace ( ) >= ( ( ( widthIn * 2 ) + 1 ) * ( ( heightIn * 2 ) + 1 ) * 8 ) ) );
+		assert ( MazeGen.width > 1 );
+		assert ( MazeGen.scale > 0 );
+
+		MazeGen.rand = new Random ( );
+
+		System.out.println ( "Graph Width: " + MazeGen.width + " Graph Height: " + MazeGen.height + " Entrance Y: "
+		        + MazeGen.entranceY + " Exit Y: " + MazeGen.exitY + " Scale: " + MazeGen.scale + " Filename: "
+		        + MazeGen.file.getName ( ) );
+
+		if ( ( ( ( MazeGen.width * 2 ) + 1 ) >= ( screenWidth * Gui.maxScale ) )
+		        || ( ( ( MazeGen.height * 2 ) + 1 ) >= ( screenHeight * Gui.maxScale ) ) ) {
+			MazeGen.renderObject = new Renderless ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1,
+			        MazeGen.scale );
+			Gui.graphicsContext.fillText ( "Maze too big to be displayed", 10, 10 );
+		}
+		else {
+			MazeGen.renderObject = new Renderer ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1,
+			        MazeGen.scale );
+			this.setBGToGrey ( );
+		}
+
+		try {
+			MazeGen.mazeImage = new BufferedImage ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1,
+			        BufferedImage.TYPE_INT_RGB );
+
+			System.out.println ( "Image Width: " + MazeGen.mazeImage.getWidth ( ) + " Image Height: "
+			        + MazeGen.mazeImage.getHeight ( ) );
+
+			MazeGen.mazeImage.setAccelerationPriority ( 1 );
+
+		}
+		catch ( final Exception e ) {
+			Gui.showError ( "Window is too large!" );
 			throw new Exception ( "Window too large" );
 		}
 

@@ -7,10 +7,6 @@ import dannypiper.mazegenerator.MazeGen;
 
 public class PrimmsProcedural {
 
-	private PrimmsProcedural ( ) {
-		// Cannot instantiate the class
-	}
-
 	public static void executePrimms ( ) {
 		long frameControlTime = System.currentTimeMillis ( );
 
@@ -214,5 +210,9 @@ public class PrimmsProcedural {
 
 		}
 
+	}
+
+	private PrimmsProcedural ( ) {
+		// Cannot instantiate the class
 	}
 }
