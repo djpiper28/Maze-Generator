@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 
 public class MazeGen implements Runnable {
 
+	@SuppressWarnings ( "exports" )
 	public static BufferedImage mazeImage;
 	public static int width;
 
@@ -97,7 +98,8 @@ public class MazeGen implements Runnable {
 		        + MazeGen.entranceY + " Exit Y: " + MazeGen.exitY + " Scale: " + MazeGen.scale + " Filename: "
 		        + MazeGen.file.getName ( ) );
 
-		if ( ( MazeGen.width * 2 + 1 >= ( screenWidth * 2 ) ) || ( MazeGen.height * 2 + 1 >= ( screenHeight * 2 ) ) ) {
+		if ( ( MazeGen.width * 2 + 1 >= ( screenWidth * Gui.maxScale ) )
+		        || ( MazeGen.height * 2 + 1 >= ( screenHeight * Gui.maxScale ) ) ) {
 			MazeGen.renderObject = new Renderless ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1,
 			        MazeGen.scale );
 			Gui.graphicsContext.fillText ( "Maze too big to be displayed", 10, 10 );

@@ -1,4 +1,4 @@
-module mazeGenerator {
+module mazeGen {
 	exports dannypiper.mazegenerator;
 	exports dannypiper.mazegenerator.kuskals;
 	exports dannypiper.mazegenerator.kuskals.sorting;

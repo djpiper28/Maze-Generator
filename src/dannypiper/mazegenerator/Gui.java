@@ -15,6 +15,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Background;
@@ -35,6 +37,7 @@ import javafx.stage.Stage;
 public class Gui extends Application {
 
 	private static CheckBox primmsCheckBox;
+	public static final int maxScale = 4;
 
 	// Objects to parse
 	public static File imageFile;
@@ -181,7 +184,8 @@ public class Gui extends Application {
 
 					if ( kruskalsTime < max ) {
 						MazeGenTest testMazeGenKruskals = new MazeGenTest ( n, n,
-						        new File ( "TEST/" + "Kruskals Test For ." + testFileName + ". n is " + n ), false );
+						        new File ( "TEST/" + "Kruskals Test For ." + testFileName + ". n is " + n + ".png" ),
+						        false );
 						kruskalsTime = testMazeGenKruskals.runTest ( );
 
 						fileWriter.print ( kruskalsTime );
@@ -542,25 +546,43 @@ public class Gui extends Application {
 		Gui.progress.setBackground ( new Background (
 		        new BackgroundFill ( new Color ( 0d, 0d, 0d, 1d ), CornerRadii.EMPTY, Insets.EMPTY ) ) );
 
-		if ( ( ( Gui.width * 2 + 1 ) <= ( Gui.XMAX * 2 ) )
-		        && ( Gui.height * 2 + 1 <= ( ( Gui.YMAX - Gui.progressBarY ) * 2 ) ) ) {
+		if ( ( ( Gui.width * 2 + 1 ) <= ( Gui.XMAX * Gui.maxScale ) )
+		        && ( Gui.height * 2 + 1 <= ( Gui.YMAX * Gui.maxScale ) ) ) {
 			Gui.canvas = new Canvas ( ( Gui.width * Gui.scale * 2 ) + Gui.scale,
 			        ( Gui.height * Gui.scale * 2 ) + Gui.scale );
 			Gui.progress.setPrefWidth ( ( Gui.width * Gui.scale * 2 ) + Gui.scale );
-			Gui.vBox = new VBox ( Gui.progress, Gui.canvas );
+			ScrollPane scrollPane = new ScrollPane ( );
+
+			scrollPane = new ScrollPane ( );
+			scrollPane.setContent ( canvas );
+
+			scrollPane.setVbarPolicy ( ScrollBarPolicy.AS_NEEDED );
+			scrollPane.setHbarPolicy ( ScrollBarPolicy.AS_NEEDED );
+
+			Gui.vBox = new VBox ( Gui.progress, scrollPane );
 			Gui.renderScene = new Scene ( Gui.vBox, ( Gui.width * Gui.scale * 2 ) + Gui.scale,
-			        ( Gui.height * Gui.scale * 2 ) + Gui.scale + Gui.progressBarY );
+			        ( Gui.height * Gui.scale * 2 ) + Gui.scale );
 		}
 		else {
-			Gui.canvas = new Canvas ( Gui.XMAX, Gui.YMAX - Gui.progressBarY );
-			Gui.vBox = new VBox ( Gui.progress, Gui.canvas );
+			Gui.canvas = new Canvas ( Gui.XMAX, Gui.YMAX );
+
+			ScrollPane scrollPane = new ScrollPane ( );
+
+			scrollPane = new ScrollPane ( );
+			scrollPane.setContent ( canvas );
+
+			scrollPane.setVbarPolicy ( ScrollBarPolicy.AS_NEEDED );
+			scrollPane.setHbarPolicy ( ScrollBarPolicy.AS_NEEDED );
+
+			Gui.vBox = new VBox ( Gui.progress, scrollPane );
+
 			Gui.progress.setPrefWidth ( Gui.XMAX );
 
 			if ( ( Gui.width > Gui.XMAX ) || ( Gui.height > Gui.YMAX ) ) {
-				Gui.renderScene = new Scene ( Gui.vBox, Gui.XMAX, 30 + Gui.progressBarY );
+				Gui.renderScene = new Scene ( Gui.vBox, Gui.XMAX, 30 );
 			}
 			else {
-				Gui.renderScene = new Scene ( Gui.vBox, Gui.XMAX, Gui.YMAX + Gui.progressBarY );
+				Gui.renderScene = new Scene ( Gui.vBox, Gui.XMAX, Gui.YMAX );
 			}
 
 		}
