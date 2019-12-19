@@ -8,6 +8,7 @@ import dannypiper.mazegenerator.MazeGen;
 import dannypiper.mazegenerator.kuskals.Arc;
 import dannypiper.mazegenerator.kuskals.ArcWeighted;
 
+//Quick sort multi-threaded - WIP
 class QuickSortThread implements Runnable {
 
 	public List < ArcWeighted > data;
@@ -18,7 +19,7 @@ class QuickSortThread implements Runnable {
 		this.finished = false;
 	}
 
-	// ascending order
+	// Ascending order, recursive binary tree based quicksort.
 	private List < ArcWeighted > quickSort ( final List < ArcWeighted > Data ) {
 		List < ArcWeighted > a = new LinkedList <> ( );
 		List < ArcWeighted > b = new LinkedList <> ( );
@@ -100,9 +101,11 @@ public class sortingAlgorithms {
 		return data;
 	}
 
+	// ascending order
 	public static List < Arc > countingSort ( final ArcWeighted [ ] data, final int maxRand ) {
 		@SuppressWarnings ( "unchecked" )
 		final Queue < Arc > [ ] categories = new LinkedList [ maxRand ];
+		// weight : (z ∩ 0 < weight < maxrand)
 
 		for ( int i = 0; i < MazeGen.maxRand; i ++ ) {
 			categories [ i ] = new LinkedList <> ( );
@@ -157,7 +160,7 @@ public class sortingAlgorithms {
 		return outputTwo;
 	}
 
-	// ascending order
+	// Ascending order, recursive binary tree based quicksort.
 	public static List < ArcWeighted > quickSort ( final List < ArcWeighted > data ) {
 		List < ArcWeighted > a = new LinkedList <> ( );
 		List < ArcWeighted > b = new LinkedList <> ( );
@@ -182,16 +185,29 @@ public class sortingAlgorithms {
 
 		}
 
-		a = sortingAlgorithms.quickSort ( a );
-		b = sortingAlgorithms.quickSort ( b );
+		// A binary tree like this is formed.
+		// ========================//
+		// pivotValue //
+		// //
+		// a b //
+		// ========================//
+		// a and b are sub-trees
+		// (they may have no children and be laeves)
+
+		// The data is placed into a tree and then exported in order.
+
+		a = sortingAlgorithms.quickSort ( a ); // Call itself
+		b = sortingAlgorithms.quickSort ( b ); // Call itself
 
 		// merge
 		a.add ( data.get ( Pivot ) );
 		a.addAll ( b );
 
 		return a;
+		// All of the data is returned and merged (see code above) forming a sorted list
 	}
 
+	// WIP
 	public static List < ArcWeighted > quickSortThreaded ( final List < ArcWeighted > data ) {
 
 		final QuickSortThread a = new QuickSortThread ( data );

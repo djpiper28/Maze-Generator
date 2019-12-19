@@ -34,23 +34,25 @@ import javafx.stage.Stage;
 
 public class Gui extends Application {
 
-	private static CheckBox primmsCheckBox;
-	public static final int maxScale = 4;
-
-	// Objects to parse
+	// Objects to pass to generator
 	public static File imageFile;
+
+	// GUI Parameters
 	public static boolean darkModeToggle;
+	private static float scale = 1;
+	public static int XMAX = 1920;
+	public static int YMAX = 1000;
 
 	// parameters
 	private static int width;
 	private static int height;
 	private static int EntranceY;
 	private static int ExitY;
-	private static float scale = 1;
-	public static int XMAX = 1920;
-	public static int YMAX = 1000;
-	public static final int progressBarY = 10;
+
+	// Constants
 	public static final String Version = Messages.getString ( "Gui.version" ); //$NON-NLS-1$
+	public static final int progressBarY = 10;
+	public static final int maxScale = 4;
 
 	// javaFX
 	private final static String font = "Lucida Console"; //$NON-NLS-1$
@@ -102,6 +104,9 @@ public class Gui extends Application {
 	private static ToggleGroup group;
 	private static final double greyConstant = 0.20d;
 	private static final double greyConstantAccent = 0.3d;
+
+	// Primms or Kruskals
+	private static CheckBox primmsCheckBox;
 
 	// Test parameters
 	public static boolean test = false;
@@ -253,51 +258,6 @@ public class Gui extends Application {
 		        Gui.exitYField, Gui.heightField, Gui.widthField, Gui.generateButton, Gui.selectImageButton );
 	}
 
-	private void buttons ( ) {
-		Gui.generateButton = new Button ( "Invalid input." ); //$NON-NLS-1$
-		Gui.selectImageButton = new Button ( "Save Maze As." ); //$NON-NLS-1$
-
-		Gui.generateButton.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
-		Gui.selectImageButton.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
-
-		Gui.generateButton.setOnAction ( e -> {
-
-			if ( ! this.validateInput ( ) ) {
-				this.generateMaze ( );
-			}
-
-		} );
-
-		Gui.selectImageButton.setOnAction ( e -> {
-			this.openFileChooser ( );
-		} );
-
-		Gui.buttonHBOX = new HBox ( Gui.selectImageButton, Gui.generateButton );
-		Gui.buttonHBOX.setPadding ( new Insets ( 20 ) );
-	}
-
-	// Primms
-	private void checkBoxes ( ) {
-		Gui.primmsTypeCheckBox = new CheckBox ( "Procedural Generation (Uses less RAM)" ); //$NON-NLS-1$
-		Gui.primmsTypeCheckBox.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
-		Gui.primmsTypeCheckBox.setSelected ( true );
-
-		Gui.primmsTypeCheckBox.setOnAction ( e -> {
-			this.validateInput ( );
-		} );
-
-		Gui.primmsCheckBox = new CheckBox ( "Use Primm's Algorithm" ); //$NON-NLS-1$
-		Gui.primmsCheckBox.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
-		Gui.primmsCheckBox.setSelected ( false );
-		Gui.primmsCheckBox.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
-		Gui.primmsCheckBox.setOnMouseClicked ( e -> {
-			this.updateGUI ( );
-		} );
-
-		Gui.proceduralHBOX = new HBox ( Gui.primmsTypeCheckBox );
-		Gui.proceduralHBOX.setPadding ( new Insets ( 20 ) );
-	}
-
 	private void darkModeAccent ( final Region... nodes ) {
 		final Background darkModeAccent = new Background ( new BackgroundFill (
 		        new Color ( Gui.greyConstantAccent, Gui.greyConstantAccent, Gui.greyConstantAccent, 1d ),
@@ -328,76 +288,6 @@ public class Gui extends Application {
 			n.setFill ( Color.WHITE );
 		}
 
-	}
-
-	private void details ( ) {
-		Gui.fileSelectedText = new Text ( "No file selected." ); //$NON-NLS-1$
-		Gui.fileSelectedText.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
-		Gui.fileSelectedText.setFill ( Color.DARKORANGE );
-
-		Gui.errorsText = new Text ( "Please select a file." ); //$NON-NLS-1$
-		Gui.errorsText.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
-		Gui.errorsText.setFill ( Color.DARKRED );
-
-		Gui.detailsBOX = new VBox ( Gui.fileSelectedText, Gui.errorsText );
-		Gui.detailsBOX.setPadding ( new Insets ( 20 ) );
-	}
-
-	private void entranceExitParameters ( ) {
-		Gui.entranceYLabel = new Text ( "Entrance Y: " ); //$NON-NLS-1$
-		Gui.entranceYLabel.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
-
-		Gui.entranceYField = new TextField ( "5" ); //$NON-NLS-1$
-		Gui.entranceYField.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
-
-		Gui.entranceYField.setOnKeyTyped ( e -> {
-
-			if ( Validation.validNumericalParameter ( Gui.entranceYField.getText ( ) ) ) {
-
-				if ( ( Gui.entranceYField.getText ( ).length ( ) > 0 )
-				        && ( Gui.entranceYField.getText ( ).length ( ) < 8 ) ) {
-					Gui.EntranceY = Integer.valueOf ( Gui.entranceYField.getText ( ) );
-				}
-				else {
-					Gui.EntranceY = 0;
-				}
-
-			}
-			else {
-				Gui.EntranceY = 0;
-			}
-
-			this.validateInput ( );
-		} );
-
-		Gui.exitYLabel = new Text ( "  Exit Y :" ); //$NON-NLS-1$
-		Gui.exitYLabel.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
-
-		Gui.exitYField = new TextField ( "5" ); //$NON-NLS-1$
-		Gui.exitYField.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
-		Gui.exitYField.setOnKeyTyped ( e -> {
-
-			if ( Validation.validNumericalParameter ( Gui.exitYField.getText ( ) ) ) {
-
-				if ( ( Gui.exitYField.getText ( ).length ( ) > 0 ) && ( Gui.exitYField.getText ( ).length ( ) < 8 ) ) {
-					Gui.ExitY = Integer.valueOf ( Gui.exitYField.getText ( ) );
-				}
-				else {
-					Gui.ExitY = 0;
-				}
-
-			}
-			else {
-				Gui.ExitY = 0;
-			}
-
-			this.validateInput ( );
-		} );
-		Gui.entranceExitParametersHBOX = new HBox ( Gui.entranceYLabel, Gui.entranceYField, Gui.exitYLabel,
-		        Gui.exitYField );
-		Gui.entranceExitParametersHBOX.setPadding ( new Insets ( 20 ) );
-		Gui.EntranceY = 5;
-		Gui.ExitY = 5;
 	}
 
 	private void generateMaze ( ) {
@@ -527,6 +417,120 @@ public class Gui extends Application {
 		Gui.height = 50;
 	}
 
+	private void initButtons ( ) {
+		Gui.generateButton = new Button ( "Invalid input." ); //$NON-NLS-1$
+		Gui.selectImageButton = new Button ( "Save Maze As." ); //$NON-NLS-1$
+
+		Gui.generateButton.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
+		Gui.selectImageButton.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
+
+		Gui.generateButton.setOnAction ( e -> {
+
+			if ( ! this.validateInput ( ) ) {
+				this.generateMaze ( );
+			}
+
+		} );
+
+		Gui.selectImageButton.setOnAction ( e -> {
+			this.openFileChooser ( );
+		} );
+
+		Gui.buttonHBOX = new HBox ( Gui.selectImageButton, Gui.generateButton );
+		Gui.buttonHBOX.setPadding ( new Insets ( 20 ) );
+	}
+
+	private void initCheckBoxes ( ) {
+		Gui.primmsTypeCheckBox = new CheckBox ( "Procedural Generation (Uses less RAM)" ); //$NON-NLS-1$
+		Gui.primmsTypeCheckBox.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
+		Gui.primmsTypeCheckBox.setSelected ( true );
+
+		Gui.primmsTypeCheckBox.setOnAction ( e -> {
+			this.validateInput ( );
+		} );
+
+		Gui.primmsCheckBox = new CheckBox ( "Use Primm's Algorithm" ); //$NON-NLS-1$
+		Gui.primmsCheckBox.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
+		Gui.primmsCheckBox.setSelected ( false );
+		Gui.primmsCheckBox.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
+		Gui.primmsCheckBox.setOnMouseClicked ( e -> {
+			this.updateGUI ( );
+		} );
+
+		Gui.proceduralHBOX = new HBox ( Gui.primmsTypeCheckBox );
+		Gui.proceduralHBOX.setPadding ( new Insets ( 20 ) );
+	}
+
+	private void initDetails ( ) {
+		Gui.fileSelectedText = new Text ( "No file selected." ); //$NON-NLS-1$
+		Gui.fileSelectedText.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
+		Gui.fileSelectedText.setFill ( Color.DARKORANGE );
+
+		Gui.errorsText = new Text ( "Please select a file." ); //$NON-NLS-1$
+		Gui.errorsText.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
+		Gui.errorsText.setFill ( Color.DARKRED );
+
+		Gui.detailsBOX = new VBox ( Gui.fileSelectedText, Gui.errorsText );
+		Gui.detailsBOX.setPadding ( new Insets ( 20 ) );
+	}
+
+	private void initEntranceExitParameters ( ) {
+		Gui.entranceYLabel = new Text ( "Entrance Y: " ); //$NON-NLS-1$
+		Gui.entranceYLabel.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
+
+		Gui.entranceYField = new TextField ( "5" ); //$NON-NLS-1$
+		Gui.entranceYField.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
+
+		Gui.entranceYField.setOnKeyTyped ( e -> {
+
+			if ( Validation.validNumericalParameter ( Gui.entranceYField.getText ( ) ) ) {
+
+				if ( ( Gui.entranceYField.getText ( ).length ( ) > 0 )
+				        && ( Gui.entranceYField.getText ( ).length ( ) < 8 ) ) {
+					Gui.EntranceY = Integer.valueOf ( Gui.entranceYField.getText ( ) );
+				}
+				else {
+					Gui.EntranceY = 0;
+				}
+
+			}
+			else {
+				Gui.EntranceY = 0;
+			}
+
+			this.validateInput ( );
+		} );
+
+		Gui.exitYLabel = new Text ( "  Exit Y :" ); //$NON-NLS-1$
+		Gui.exitYLabel.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
+
+		Gui.exitYField = new TextField ( "5" ); //$NON-NLS-1$
+		Gui.exitYField.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
+		Gui.exitYField.setOnKeyTyped ( e -> {
+
+			if ( Validation.validNumericalParameter ( Gui.exitYField.getText ( ) ) ) {
+
+				if ( ( Gui.exitYField.getText ( ).length ( ) > 0 ) && ( Gui.exitYField.getText ( ).length ( ) < 8 ) ) {
+					Gui.ExitY = Integer.valueOf ( Gui.exitYField.getText ( ) );
+				}
+				else {
+					Gui.ExitY = 0;
+				}
+
+			}
+			else {
+				Gui.ExitY = 0;
+			}
+
+			this.validateInput ( );
+		} );
+		Gui.entranceExitParametersHBOX = new HBox ( Gui.entranceYLabel, Gui.entranceYField, Gui.exitYLabel,
+		        Gui.exitYField );
+		Gui.entranceExitParametersHBOX.setPadding ( new Insets ( 20 ) );
+		Gui.EntranceY = 5;
+		Gui.ExitY = 5;
+	}
+
 	private void initGenerationScene ( ) {
 		Gui.progress = new ProgressBar ( 0 );
 		Gui.progress.setPrefHeight ( Gui.progressBarY );
@@ -596,11 +600,11 @@ public class Gui extends Application {
 	}
 
 	private void initInputScene ( ) {
-		this.entranceExitParameters ( );
+		this.initEntranceExitParameters ( );
 		this.graphParameters ( );
-		this.details ( );
-		this.buttons ( );
-		this.checkBoxes ( );
+		this.initDetails ( );
+		this.initButtons ( );
+		this.initCheckBoxes ( );
 		this.setUpRadioButtons ( );
 
 		Gui.vBox = new VBox ( Gui.primmsCheckBox, Gui.entranceExitParametersHBOX, Gui.graphParametersHBOX,
