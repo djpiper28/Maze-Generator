@@ -553,8 +553,8 @@ public class Gui extends Application {
 			scrollPane.setHbarPolicy ( ScrollBarPolicy.AS_NEEDED );
 
 			Gui.vBox = new VBox ( Gui.progress, scrollPane );
-			Gui.renderScene = new Scene ( Gui.vBox, ( Gui.width * Gui.scale * 2 ) + Gui.scale,
-			        ( Gui.height * Gui.scale * 2 ) + Gui.scale );
+			Gui.renderScene = new Scene ( Gui.vBox, Gui.XMAX, Gui.YMAX);
+			//( Gui.width * Gui.scale * 2 ) + Gui.scale, ( Gui.height * Gui.scale * 2 ) + Gui.scale );
 		}
 		else {
 			Gui.canvas = new Canvas ( Gui.XMAX, Gui.YMAX );
