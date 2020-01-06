@@ -533,57 +533,42 @@ public class Gui extends Application {
 
 	private void initGenerationScene ( ) {
 		Gui.progress = new ProgressBar ( 0 );
+		
 		Gui.progress.setPrefHeight ( Gui.progressBarY );
 		Gui.progress.setMinHeight ( Gui.progressBarY );
 		Gui.progress.setPadding ( new Insets ( 0 ) );
+		
 		Gui.progress.setBackground ( new Background (
 		        new BackgroundFill ( new Color ( 0d, 0d, 0d, 1d ), CornerRadii.EMPTY, Insets.EMPTY ) ) );
 
-		if ( ( ( ( Gui.width * 2 ) + 1 ) <= ( Gui.XMAX * Gui.maxScale ) )
-		        && ( ( ( Gui.height * 2 ) + 1 ) <= ( Gui.YMAX * Gui.maxScale ) ) ) {
-			Gui.canvas = new Canvas ( ( Gui.width * Gui.scale * 2 ) + Gui.scale,
-			        ( Gui.height * Gui.scale * 2 ) + Gui.scale );
-			Gui.progress.setPrefWidth ( ( Gui.width * Gui.scale * 2 ) + Gui.scale );
-			ScrollPane scrollPane = new ScrollPane ( );
+		Gui.canvas = new Canvas ( ( Gui.width * Gui.scale * 2 ) + Gui.scale,
+		        ( Gui.height * Gui.scale * 2 ) + Gui.scale );
+		Gui.progress.setPrefWidth ( ( Gui.width * Gui.scale * 2 ) + Gui.scale );
+		ScrollPane scrollPane = new ScrollPane ( );
 
-			scrollPane = new ScrollPane ( );
-			scrollPane.setContent ( Gui.canvas );
+		scrollPane = new ScrollPane ( );
+		scrollPane.setContent ( Gui.canvas );
 
-			scrollPane.setVbarPolicy ( ScrollBarPolicy.AS_NEEDED );
-			scrollPane.setHbarPolicy ( ScrollBarPolicy.AS_NEEDED );
+		scrollPane.setVbarPolicy ( ScrollBarPolicy.AS_NEEDED );
+		scrollPane.setHbarPolicy ( ScrollBarPolicy.AS_NEEDED );
 
-			Gui.vBox = new VBox ( Gui.progress, scrollPane );
-			Gui.renderScene = new Scene ( Gui.vBox, Gui.XMAX, Gui.YMAX);
-			//( Gui.width * Gui.scale * 2 ) + Gui.scale, ( Gui.height * Gui.scale * 2 ) + Gui.scale );
+		Gui.vBox = new VBox ( Gui.progress, scrollPane );
+
+		if ( ( Gui.width >= Gui.XMAX ) || ( Gui.height >= ( Gui.YMAX - 30 ) ) ) {
+			// Image is too big to fit nicely, so take up the screen and show scroll bars
+			Gui.renderScene = new Scene ( Gui.vBox, Gui.XMAX, Gui.YMAX );
 		}
 		else {
-			Gui.canvas = new Canvas ( Gui.XMAX, Gui.YMAX );
-
-			ScrollPane scrollPane = new ScrollPane ( );
-
-			scrollPane = new ScrollPane ( );
-			scrollPane.setContent ( Gui.canvas );
-
-			scrollPane.setVbarPolicy ( ScrollBarPolicy.AS_NEEDED );
-			scrollPane.setHbarPolicy ( ScrollBarPolicy.AS_NEEDED );
-
-			Gui.vBox = new VBox ( Gui.progress, scrollPane );
-
-			Gui.progress.setPrefWidth ( Gui.XMAX );
-
-			if ( ( Gui.width > Gui.XMAX ) || ( Gui.height > Gui.YMAX ) ) {
-				Gui.renderScene = new Scene ( Gui.vBox, Gui.XMAX, 30 );
-			}
-			else {
-				Gui.renderScene = new Scene ( Gui.vBox, Gui.XMAX, Gui.YMAX );
-			}
-
+			// Use the amount of space required
+			Gui.renderScene = new Scene ( Gui.vBox, ( Gui.width * Gui.scale * 2 ) + Gui.scale,
+			        ( Gui.height * Gui.scale * 2 ) + Gui.scale + Gui.progressBarY );
 		}
 
 		Gui.canvas.setOnMouseClicked ( e -> {
 
 			if ( e.getClickCount ( ) >= 2 ) {
 				Gui.stage.setFullScreen ( true );
+				System.out.println ( "Fullscreen enabled" );
 			}
 
 		} );
