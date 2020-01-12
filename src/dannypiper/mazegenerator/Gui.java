@@ -86,6 +86,9 @@ public class Gui extends Application {
 	private static Text heightLabel;
 	private static TextField heightField;
 	private static CheckBox primmsTypeCheckBox;
+	private static RadioButton useKruskals;
+	private static RadioButton usePrimms;
+	private static ToggleGroup genTypeGroup;
 
 	// Details
 	private static Text fileSelectedText;
@@ -106,7 +109,6 @@ public class Gui extends Application {
 	private static final double greyConstantAccent = 0.3d;
 
 	// Primms or Kruskals
-	private static CheckBox primmsCheckBox;
 
 	// Test parameters
 	public static boolean test = false;
@@ -254,7 +256,7 @@ public class Gui extends Application {
 
 		Gui.proceduralHBOX.setPadding ( new Insets ( 10 ) );
 
-		this.darkModeAccent ( Gui.primmsCheckBox, Gui.primmsTypeCheckBox, Gui.entranceYField, Gui.detailsBOX,
+		this.darkModeAccent ( Gui.usePrimms, Gui.useKruskals, Gui.primmsTypeCheckBox, Gui.entranceYField, Gui.detailsBOX,
 		        Gui.exitYField, Gui.heightField, Gui.widthField, Gui.generateButton, Gui.selectImageButton );
 	}
 
@@ -344,7 +346,7 @@ public class Gui extends Application {
 
 				final MazeGen generator = new MazeGen ( Gui.width, Gui.height, Gui.scale, Gui.imageFile, Gui.EntranceY,
 				        Gui.ExitY, Gui.primmsTypeCheckBox.isSelected ( ), Gui.XMAX, Gui.YMAX,
-				        Gui.primmsCheckBox.isSelected ( ), type );
+				        Gui.usePrimms.isSelected ( ), type );
 				final Thread generatorThread = new Thread ( generator, "Generator Thread" ); //$NON-NLS-1$
 				generatorThread.start ( );
 			}
@@ -449,13 +451,26 @@ public class Gui extends Application {
 			this.validateInput ( );
 		} );
 
-		Gui.primmsCheckBox = new CheckBox ( "Use Primm's Algorithm" ); //$NON-NLS-1$
-		Gui.primmsCheckBox.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
-		Gui.primmsCheckBox.setSelected ( false );
-		Gui.primmsCheckBox.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
-		Gui.primmsCheckBox.setOnMouseClicked ( e -> {
+		Gui.genTypeGroup = new ToggleGroup ();
+		
+		Gui.usePrimms = new RadioButton ( "Use Primm's Algorithm" ); //$NON-NLS-1$
+		Gui.usePrimms.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
+		Gui.usePrimms.setSelected ( false );
+		Gui.usePrimms.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
+		Gui.usePrimms.setToggleGroup ( Gui.genTypeGroup  );
+		Gui.usePrimms.setOnMouseClicked ( e -> {
 			this.updateGUI ( );
 		} );
+		
+		Gui.useKruskals = new RadioButton ( "Use Kruskal's Algorithm" );
+		Gui.useKruskals.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
+		Gui.useKruskals.setSelected ( true );
+		Gui.useKruskals.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
+		Gui.useKruskals.setToggleGroup ( Gui.genTypeGroup  );
+		Gui.useKruskals.setOnMouseClicked ( e -> {
+			this.updateGUI ( );
+		} );
+		
 
 		Gui.proceduralHBOX = new HBox ( Gui.primmsTypeCheckBox );
 		Gui.proceduralHBOX.setPadding ( new Insets ( 20 ) );
@@ -592,7 +607,7 @@ public class Gui extends Application {
 		this.initCheckBoxes ( );
 		this.setUpRadioButtons ( );
 
-		Gui.vBox = new VBox ( Gui.primmsCheckBox, Gui.entranceExitParametersHBOX, Gui.graphParametersHBOX,
+		Gui.vBox = new VBox ( Gui.usePrimms, Gui.useKruskals, Gui.entranceExitParametersHBOX, Gui.graphParametersHBOX,
 		        Gui.detailsBOX, Gui.proceduralHBOX, Gui.kruskalsRadioBoxes, Gui.buttonHBOX );
 		Gui.vBox.setPadding ( new Insets ( 20 ) );
 
@@ -600,7 +615,7 @@ public class Gui extends Application {
 			this.applyDarkMode ( );
 		}
 
-		Gui.inputScene = new Scene ( Gui.vBox, 500, 450, Color.BLACK );
+		Gui.inputScene = new Scene ( Gui.vBox, Color.BLACK );
 
 		this.updateGUI ( );
 	}
@@ -693,6 +708,8 @@ public class Gui extends Application {
 
 		Gui.stage.setScene ( Gui.inputScene );
 		Gui.stage.show ( );
+		Gui.stage.setMinWidth ( Gui.stage.getWidth ( ) );
+		Gui.stage.setMinHeight ( Gui.stage.getHeight ( ) );
 		Gui.stage.centerOnScreen ( );
 
 		Gui.stage.setOnCloseRequest ( e -> {
@@ -702,8 +719,8 @@ public class Gui extends Application {
 	}
 
 	private void updateGUI ( ) {
-		Gui.kruskalsRadioBoxes.setVisible ( ! Gui.primmsCheckBox.isSelected ( ) );
-		Gui.primmsTypeCheckBox.setVisible ( Gui.primmsCheckBox.isSelected ( ) );
+		Gui.kruskalsRadioBoxes.setVisible ( ! Gui.usePrimms.isSelected ( ) );
+		Gui.primmsTypeCheckBox.setVisible ( Gui.usePrimms.isSelected ( ) );
 	}
 
 	// Primms Methods
@@ -742,7 +759,7 @@ public class Gui extends Application {
 		}
 
 		if ( ( ( Gui.height >= MazeGen.proceduralThreshold ) || ( Gui.width >= MazeGen.proceduralThreshold ) )
-		        && Gui.primmsCheckBox.isSelected ( ) ) {
+		        && Gui.usePrimms.isSelected ( ) ) {
 
 			if ( out ) {
 				errorText += "\n"; //$NON-NLS-1$
@@ -756,7 +773,7 @@ public class Gui extends Application {
 			Gui.primmsTypeCheckBox.setDisable ( false );
 		}
 
-		if ( Gui.primmsTypeCheckBox.isSelected ( ) && Gui.primmsCheckBox.isSelected ( ) ) {
+		if ( Gui.primmsTypeCheckBox.isSelected ( ) && Gui.usePrimms.isSelected ( ) ) {
 		}
 
 		if ( ( Gui.EntranceY > Gui.height ) || ( Gui.EntranceY < 0 ) ) {
