@@ -548,11 +548,11 @@ public class Gui extends Application {
 
 	private void initGenerationScene ( ) {
 		Gui.progress = new ProgressBar ( 0 );
-		
+
 		Gui.progress.setPrefHeight ( Gui.progressBarY );
 		Gui.progress.setMinHeight ( Gui.progressBarY );
 		Gui.progress.setPadding ( new Insets ( 0 ) );
-		
+
 		Gui.progress.setBackground ( new Background (
 		        new BackgroundFill ( new Color ( 0d, 0d, 0d, 1d ), CornerRadii.EMPTY, Insets.EMPTY ) ) );
 
@@ -711,6 +711,8 @@ public class Gui extends Application {
 		Gui.stage.setMinWidth ( Gui.stage.getWidth ( ) );
 		Gui.stage.setMinHeight ( Gui.stage.getHeight ( ) );
 		Gui.stage.centerOnScreen ( );
+		Gui.stage.setMinHeight ( Gui.stage.getHeight ( ) );
+		Gui.stage.setMinWidth ( Gui.stage.getWidth ( ) );
 
 		Gui.stage.setOnCloseRequest ( e -> {
 			System.out.println ( "Closing program by user request." ); //$NON-NLS-1$
