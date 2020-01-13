@@ -100,6 +100,7 @@ public class Gui extends Application {
 
 	// Kruskals radioButtons
 	private static Text radioButtonLabels;
+	private static RadioButton bogoSort;
 	private static RadioButton bubbleSort;
 	private static RadioButton insersionSort;
 	private static RadioButton quickSort;
@@ -342,6 +343,8 @@ public class Gui extends Application {
 				}
 				else if ( Gui.countingSort.isSelected ( ) ) {
 					type = sortType.COUNTINGSORT;
+				} else if(Gui.bogoSort.isSelected ( ) ) {
+					type = sortType.BOGOSORT;
 				}
 
 				final MazeGen generator = new MazeGen ( Gui.width, Gui.height, Gui.scale, Gui.imageFile, Gui.EntranceY,
@@ -649,12 +652,15 @@ public class Gui extends Application {
 	private void setUpRadioButtons ( ) {
 		Gui.group = new ToggleGroup ( );
 
-		Gui.radioButtonLabels = new Text ( "Select Sorting Type" ); //$NON-NLS-1$
+		Gui.radioButtonLabels = new Text ( "Select Sorting Type" ); //$NON-NLS-1$#
+		
+		Gui.bogoSort = new RadioButton("Bogo Sort (Will not terminate)");
 		Gui.bubbleSort = new RadioButton ( "Bubble Sort (slowest)" ); //$NON-NLS-1$
-		Gui.insersionSort = new RadioButton ( "Insersion Sort" ); //$NON-NLS-1$
+		Gui.insersionSort = new RadioButton ( "Insertion Sort" ); //$NON-NLS-1$
 		Gui.quickSort = new RadioButton ( "Quick Sort" ); //$NON-NLS-1$
 		Gui.countingSort = new RadioButton ( "Counting Sort (fastest)" ); //$NON-NLS-1$
 
+		Gui.bogoSort.setToggleGroup ( Gui.group );
 		Gui.bubbleSort.setToggleGroup ( Gui.group );
 		Gui.insersionSort.setToggleGroup ( Gui.group );
 		Gui.quickSort.setToggleGroup ( Gui.group );
@@ -662,7 +668,10 @@ public class Gui extends Application {
 		Gui.countingSort.setSelected ( true );
 
 		Gui.radioButtonLabels.setFill ( Color.WHITE );
-		Gui.radioButtonLabels.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
+		Gui.radioButtonLabels.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );		
+
+		Gui.bogoSort.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
+		Gui.bogoSort.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
 		Gui.bubbleSort.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
 		Gui.bubbleSort.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
@@ -676,8 +685,8 @@ public class Gui extends Application {
 		Gui.countingSort.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
 		Gui.countingSort.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
-		Gui.kruskalsRadioBoxes = new VBox ( Gui.radioButtonLabels, Gui.bubbleSort, Gui.insersionSort, Gui.quickSort,
-		        Gui.countingSort );
+		Gui.kruskalsRadioBoxes = new VBox ( Gui.radioButtonLabels, Gui.bogoSort, Gui.bubbleSort, Gui.insersionSort,
+				Gui.quickSort, Gui.countingSort );
 		Gui.kruskalsRadioBoxes.setPadding ( new Insets ( 5 ) );
 	}
 
@@ -730,7 +739,7 @@ public class Gui extends Application {
 	private boolean validateInput ( ) {
 		boolean out = false;
 		String errorText = ""; //$NON-NLS-1$
-
+				
 		if ( Gui.imageFile == null ) {
 			out = true;
 			errorText += "Please select a file."; //$NON-NLS-1$
@@ -811,6 +820,11 @@ public class Gui extends Application {
 			Gui.generateButton.setTextFill ( Color.WHITE );
 		}
 
+		if( Gui.bogoSort.isSelected ( ) ) {
+			errorText += "\n--Will not terminate!--";
+			Gui.errorsText.setFill ( Color.DARKRED );
+		}
+		
 		Gui.errorsText.setText ( errorText );
 
 		if ( ! out ) {

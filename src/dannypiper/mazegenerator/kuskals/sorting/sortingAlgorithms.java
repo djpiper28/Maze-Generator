@@ -3,6 +3,7 @@ package dannypiper.mazegenerator.kuskals.sorting;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 
 import dannypiper.mazegenerator.MazeGen;
 import dannypiper.mazegenerator.kuskals.Arc;
@@ -74,6 +75,38 @@ class QuickSortThread implements Runnable {
 
 public class sortingAlgorithms {
 
+	private static boolean isSorted( final ArcWeighted [ ] data ) {
+		//Complexity O(n)
+		for(int i = 0; i < data.length - 1; i++) {
+			if(data [ i ].weight > data [ i + 1 ].weight ) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private static ArcWeighted [ ] randomise ( ArcWeighted [ ] data ) {
+		//Complexity O(n)
+		Random rand = new Random();
+		for(int i = 0; i < data.length; i++) {
+			//Swap data[i] with a random element
+			ArcWeighted temp = data[i];
+			int randomNumber = rand.nextInt ( data.length - 1);
+			
+			data[i] = data[randomNumber];
+			data[randomNumber] = temp;
+		}
+		return data;
+	}
+	
+	public static ArcWeighted [ ] bogoSort ( ArcWeighted [ ] data ) {
+		System.out.println("BOGO SORT MAY NEVER TERMINATE, PLEASE BE WARNED. IT HAS COMLEXITY NxN!");
+		while(!isSorted(data)) {
+			data = randomise (data);
+		}
+		return data;
+	}
+	
 	// ascending order
 	public static ArcWeighted [ ] bubbleSort ( final ArcWeighted [ ] data ) {
 		boolean finished = false;

@@ -8,48 +8,48 @@
 			<attribute name="add-reads" value="mazeGenerator=java.rmi:mazeGenerator=jdk.management.jfr:mazeGenerator=jdk.jdi:mazeGenerator=jdk.charsets:mazeGenerator=jdk.pack:mazeGenerator=java.xml:mazeGenerator=jdk.xml.dom:mazeGenerator=java.datatransfer:mazeGenerator=jdk.rmic:mazeGenerator=jdk.jstatd:mazeGenerator=jdk.httpserver:mazeGenerator=jdk.jcmd:mazeGenerator=java.se:mazeGenerator=java.security.sasl:mazeGenerator=jdk.zipfs:mazeGenerator=jdk.crypto.ec:mazeGenerator=jdk.javadoc:mazeGenerator=jdk.management.agent:mazeGenerator=jdk.jshell:mazeGenerator=jdk.editpad:mazeGenerator=java.sql.rowset:mazeGenerator=jdk.jsobject:mazeGenerator=jdk.sctp:mazeGenerator=java.smartcardio:mazeGenerator=jdk.jlink:mazeGenerator=jdk.unsupported:mazeGenerator=jdk.scripting.nashorn:mazeGenerator=jdk.scripting.nashorn.shell:mazeGenerator=java.security.jgss:mazeGenerator=java.compiler:mazeGenerator=jdk.dynalink:mazeGenerator=jdk.unsupported.desktop:mazeGenerator=jdk.accessibility:mazeGenerator=jdk.security.jgss:mazeGenerator=java.sql:mazeGenerator=jdk.hotspot.agent:mazeGenerator=java.logging:mazeGenerator=java.transaction.xa:mazeGenerator=java.xml.crypto:mazeGenerator=jdk.jfr:mazeGenerator=jdk.internal.vm.ci:mazeGenerator=jdk.crypto.cryptoki:mazeGenerator=jdk.net:mazeGenerator=java.naming:mazeGenerator=jdk.internal.ed:mazeGenerator=java.prefs:mazeGenerator=java.net.http:mazeGenerator=jdk.compiler:mazeGenerator=jdk.internal.opt:mazeGenerator=jdk.naming.rmi:mazeGenerator=jdk.jconsole:mazeGenerator=jdk.attach:mazeGenerator=jdk.internal.le:mazeGenerator=java.management:mazeGenerator=jdk.jdwp.agent:mazeGenerator=jdk.internal.jvmstat:mazeGenerator=java.instrument:mazeGenerator=jdk.internal.vm.compiler:mazeGenerator=jdk.internal.vm.compiler.management:mazeGenerator=jdk.management:mazeGenerator=jdk.security.auth:mazeGenerator=java.scripting:mazeGenerator=jdk.jdeps:mazeGenerator=jdk.aot:mazeGenerator=jdk.jartool:mazeGenerator=java.management.rmi:mazeGenerator=jdk.naming.dns:mazeGenerator=jdk.localedata"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx.base.jar">
+	<classpathentry kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx.graphics.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx.controls.jar">
+	<classpathentry kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx.controls.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx.fxml.jar">
+	<classpathentry kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx.base.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx.graphics.jar">
+	<classpathentry kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx.web.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx.media.jar">
+	<classpathentry kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx.media.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx.swing.jar">
+	<classpathentry kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx.fxml.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx.web.jar">
+	<classpathentry kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx.swing.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx-swt.jar">
+	<classpathentry kind="lib" path="/home/danny/Downloads/javafx-sdk-11.0.2/lib/javafx-swt.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

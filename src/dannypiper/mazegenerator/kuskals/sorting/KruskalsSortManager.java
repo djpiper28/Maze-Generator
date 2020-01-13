@@ -57,6 +57,10 @@ public class KruskalsSortManager {
 			List < Arc > sortedData = null;
 
 			switch ( this.typeOfSort ) {
+				case BOGOSORT:
+					sortedData = this.arrayToList ( sortingAlgorithms.bogoSort ( this.arcsToSort ) );
+					break;
+					
 				case BUBBLESORT :
 					sortedData = this.arrayToList ( sortingAlgorithms.bubbleSort ( this.arcsToSort ) );
 					break;
