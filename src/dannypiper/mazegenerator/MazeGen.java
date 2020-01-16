@@ -142,7 +142,8 @@ public class MazeGen implements Runnable {
 		        + MazeGen.file.getName ( ) );
 
 		if ( ( ( ( MazeGen.width * 2 ) + 1 ) >= ( screenWidth * Gui.maxScale ) )
-		        || ( ( ( MazeGen.height * 2 ) + 1 ) >= ( screenHeight * Gui.maxScale ) ) ) {
+		        || ( ( ( MazeGen.height * 2 ) + 1 ) >= ( screenHeight * Gui.maxScale ) )
+		        || ( ( Runtime.getRuntime ( ).freeMemory ( ) - ( MazeGen.width * MazeGen.height * 64 ) ) < 128000 ) ) {
 			MazeGen.renderObject = new Renderless ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1,
 			        MazeGen.scale );
 			Gui.graphicsContext.fillText ( "Maze too big to be displayed", 10, 10 );

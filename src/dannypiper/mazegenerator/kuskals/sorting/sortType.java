@@ -1,5 +1,5 @@
 package dannypiper.mazegenerator.kuskals.sorting;
 
 public enum sortType {
-	BUBBLESORT, INSERTIONSORT, QUICKSORT, COUNTINGSORT
+	BOGOSORT, BUBBLESORT, INSERTIONSORT, QUICKSORT, COUNTINGSORT
 }

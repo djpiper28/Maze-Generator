@@ -39,19 +39,16 @@ public class Renderer implements Runnable {
 		if ( this.scale != 1 ) {
 			this.after = this.scaleOp.filter ( MazeGen.mazeImage, this.after );
 
-			Image image = SwingFXUtils.toFXImage ( this.after, null );
+			final Image image = SwingFXUtils.toFXImage ( this.after, null );
 
 			Gui.graphicsContext.drawImage ( image, 0, 0 );
 
-			image = null;
-			this.after = null;
 		}
 		else {
-			Image image = SwingFXUtils.toFXImage ( MazeGen.mazeImage, null );
+			final Image image = SwingFXUtils.toFXImage ( MazeGen.mazeImage, null );
 
 			Gui.graphicsContext.drawImage ( image, 0, 0 );
-
-			image = null;
+			;
 		}
 
 		System.out.println ( "Render call - " + ( System.currentTimeMillis ( ) - time ) + "ms" );

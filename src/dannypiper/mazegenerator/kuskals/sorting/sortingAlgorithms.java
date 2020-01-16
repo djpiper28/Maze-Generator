@@ -3,76 +3,23 @@ package dannypiper.mazegenerator.kuskals.sorting;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 
 import dannypiper.mazegenerator.MazeGen;
 import dannypiper.mazegenerator.kuskals.Arc;
 import dannypiper.mazegenerator.kuskals.ArcWeighted;
 
-//Quick sort multi-threaded - WIP
-class QuickSortThread implements Runnable {
-
-	public List < ArcWeighted > data;
-	public boolean finished;
-
-	public QuickSortThread ( final List < ArcWeighted > data ) {
-		this.data = data;
-		this.finished = false;
-	}
-
-	// Ascending order, recursive binary tree based quicksort.
-	private List < ArcWeighted > quickSort ( final List < ArcWeighted > Data ) {
-		List < ArcWeighted > a = new LinkedList <> ( );
-		List < ArcWeighted > b = new LinkedList <> ( );
-		final int Pivot = Data.size ( ) / 2;
-
-		if ( Data.size ( ) <= 1 ) {
-			return Data;
-		}
-
-		for ( int i = 0; i < Data.size ( ); i ++ ) {
-
-			if ( i != Pivot ) {
-
-				if ( Data.get ( Pivot ).weight <= Data.get ( i ).weight ) {
-					a.add ( Data.get ( i ) );
-				}
-				else {
-					b.add ( Data.get ( i ) );
-				}
-
-			}
-
-		}
-
-		final QuickSortThread aObj = new QuickSortThread ( a );
-		final QuickSortThread bObj = new QuickSortThread ( b );
-
-		( new Thread ( aObj ) ).start ( );
-		( new Thread ( bObj ) ).start ( );
-
-		while ( ! ( aObj.finished && bObj.finished ) ) {
-
-		}
-
-		a = aObj.data;
-		b = bObj.data;
-
-		// merge
-		a.add ( Data.get ( Pivot ) );
-		a.addAll ( b );
-
-		return a;
-	}
-
-	@Override
-	public void run ( ) {
-		this.data = this.quickSort ( this.data );
-		this.finished = true;
-	}
-
-}
-
 public class sortingAlgorithms {
+
+	public static ArcWeighted [ ] bogoSort ( ArcWeighted [ ] data ) {
+		System.out.println ( "BOGO SORT MAY NEVER TERMINATE, PLEASE BE WARNED. IT HAS COMLEXITY NxN!" );
+
+		while ( ! sortingAlgorithms.isSorted ( data ) ) {
+			data = sortingAlgorithms.randomise ( data );
+		}
+
+		return data;
+	}
 
 	// ascending order
 	public static ArcWeighted [ ] bubbleSort ( final ArcWeighted [ ] data ) {
@@ -160,6 +107,20 @@ public class sortingAlgorithms {
 		return outputTwo;
 	}
 
+	private static boolean isSorted ( final ArcWeighted [ ] data ) {
+
+		// Complexity O(n)
+		for ( int i = 0; i < ( data.length - 1 ); i ++ ) {
+
+			if ( data [ i ].weight > data [ i + 1 ].weight ) {
+				return false;
+			}
+
+		}
+
+		return true;
+	}
+
 	// Ascending order, recursive binary tree based quicksort.
 	public static List < ArcWeighted > quickSort ( final List < ArcWeighted > data ) {
 		List < ArcWeighted > a = new LinkedList <> ( );
@@ -170,15 +131,19 @@ public class sortingAlgorithms {
 			return data;
 		}
 
-		for ( int i = 0; i < data.size ( ); i ++ ) {
+		final ArcWeighted PivotArc = data.get ( Pivot );
+		final int PivotValue = data.get ( Pivot ).weight;
 
-			if ( i != Pivot ) {
+		while ( ! data.isEmpty ( ) ) {
+			final ArcWeighted temp = data.remove ( 0 );
 
-				if ( data.get ( Pivot ).weight <= data.get ( i ).weight ) {
-					a.add ( data.get ( i ) );
+			if ( temp != PivotArc ) {
+
+				if ( PivotValue <= temp.weight ) {
+					a.add ( temp );
 				}
 				else {
-					b.add ( data.get ( i ) );
+					b.add ( temp );
 				}
 
 			}
@@ -200,23 +165,27 @@ public class sortingAlgorithms {
 		b = sortingAlgorithms.quickSort ( b ); // Call itself
 
 		// merge
-		a.add ( data.get ( Pivot ) );
+		a.add ( PivotArc );
 		a.addAll ( b );
 
 		return a;
 		// All of the data is returned and merged (see code above) forming a sorted list
 	}
 
-	// WIP
-	public static List < ArcWeighted > quickSortThreaded ( final List < ArcWeighted > data ) {
+	private static ArcWeighted [ ] randomise ( final ArcWeighted [ ] data ) {
+		// Complexity O(n)
+		final Random rand = new Random ( );
 
-		final QuickSortThread a = new QuickSortThread ( data );
-		( new Thread ( a ) ).start ( );
+		for ( int i = 0; i < data.length; i ++ ) {
+			// Swap data[i] with a random element
+			final ArcWeighted temp = data [ i ];
+			final int randomNumber = rand.nextInt ( data.length - 1 );
 
-		while ( ! a.finished ) {
-
+			data [ i ] = data [ randomNumber ];
+			data [ randomNumber ] = temp;
 		}
 
-		return a.data;
+		return data;
 	}
+
 }

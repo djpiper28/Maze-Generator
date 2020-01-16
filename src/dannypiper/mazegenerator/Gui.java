@@ -100,6 +100,7 @@ public class Gui extends Application {
 
 	// Kruskals radioButtons
 	private static Text radioButtonLabels;
+	private static RadioButton bogoSort;
 	private static RadioButton bubbleSort;
 	private static RadioButton insersionSort;
 	private static RadioButton quickSort;
@@ -256,8 +257,9 @@ public class Gui extends Application {
 
 		Gui.proceduralHBOX.setPadding ( new Insets ( 10 ) );
 
-		this.darkModeAccent ( Gui.usePrimms, Gui.useKruskals, Gui.primmsTypeCheckBox, Gui.entranceYField, Gui.detailsBOX,
-		        Gui.exitYField, Gui.heightField, Gui.widthField, Gui.generateButton, Gui.selectImageButton );
+		this.darkModeAccent ( Gui.usePrimms, Gui.useKruskals, Gui.primmsTypeCheckBox, Gui.entranceYField,
+		        Gui.detailsBOX, Gui.exitYField, Gui.heightField, Gui.widthField, Gui.generateButton,
+		        Gui.selectImageButton );
 	}
 
 	private void darkModeAccent ( final Region... nodes ) {
@@ -342,6 +344,9 @@ public class Gui extends Application {
 				}
 				else if ( Gui.countingSort.isSelected ( ) ) {
 					type = sortType.COUNTINGSORT;
+				}
+				else if ( Gui.bogoSort.isSelected ( ) ) {
+					type = sortType.BOGOSORT;
 				}
 
 				final MazeGen generator = new MazeGen ( Gui.width, Gui.height, Gui.scale, Gui.imageFile, Gui.EntranceY,
@@ -451,26 +456,25 @@ public class Gui extends Application {
 			this.validateInput ( );
 		} );
 
-		Gui.genTypeGroup = new ToggleGroup ();
-		
+		Gui.genTypeGroup = new ToggleGroup ( );
+
 		Gui.usePrimms = new RadioButton ( "Use Primm's Algorithm" ); //$NON-NLS-1$
 		Gui.usePrimms.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
 		Gui.usePrimms.setSelected ( false );
 		Gui.usePrimms.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
-		Gui.usePrimms.setToggleGroup ( Gui.genTypeGroup  );
+		Gui.usePrimms.setToggleGroup ( Gui.genTypeGroup );
 		Gui.usePrimms.setOnMouseClicked ( e -> {
 			this.updateGUI ( );
 		} );
-		
+
 		Gui.useKruskals = new RadioButton ( "Use Kruskal's Algorithm" );
 		Gui.useKruskals.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
 		Gui.useKruskals.setSelected ( true );
 		Gui.useKruskals.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
-		Gui.useKruskals.setToggleGroup ( Gui.genTypeGroup  );
+		Gui.useKruskals.setToggleGroup ( Gui.genTypeGroup );
 		Gui.useKruskals.setOnMouseClicked ( e -> {
 			this.updateGUI ( );
 		} );
-		
 
 		Gui.proceduralHBOX = new HBox ( Gui.primmsTypeCheckBox );
 		Gui.proceduralHBOX.setPadding ( new Insets ( 20 ) );
@@ -649,12 +653,15 @@ public class Gui extends Application {
 	private void setUpRadioButtons ( ) {
 		Gui.group = new ToggleGroup ( );
 
-		Gui.radioButtonLabels = new Text ( "Select Sorting Type" ); //$NON-NLS-1$
+		Gui.radioButtonLabels = new Text ( "Select Sorting Type" ); //$NON-NLS-1$ #
+
+		Gui.bogoSort = new RadioButton ( "Bogo Sort (Will not terminate)" );
 		Gui.bubbleSort = new RadioButton ( "Bubble Sort (slowest)" ); //$NON-NLS-1$
-		Gui.insersionSort = new RadioButton ( "Insersion Sort" ); //$NON-NLS-1$
+		Gui.insersionSort = new RadioButton ( "Insertion Sort" ); //$NON-NLS-1$
 		Gui.quickSort = new RadioButton ( "Quick Sort" ); //$NON-NLS-1$
 		Gui.countingSort = new RadioButton ( "Counting Sort (fastest)" ); //$NON-NLS-1$
 
+		Gui.bogoSort.setToggleGroup ( Gui.group );
 		Gui.bubbleSort.setToggleGroup ( Gui.group );
 		Gui.insersionSort.setToggleGroup ( Gui.group );
 		Gui.quickSort.setToggleGroup ( Gui.group );
@@ -663,6 +670,9 @@ public class Gui extends Application {
 
 		Gui.radioButtonLabels.setFill ( Color.WHITE );
 		Gui.radioButtonLabels.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
+
+		Gui.bogoSort.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
+		Gui.bogoSort.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
 		Gui.bubbleSort.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
 		Gui.bubbleSort.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
@@ -676,8 +686,8 @@ public class Gui extends Application {
 		Gui.countingSort.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
 		Gui.countingSort.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
-		Gui.kruskalsRadioBoxes = new VBox ( Gui.radioButtonLabels, Gui.bubbleSort, Gui.insersionSort, Gui.quickSort,
-		        Gui.countingSort );
+		Gui.kruskalsRadioBoxes = new VBox ( Gui.radioButtonLabels, Gui.bogoSort, Gui.bubbleSort, Gui.insersionSort,
+		        Gui.quickSort, Gui.countingSort );
 		Gui.kruskalsRadioBoxes.setPadding ( new Insets ( 5 ) );
 	}
 
@@ -740,24 +750,26 @@ public class Gui extends Application {
 			Gui.fileSelectedText.setFill ( Color.LIGHTGREEN );
 		}
 
-		if ( Gui.width <= 1 ) {
+		// validate width
+		if ( ( Gui.width <= 1 ) || ( ( ( Gui.width * 2 ) + 1 ) >= 999999 ) ) {
 
 			if ( out ) {
 				errorText += "\n"; //$NON-NLS-1$
 			}
 
 			out = true;
-			errorText += "Invalid width."; //$NON-NLS-1$
+			errorText += "Invalid width, it must be above 2."; //$NON-NLS-1$
 		}
 
-		if ( Gui.height <= 1 ) {
+		// validate height
+		if ( ( Gui.height <= 1 ) || ( ( ( Gui.height * 2 ) + 1 ) >= 999999 ) ) {
 
 			if ( out ) {
 				errorText += "\n"; //$NON-NLS-1$
 			}
 
 			out = true;
-			errorText += "Invalid height."; //$NON-NLS-1$
+			errorText += "Invalid height, it must be above 2."; //$NON-NLS-1$
 		}
 
 		if ( ( ( Gui.height >= MazeGen.proceduralThreshold ) || ( Gui.width >= MazeGen.proceduralThreshold ) )
@@ -785,7 +797,7 @@ public class Gui extends Application {
 			}
 
 			out = true;
-			errorText += "Invalid entrance Y."; //$NON-NLS-1$
+			errorText += "Invalid entrance Y, it must be between 1 and graph height."; //$NON-NLS-1$
 		}
 
 		if ( ( Gui.ExitY > Gui.height ) || ( Gui.ExitY < 0 ) ) {
@@ -795,13 +807,19 @@ public class Gui extends Application {
 			}
 
 			out = true;
-			errorText += "Invalid exit Y."; //$NON-NLS-1$
+			errorText += "Invalid exit Y, it must be between 1 and graph height."; //$NON-NLS-1$
 		}
 
 		if ( ! out ) {
 			errorText = "All input valid. Maze Width: " + ( ( Gui.width * 2 ) + 1 ) + " Maze Height: " //$NON-NLS-1$ //$NON-NLS-2$
 			        + ( ( Gui.height * 2 ) + 1 );
 			Gui.errorsText.setFill ( Color.LIGHTGREEN );
+
+			if ( Gui.bogoSort.isSelected ( ) ) {
+				errorText += "\n--Will not terminate because of Bogo sort!--";
+				Gui.errorsText.setFill ( Color.DARKRED );
+			}
+
 			Gui.generateButton.setText ( "Generate Maze" ); //$NON-NLS-1$
 			Gui.generateButton.setTextFill ( Color.LIGHTGREEN );
 		}
@@ -817,7 +835,7 @@ public class Gui extends Application {
 			System.out.println ( "Input is: valid" ); //$NON-NLS-1$
 		}
 		else {
-			System.out.println ( "Input is: not valid" ); //$NON-NLS-1$
+			System.out.println ( "Input is: not valid, please read the warnings" ); //$NON-NLS-1$
 		}
 
 		return out;
