@@ -356,7 +356,7 @@ public class Gui extends Application {
 		Gui.widthLabel = new Text ( "Graph Width:" ); //$NON-NLS-1$
 		Gui.widthLabel.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
-		Gui.widthField = new TextField ( "50" ); //$NON-NLS-1$
+		Gui.widthField = new TextField ( "100" ); //$NON-NLS-1$
 		Gui.widthField.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 		Gui.widthField.setOnKeyTyped ( e -> {
 
@@ -380,7 +380,7 @@ public class Gui extends Application {
 		Gui.heightLabel = new Text ( "  Graph Height:" ); //$NON-NLS-1$
 		Gui.heightLabel.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
-		Gui.heightField = new TextField ( "50" ); //$NON-NLS-1$
+		Gui.heightField = new TextField ( "100" ); //$NON-NLS-1$
 		Gui.heightField.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 		Gui.heightField.setOnKeyTyped ( e -> {
 
@@ -482,7 +482,7 @@ public class Gui extends Application {
 		Gui.entranceYLabel = new Text ( "Entrance Y: " ); //$NON-NLS-1$
 		Gui.entranceYLabel.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
-		Gui.entranceYField = new TextField ( "5" ); //$NON-NLS-1$
+		Gui.entranceYField = new TextField ( "50" ); //$NON-NLS-1$
 		Gui.entranceYField.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
 		Gui.entranceYField.setOnKeyTyped ( e -> {
@@ -508,7 +508,7 @@ public class Gui extends Application {
 		Gui.exitYLabel = new Text ( "  Exit Y :" ); //$NON-NLS-1$
 		Gui.exitYLabel.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
-		Gui.exitYField = new TextField ( "5" ); //$NON-NLS-1$
+		Gui.exitYField = new TextField ( "50" ); //$NON-NLS-1$
 		Gui.exitYField.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 		Gui.exitYField.setOnKeyTyped ( e -> {
 
