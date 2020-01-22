@@ -143,7 +143,7 @@ public class MazeGen implements Runnable {
 
 		if ( ( ( ( MazeGen.width * 2 ) + 1 ) >= ( screenWidth * Gui.maxScale ) )
 		        || ( ( ( MazeGen.height * 2 ) + 1 ) >= ( screenHeight * Gui.maxScale ) )
-		        || ( ( Runtime.getRuntime ( ).freeMemory ( ) - ( MazeGen.width * MazeGen.height * 64 ) ) < 128000 ) ) {
+		        || Validation.enoughMemory ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1, MazeGen.scale ) ) {
 			MazeGen.renderObject = new Renderless ( ( MazeGen.width * 2 ) + 1, ( MazeGen.height * 2 ) + 1,
 			        MazeGen.scale );
 			Gui.graphicsContext.fillText ( "Maze too big to be displayed", 10, 10 );
@@ -231,12 +231,12 @@ public class MazeGen implements Runnable {
 			System.out.println ( "Applied Kruskals in " + ( System.currentTimeMillis ( ) - time ) + "ms" );
 		}
 
-		MazeGen.render ( );
+		MazeGen.renderObject.run ( ); // Not async as that messes up stuff here
 
 		ImageFile.saveImage ( MazeGen.mazeImage, MazeGen.file );
 
 		if ( ! Gui.test ) {
-			System.exit ( 0 );
+			MazeGen.renderObject.renderFinishedScreen ( );
 		}
 
 	}
@@ -258,14 +258,6 @@ public class MazeGen implements Runnable {
 		catch ( final Exception e ) {
 			e.printStackTrace ( );
 			System.out.println ( "Critical error." );
-			String stackTraceMsg = "";
-
-			for ( final StackTraceElement error : e.getStackTrace ( ) ) {
-				stackTraceMsg += error.toString ( );
-			}
-
-			Gui.showError ( "Critical error:\nParameters Width: " + MazeGen.width + " Height: " + MazeGen.height
-			        + "\nError Details:\n" + stackTraceMsg );
 		}
 
 	}

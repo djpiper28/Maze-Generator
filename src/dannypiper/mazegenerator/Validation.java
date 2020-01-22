@@ -2,6 +2,10 @@ package dannypiper.mazegenerator;
 
 public class Validation {
 
+	public static boolean enoughMemory ( final int width, final int height, final float scale ) {
+		return ( ( Runtime.getRuntime ( ).freeMemory ( ) - ( width * height * scale * scale * 64 ) ) < 128000 );
+	}
+
 	// Methods
 	public static boolean validNumericalParameter ( final String parameterStr ) {
 		final String validChars = "0123456789";
@@ -15,6 +19,11 @@ public class Validation {
 
 		}
 
-		return true;
+		return true && ( parameterStr.length ( ) < 8 );
 	}
+
+	private Validation ( ) {
+
+	}
+
 }

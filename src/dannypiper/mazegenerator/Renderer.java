@@ -32,6 +32,11 @@ public class Renderer implements Runnable {
 
 	}
 
+	public void renderFinishedScreen ( ) {
+		Gui.graphicsContext.drawImage ( new Image ( "savingScreenImage.png" ), 0, 0 );
+		System.out.println ( "Rendered finished message" );
+	}
+
 	@Override
 	public void run ( ) {
 		final long time = System.currentTimeMillis ( );

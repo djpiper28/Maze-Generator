@@ -39,7 +39,9 @@ public class Gui extends Application {
 
 	// GUI Parameters
 	public static boolean darkModeToggle;
-	private static float scale = 1;
+	private static final float defaultScaleAndLowestScale = 1;
+	private static final int taskbarWidth = 50;
+	private static float scale = Gui.defaultScaleAndLowestScale;
 	public static int XMAX = 1920;
 	public static int YMAX = 1000;
 
@@ -304,27 +306,7 @@ public class Gui extends Application {
 		if ( ! this.validateInput ( ) ) {
 			System.out.println ( "Canvas GUI" ); //$NON-NLS-1$
 
-			Gui.scale = 1f;
-
-			final float scalex = Gui.XMAX / ( ( Gui.width * 2 ) + 1 );
-			final float scaley = Gui.YMAX / ( ( Gui.height * 2 ) + 1 );
-
-			if ( ( scalex < 1 ) || ( scaley < 1 ) ) {
-				Gui.scale = 1f;
-			}
-			else if ( scalex <= scaley ) {
-				Gui.scale = scalex;
-			}
-			else {
-				Gui.scale = scaley;
-			}
-
-			if ( ( ( Gui.scale * Gui.width * 2 ) + 1 ) > Gui.XMAX ) {
-				Gui.scale = 1f;
-			}
-			else if ( ( ( Gui.scale * Gui.height * 2 ) + 1 ) > Gui.YMAX ) {
-				Gui.scale = 1f;
-			}
+			this.updateScale ( );
 
 			this.initGenerationScene ( );
 
@@ -344,7 +326,8 @@ public class Gui extends Application {
 				}
 				else if ( Gui.countingSort.isSelected ( ) ) {
 					type = sortType.COUNTINGSORT;
-				} else if(Gui.bogoSort.isSelected ( ) ) {
+				}
+				else if ( Gui.bogoSort.isSelected ( ) ) {
 					type = sortType.BOGOSORT;
 				}
 				else if ( Gui.bogoSort.isSelected ( ) ) {
@@ -511,12 +494,12 @@ public class Gui extends Application {
 					Gui.EntranceY = Integer.valueOf ( Gui.entranceYField.getText ( ) );
 				}
 				else {
-					Gui.EntranceY = 0;
+					Gui.EntranceY = - 1;
 				}
 
 			}
 			else {
-				Gui.EntranceY = 0;
+				Gui.EntranceY = - 1;
 			}
 
 			this.validateInput ( );
@@ -597,7 +580,11 @@ public class Gui extends Application {
 		Gui.vBox.setPadding ( new Insets ( 0 ) );
 
 		Gui.stage.setScene ( Gui.renderScene );
-		Gui.stage.setResizable ( false );
+		Gui.stage.setResizable ( true );
+		Gui.stage.setMinHeight ( 30 );
+		Gui.stage.setMinWidth ( 30 );
+		Gui.stage.setMaxHeight ( ( Gui.height * Gui.scale * 2 ) + Gui.scale );
+		Gui.stage.setMaxWidth ( ( Gui.width * Gui.scale * 2 ) + Gui.scale );
 		Gui.stage.setX ( 0 );
 		Gui.stage.setY ( 0 );
 		Gui.stage.setFullScreenExitHint ( "ESC to exit fullscreen mode" + "\nDouble click to go fullscreen" ); //$NON-NLS-1$ //$NON-NLS-2$
@@ -671,7 +658,7 @@ public class Gui extends Application {
 		Gui.countingSort.setSelected ( true );
 
 		Gui.radioButtonLabels.setFill ( Color.WHITE );
-		Gui.radioButtonLabels.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );		
+		Gui.radioButtonLabels.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
 		Gui.bogoSort.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
 		Gui.bogoSort.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
@@ -688,8 +675,8 @@ public class Gui extends Application {
 		Gui.countingSort.setStyle ( "-fx-text-fill: white;" ); //$NON-NLS-1$
 		Gui.countingSort.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
-		Gui.kruskalsRadioBoxes = new VBox ( Gui.radioButtonLabels, Gui.bubbleSort, Gui.insersionSort, Gui.quickSort,
-		        Gui.countingSort );
+		Gui.kruskalsRadioBoxes = new VBox ( Gui.radioButtonLabels, Gui.bogoSort, Gui.bubbleSort, Gui.insersionSort,
+		        Gui.quickSort, Gui.countingSort );
 		Gui.kruskalsRadioBoxes.setPadding ( new Insets ( 5 ) );
 	}
 
@@ -715,7 +702,7 @@ public class Gui extends Application {
 		if ( Screen.getPrimary ( ) != null ) {
 			System.out.println ( Screen.getPrimary ( ).getBounds ( ) );
 			Gui.XMAX = ( int ) Screen.getPrimary ( ).getBounds ( ).getWidth ( );
-			Gui.YMAX = ( int ) Screen.getPrimary ( ).getBounds ( ).getHeight ( );
+			Gui.YMAX = ( int ) Screen.getPrimary ( ).getBounds ( ).getHeight ( ) - Gui.taskbarWidth;
 		}
 
 		Gui.stage.setScene ( Gui.inputScene );
@@ -737,12 +724,37 @@ public class Gui extends Application {
 		Gui.primmsTypeCheckBox.setVisible ( Gui.usePrimms.isSelected ( ) );
 	}
 
+	private void updateScale ( ) {
+		Gui.scale = Gui.defaultScaleAndLowestScale;
+
+		final float scalex = Gui.XMAX / ( ( Gui.width * 2 ) + 1 );
+		final float scaley = Gui.YMAX / ( ( Gui.height * 2 ) + 1 );
+
+		if ( ( scalex < Gui.defaultScaleAndLowestScale ) || ( scaley < Gui.defaultScaleAndLowestScale ) ) {
+			Gui.scale = Gui.defaultScaleAndLowestScale;
+		}
+		else if ( scalex <= scaley ) {
+			Gui.scale = scalex;
+		}
+		else {
+			Gui.scale = scaley;
+		}
+
+		if ( ( ( Gui.scale * Gui.width * 2 ) + 1 ) > Gui.XMAX ) {
+			Gui.scale = Gui.defaultScaleAndLowestScale;
+		}
+		else if ( ( ( Gui.scale * Gui.height * 2 ) + 1 ) > Gui.YMAX ) {
+			Gui.scale = Gui.defaultScaleAndLowestScale;
+		}
+
+	}
+
 	// Primms Methods
 	@SuppressWarnings ( "unused" )
 	private boolean validateInput ( ) {
 		boolean out = false;
 		String errorText = ""; //$NON-NLS-1$
-				
+
 		if ( Gui.imageFile == null ) {
 			out = true;
 			errorText += "Please select a file."; //$NON-NLS-1$
@@ -760,7 +772,7 @@ public class Gui extends Application {
 			}
 
 			out = true;
-			errorText += "Invalid width, it must be above 2."; //$NON-NLS-1$
+			errorText += "Invalid width."; //$NON-NLS-1$
 		}
 
 		// validate height
@@ -771,7 +783,7 @@ public class Gui extends Application {
 			}
 
 			out = true;
-			errorText += "Invalid height, it must be above 2."; //$NON-NLS-1$
+			errorText += "Invalid height."; //$NON-NLS-1$
 		}
 
 		if ( ( ( Gui.height >= MazeGen.proceduralThreshold ) || ( Gui.width >= MazeGen.proceduralThreshold ) )
@@ -799,7 +811,7 @@ public class Gui extends Application {
 			}
 
 			out = true;
-			errorText += "Invalid entrance Y, it must be between 1 and graph height."; //$NON-NLS-1$
+			errorText += "Invalid entrance Y."; //$NON-NLS-1$
 		}
 
 		if ( ( Gui.ExitY > Gui.height ) || ( Gui.ExitY < 0 ) ) {
@@ -809,7 +821,7 @@ public class Gui extends Application {
 			}
 
 			out = true;
-			errorText += "Invalid exit Y, it must be between 1 and graph height."; //$NON-NLS-1$
+			errorText += "Invalid exit Y."; //$NON-NLS-1$
 		}
 
 		if ( ! out ) {
@@ -822,6 +834,11 @@ public class Gui extends Application {
 				Gui.errorsText.setFill ( Color.DARKRED );
 			}
 
+			if ( Validation.enoughMemory ( ( Gui.width * 2 ) + 1, ( Gui.height * 2 ) + 1, Gui.scale ) ) {
+				errorText += "\nA preview image cannot be rendered due to memory constraints"
+				        + "\n--The Program may crash from lack of memory--";
+			}
+
 			Gui.generateButton.setText ( "Generate Maze" ); //$NON-NLS-1$
 			Gui.generateButton.setTextFill ( Color.LIGHTGREEN );
 		}
@@ -831,11 +848,11 @@ public class Gui extends Application {
 			Gui.generateButton.setTextFill ( Color.WHITE );
 		}
 
-		if( Gui.bogoSort.isSelected ( ) ) {
+		if ( Gui.bogoSort.isSelected ( ) ) {
 			errorText += "\n--Will not terminate!--";
 			Gui.errorsText.setFill ( Color.DARKRED );
 		}
-		
+
 		Gui.errorsText.setText ( errorText );
 
 		if ( ! out ) {
@@ -843,6 +860,10 @@ public class Gui extends Application {
 		}
 		else {
 			System.out.println ( "Input is: not valid, please read the warnings" ); //$NON-NLS-1$
+		}
+
+		if ( out ) {
+			this.updateScale ( );
 		}
 
 		return out;
