@@ -15,6 +15,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Background;
@@ -39,9 +40,12 @@ public class Gui extends Application {
 
 	// GUI Parameters
 	public static boolean darkModeToggle;
-	private static final float defaultScaleAndLowestScale = 1;
+	private static final float defaultScale = 3;
+	private static final float minimumScale = 1;
 	private static final int taskbarWidth = 50;
-	private static float scale = Gui.defaultScaleAndLowestScale;
+	private static float scale = Gui.defaultScale;
+	
+	//private static Slider scaleSlider;
 	public static int XMAX = 1920;
 	public static int YMAX = 1000;
 
@@ -54,13 +58,14 @@ public class Gui extends Application {
 	// Constants
 	public static final String Version = Messages.getString ( "Gui.version" ); //$NON-NLS-1$
 	public static final int progressBarY = 10;
-	public static final int maxScale = 4;
+	public static final int maxScale = 25;
 
 	// javaFX
 	private final static String font = "Lucida Console"; //$NON-NLS-1$
 	private static Stage stage;
 	private static Scene inputScene;
 
+	// containers
 	private static VBox vBox;
 	private static VBox kruskalsRadioBoxes;
 	private static HBox entranceExitParametersHBOX;
@@ -110,8 +115,6 @@ public class Gui extends Application {
 	private static ToggleGroup group;
 	private static final double greyConstant = 0.20d;
 	private static final double greyConstantAccent = 0.3d;
-
-	// Primms or Kruskals
 
 	// Test parameters
 	public static boolean test = false;
@@ -351,7 +354,7 @@ public class Gui extends Application {
 
 	}
 
-	private void graphParameters ( ) {
+	private void initGraphParameters ( ) {
 
 		Gui.widthLabel = new Text ( "Graph Width:" ); //$NON-NLS-1$
 		Gui.widthLabel.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
@@ -482,7 +485,7 @@ public class Gui extends Application {
 		Gui.entranceYLabel = new Text ( "Entrance Y: " ); //$NON-NLS-1$
 		Gui.entranceYLabel.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
-		Gui.entranceYField = new TextField ( "50" ); //$NON-NLS-1$
+		Gui.entranceYField = new TextField ( "1" ); //$NON-NLS-1$
 		Gui.entranceYField.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
 		Gui.entranceYField.setOnKeyTyped ( e -> {
@@ -508,7 +511,7 @@ public class Gui extends Application {
 		Gui.exitYLabel = new Text ( "  Exit Y :" ); //$NON-NLS-1$
 		Gui.exitYLabel.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
-		Gui.exitYField = new TextField ( "50" ); //$NON-NLS-1$
+		Gui.exitYField = new TextField ( "100" ); //$NON-NLS-1$
 		Gui.exitYField.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 		Gui.exitYField.setOnKeyTyped ( e -> {
 
@@ -518,12 +521,12 @@ public class Gui extends Application {
 					Gui.ExitY = Integer.valueOf ( Gui.exitYField.getText ( ) );
 				}
 				else {
-					Gui.ExitY = 0;
+					Gui.ExitY = -1;
 				}
 
 			}
 			else {
-				Gui.ExitY = 0;
+				Gui.ExitY = -1;
 			}
 
 			this.validateInput ( );
@@ -545,8 +548,8 @@ public class Gui extends Application {
 		Gui.progress.setBackground ( new Background (
 		        new BackgroundFill ( new Color ( 0d, 0d, 0d, 1d ), CornerRadii.EMPTY, Insets.EMPTY ) ) );
 
-		Gui.canvas = new Canvas ( ( Gui.width * Gui.scale * 2 ) + Gui.scale,
-		        ( Gui.height * Gui.scale * 2 ) + Gui.scale );
+		Gui.canvas = new Canvas ( ( Gui.width * 2 + 1 ) - Gui.scale,
+		        ( Gui.height * 2 + 1 ) * Gui.scale );
 		Gui.progress.setPrefWidth ( ( Gui.width * Gui.scale * 2 ) + Gui.scale );
 		ScrollPane scrollPane = new ScrollPane ( );
 
@@ -555,6 +558,7 @@ public class Gui extends Application {
 
 		scrollPane.setVbarPolicy ( ScrollBarPolicy.AS_NEEDED );
 		scrollPane.setHbarPolicy ( ScrollBarPolicy.AS_NEEDED );
+		//darkModeify ( scrollPane );
 
 		Gui.vBox = new VBox ( Gui.progress, scrollPane );
 
@@ -564,8 +568,9 @@ public class Gui extends Application {
 		}
 		else {
 			// Use the amount of space required
-			Gui.renderScene = new Scene ( Gui.vBox, ( Gui.width * Gui.scale * 2 ) + Gui.scale,
-			        ( Gui.height * Gui.scale * 2 ) + Gui.scale + Gui.progressBarY );
+			Gui.renderScene = new Scene ( Gui.vBox, ( Gui.width * 2 + 1 ) - Gui.scale,
+			        ( Gui.height * 2 + 1 ) * Gui.scale + Gui.progressBarY );
+			Gui.stage.sizeToScene ( );
 		}
 
 		Gui.canvas.setOnMouseClicked ( e -> {
@@ -581,10 +586,10 @@ public class Gui extends Application {
 
 		Gui.stage.setScene ( Gui.renderScene );
 		Gui.stage.setResizable ( true );
-		Gui.stage.setMinHeight ( 30 );
-		Gui.stage.setMinWidth ( 30 );
-		Gui.stage.setMaxHeight ( ( Gui.height * Gui.scale * 2 ) + Gui.scale );
-		Gui.stage.setMaxWidth ( ( Gui.width * Gui.scale * 2 ) + Gui.scale );
+		Gui.stage.setMinHeight ( 100 );
+		Gui.stage.setMinWidth ( 100 );
+		Gui.stage.setMaxHeight ( Gui.stage.getWidth ( ) );
+		Gui.stage.setMaxWidth ( Gui.stage.getHeight ( ) );
 		Gui.stage.setX ( 0 );
 		Gui.stage.setY ( 0 );
 		Gui.stage.setFullScreenExitHint ( "ESC to exit fullscreen mode" + "\nDouble click to go fullscreen" ); //$NON-NLS-1$ //$NON-NLS-2$
@@ -594,14 +599,21 @@ public class Gui extends Application {
 
 	private void initInputScene ( ) {
 		this.initEntranceExitParameters ( );
-		this.graphParameters ( );
+		this.initGraphParameters ( );
 		this.initDetails ( );
 		this.initButtons ( );
 		this.initCheckBoxes ( );
 		this.setUpRadioButtons ( );
 
+		/*Gui.scaleSlider = new Slider(1, 10, 0.5);
+		Gui.scaleSlider.setValue ( 3 );
+		Gui.scaleSlider.setMinorTickCount ( 100 );
+		Gui.scaleSlider.setMajorTickUnit ( 1 );
+		Gui.scaleSlider.isSnapToTicks ( );
+		Gui.scaleSlider.isShowTickMarks ( );*/
+		
 		Gui.vBox = new VBox ( Gui.usePrimms, Gui.useKruskals, Gui.entranceExitParametersHBOX, Gui.graphParametersHBOX,
-		        Gui.detailsBOX, Gui.proceduralHBOX, Gui.kruskalsRadioBoxes, Gui.buttonHBOX );
+		        Gui.detailsBOX, Gui.proceduralHBOX, Gui.kruskalsRadioBoxes, Gui.buttonHBOX/*, Gui.scaleSlider*/ );
 		Gui.vBox.setPadding ( new Insets ( 20 ) );
 
 		if ( Gui.darkModeToggle ) {
@@ -707,8 +719,6 @@ public class Gui extends Application {
 
 		Gui.stage.setScene ( Gui.inputScene );
 		Gui.stage.show ( );
-		Gui.stage.setMinWidth ( Gui.stage.getWidth ( ) );
-		Gui.stage.setMinHeight ( Gui.stage.getHeight ( ) );
 		Gui.stage.centerOnScreen ( );
 		Gui.stage.setMinHeight ( Gui.stage.getHeight ( ) );
 		Gui.stage.setMinWidth ( Gui.stage.getWidth ( ) );
@@ -722,16 +732,19 @@ public class Gui extends Application {
 	private void updateGUI ( ) {
 		Gui.kruskalsRadioBoxes.setVisible ( ! Gui.usePrimms.isSelected ( ) );
 		Gui.primmsTypeCheckBox.setVisible ( Gui.usePrimms.isSelected ( ) );
+		this.updateScale();
 	}
 
 	private void updateScale ( ) {
-		Gui.scale = Gui.defaultScaleAndLowestScale;
+		//Gui.defaultScaleAndLowestScale = ( float ) scaleSlider.getValue ( );
+		
+		Gui.scale = Gui.defaultScale;
 
 		final float scalex = Gui.XMAX / ( ( Gui.width * 2 ) + 1 );
 		final float scaley = Gui.YMAX / ( ( Gui.height * 2 ) + 1 );
 
-		if ( ( scalex < Gui.defaultScaleAndLowestScale ) || ( scaley < Gui.defaultScaleAndLowestScale ) ) {
-			Gui.scale = Gui.defaultScaleAndLowestScale;
+		if ( ( scalex < Gui.defaultScale ) || ( scaley < Gui.defaultScale ) ) {
+			Gui.scale = Gui.minimumScale;
 		}
 		else if ( scalex <= scaley ) {
 			Gui.scale = scalex;
@@ -741,10 +754,10 @@ public class Gui extends Application {
 		}
 
 		if ( ( ( Gui.scale * Gui.width * 2 ) + 1 ) > Gui.XMAX ) {
-			Gui.scale = Gui.defaultScaleAndLowestScale;
+			Gui.scale = Gui.defaultScale;
 		}
 		else if ( ( ( Gui.scale * Gui.height * 2 ) + 1 ) > Gui.YMAX ) {
-			Gui.scale = Gui.defaultScaleAndLowestScale;
+			Gui.scale = Gui.defaultScale;
 		}
 
 	}
@@ -865,7 +878,12 @@ public class Gui extends Application {
 		if ( out ) {
 			this.updateScale ( );
 		}
+		
+		Gui.stage.sizeToScene ( );
+		Gui.stage.setMinHeight ( Gui.stage.getHeight ( ) );
+		Gui.stage.setMinWidth ( Gui.stage.getWidth ( ) );
 
 		return out;
 	}
+
 }
