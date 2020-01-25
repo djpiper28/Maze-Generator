@@ -550,10 +550,9 @@ public class Gui extends Application {
 
 		Gui.canvas = new Canvas ( ( Gui.width * 2 + 1 ) * Gui.scale,
 		        ( Gui.height * 2 + 1 ) * Gui.scale );
-		Gui.progress.setPrefWidth ( ( Gui.width * Gui.scale * 2 ) + Gui.scale );
+		Gui.progress.setPrefWidth ( ( Gui.width * 2 + 1 ) * Gui.scale );
+		
 		ScrollPane scrollPane = new ScrollPane ( );
-
-		scrollPane = new ScrollPane ( );
 		scrollPane.setContent ( Gui.canvas );
 
 		scrollPane.setVbarPolicy ( ScrollBarPolicy.AS_NEEDED );
