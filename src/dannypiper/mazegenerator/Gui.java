@@ -485,7 +485,7 @@ public class Gui extends Application {
 		Gui.entranceYLabel = new Text ( "Entrance Y: " ); //$NON-NLS-1$
 		Gui.entranceYLabel.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
-		Gui.entranceYField = new TextField ( "1" ); //$NON-NLS-1$
+		Gui.entranceYField = new TextField ( "50" ); //$NON-NLS-1$
 		Gui.entranceYField.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
 		Gui.entranceYField.setOnKeyTyped ( e -> {
@@ -511,7 +511,7 @@ public class Gui extends Application {
 		Gui.exitYLabel = new Text ( "  Exit Y :" ); //$NON-NLS-1$
 		Gui.exitYLabel.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 
-		Gui.exitYField = new TextField ( "100" ); //$NON-NLS-1$
+		Gui.exitYField = new TextField ( "50" ); //$NON-NLS-1$
 		Gui.exitYField.setFont ( Font.font ( Gui.font, FontWeight.BOLD, FontPosture.REGULAR, 14 ) );
 		Gui.exitYField.setOnKeyTyped ( e -> {
 
@@ -548,7 +548,7 @@ public class Gui extends Application {
 		Gui.progress.setBackground ( new Background (
 		        new BackgroundFill ( new Color ( 0d, 0d, 0d, 1d ), CornerRadii.EMPTY, Insets.EMPTY ) ) );
 
-		Gui.canvas = new Canvas ( ( Gui.width * 2 + 1 ) - Gui.scale,
+		Gui.canvas = new Canvas ( ( Gui.width * 2 + 1 ) * Gui.scale,
 		        ( Gui.height * 2 + 1 ) * Gui.scale );
 		Gui.progress.setPrefWidth ( ( Gui.width * Gui.scale * 2 ) + Gui.scale );
 		ScrollPane scrollPane = new ScrollPane ( );
@@ -568,9 +568,8 @@ public class Gui extends Application {
 		}
 		else {
 			// Use the amount of space required
-			Gui.renderScene = new Scene ( Gui.vBox, ( Gui.width * 2 + 1 ) - Gui.scale,
+			Gui.renderScene = new Scene ( Gui.vBox, ( Gui.width * 2 + 1 ) * Gui.scale,
 			        ( Gui.height * 2 + 1 ) * Gui.scale + Gui.progressBarY );
-			Gui.stage.sizeToScene ( );
 		}
 
 		Gui.canvas.setOnMouseClicked ( e -> {

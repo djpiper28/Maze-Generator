@@ -8,21 +8,16 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
 public class Renderer implements Runnable {
-
-	public int width;
-	public int height;
 	public float scale;
 	protected BufferedImage after;
 	protected AffineTransform affineTransform;
 	protected AffineTransformOp scaleOp;
 
 	public Renderer ( final int width, final int height, final float scale ) {
-		this.width = width;
-		this.height = height;
 		this.scale = scale;
 
 		if ( this.scale != 1 ) {
-			this.after = new BufferedImage ( ( int ) Math.ceil ( width * scale ), ( int ) Math.ceil ( height * scale ),
+			this.after = new BufferedImage ( ( int ) Math.ceil ( width * this.scale ), ( int ) Math.ceil ( height * this.scale ),
 			        BufferedImage.TYPE_INT_RGB );
 			this.after.setAccelerationPriority ( 1 );
 			this.affineTransform = new AffineTransform ( );
@@ -53,11 +48,9 @@ public class Renderer implements Runnable {
 			final Image image = SwingFXUtils.toFXImage ( MazeGen.mazeImage, null );
 
 			Gui.graphicsContext.drawImage ( image, 0, 0 );
-			;
 		}
 
 		System.out.println ( "Render call - " + ( System.currentTimeMillis ( ) - time ) + "ms" );
-		System.gc ( );
 	}
 
 }
