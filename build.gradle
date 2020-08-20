@@ -38,7 +38,7 @@ jar {
         configurations.runtimeClasspath.collect() { it.isDirectory() ? it : zipTree(it) }
     }
     from('src/main/java') {
-        include 'dannypiper/mazegenerator/*.png'
+        include '*.png'
         include 'dannypiper/mazegenerator/*.properties'
     }
 }
